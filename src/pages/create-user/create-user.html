@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Crear Preventa</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="close()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <form novalidate [formGroup]="createForm" (ngSubmit)="saveUser( $event )">
+    <ion-list>
+
+      <ion-item>
+        <ion-label floating>Nombre: </ion-label>
+        <ion-input formControlName="name" type="text"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="createForm.get('name').errors && createForm.get('name').dirty">
+        <p *ngIf="createForm.get('name').hasError('required')" ion-text color="danger">Este campo es requerido.</p>
+      </ion-item>
+
+      <ion-item>
+        <ion-label floating>Apellido Paterno: </ion-label>
+        <ion-input formControlName="apPat" type="text" type="text"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="createForm.get('apPat').errors && createForm.get('apPat').dirty">
+        <p *ngIf="createForm.get('apPat').hasError('required')" ion-text color="danger">Este campo es requerido.</p>
+      </ion-item>
+
+    </ion-list>
+
+    <div padding>
+      <button block ion-button color="primary" type="submit" icon-left [disabled]="createForm.invalid">
+        Guardar
+      </button>
+    </div>
+    
+  </form>
+
+</ion-content>

@@ -1,0 +1,26 @@
+<ion-split-pane>
+  <ion-menu id="menuAdmin" [content]="content">
+    <ion-content>
+      <div class="profile primary">
+        <div class="cover">
+          <img class="photo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1kE5Udx85NgpPzQqnsa-9tNscRlWjAPveihRgvD63DfkRUQEK" alt="logo">
+             <p> Marcelo Gutierrez Espinoza <p> 
+        </div>
+        <p> admin@gmail.com </p>
+        <h5>SUPERVISOR</h5>
+      </div>
+      <ion-list>
+        <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
+          {{p.title}}
+        </button>
+        <!--<button menuClose ion-item (click)="logout()">
+          <ion-icon name="log-out" item-left></ion-icon>
+          Salir
+        </button>-->
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+
+  <ion-nav #content [root]="rootPage" main></ion-nav>
+</ion-split-pane>

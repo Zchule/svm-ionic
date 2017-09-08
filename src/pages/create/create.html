@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Crear Preventa</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="close()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <form novalidate [formGroup]="preventaForm" (ngSubmit)="savePreventa( $event )">
+    <ion-list>
+
+      <ion-item>
+        <ion-label floating>Nombre: </ion-label>
+        <ion-input formControlName="name" type="text"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="preventaForm.get('name').errors && preventaForm.get('name').dirty">
+        <p *ngIf="preventaForm.get('name').hasError('required')" ion-text color="danger">Este campo es requerido.</p>
+      </ion-item>
+
+      <ion-item>
+        <ion-label floating>Apellido Paterno: </ion-label>
+        <ion-input formControlName="apPat" type="text" type="text"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="preventaForm.get('apPat').errors && preventaForm.get('apPat').dirty">
+        <p *ngIf="preventaForm.get('apPat').hasError('required')" ion-text color="danger">Este campo es requerido.</p>
+      </ion-item>
+      
+      <div class="item item-text-wrap" style="text-align:center"> {{" *Registre la Ubicación del Pedido:"}}
+          <ion-grid>
+           <ion-row>
+            <ion-col col-6 offset-3>
+              <button ion-button icon-left color="dark" type="button" (click)="getPosition()">
+                <ion-icon name="ios-pin"></ion-icon>
+                  Presione!
+            </button>
+          </ion-col>
+          </ion-row>
+         </ion-grid>
+        </div>
+        
+    </ion-list>
+
+    <div padding>
+      <button block ion-button color="primary" type="submit" icon-left [disabled]="preventaForm.invalid">
+        Guardar
+      </button>
+    </div>
+    
+  </form>
+
+</ion-content>

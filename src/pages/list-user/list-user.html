@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title class="Title">Preventa</ion-title>
+    <ion-buttons left>
+      <button ion-button icon-only menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-buttons right>
+      <button ion-button icon-only (click)="addUser()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <ion-list>
+        <button ion-item *ngFor="let user of users"  (click)="goToMapPage(dato)">
+            <ion-icon name="map" item-right ></ion-icon>
+            <ion-thumbnail item-left>
+                <img [src]="user.photo" alt="avatar">
+              </ion-thumbnail>
+          <h2>{{ user.name }} {{ user.apPat}} </h2>
+          
+        </button>
+        
+      </ion-list>
+</ion-content>
