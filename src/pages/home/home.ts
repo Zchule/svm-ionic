@@ -1,78 +1,38 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonicPage, NavController, NavParams, AlertController, ModalController, LoadingController, MenuController} from 'ionic-angular';
+import { IonicPage, NavController, NavParams, MenuController, AlertController } from 'ionic-angular';
 
-import { FirebaseListObservable } from 'angularfire2/database';
 import { LoginService } from '../../providers/login.service';
 
 @IonicPage()
 @Component({
   selector: 'page-home',
-  templateUrl: 'home.html'
+  templateUrl: 'home.html',
 })
 export class HomePage {
-  loginForm: FormGroup;
-  supervisores: FirebaseListObservable<any>;
-  data: any [];
-  user: any[];
 
-    constructor(
-      public navCtrl: NavController, 
-      public navParams: NavParams,
-      public formBuilder: FormBuilder,
-      public alertCtrl: AlertController, 
-      public loadingCtrl: LoadingController,
-      public menuCtrl: MenuController,
-      public modalCtrl: ModalController,
-      public loginService: LoginService
-    ) {
-      this.loginForm = this.makeLoginForm();
-    }
+  lists: any[] = [];
+  myDate: String = new Date().toISOString().substring(0, 10);
+  progressPercent;
+  date = new Date();
 
-    ionViewDidEnter() {
-      this.menuCtrl.enable(false, 'menuAdmin');
-    }
-    
-    info(){
-      let modal = this.modalCtrl.create('InfoPage');
-      modal.present();
-    }
-    
-    doLogin( event: Event ){
-      event.preventDefault();
-      let load = this.loadingCtrl.create({
-        dismissOnPageChange: true,
-      });
-      let usuario = this.loginForm.value.usuario;
-      let password = this.loginForm.value.password;
-      this.loginService.doLogin(usuario, password)
-      .then( user => {
-        console.log(user.$key)
-        this.navCtrl.setRoot("PreventaPage", {
-          key: user.$key,
-          list: user.VendedoresList
-        });
-      })
-      .catch(error =>{
-        load.dismiss().then( () => {
-        let alert = this.alertCtrl.create({
-          title: "Datos Invalidos",
-          message: "Revise sus Datos",
-          buttons: [{
-            text: "Ok",
-            role: 'cancel'
-          }]
-        });
-        alert.present();
-        });
-      });
-    }
-  
-    private makeLoginForm(){
-      return this.formBuilder.group({
-        usuario: ['', [Validators.required, Validators.minLength(6)]],
-        password: ['', [Validators.required, Validators.minLength(6)]]
-      });
-    }
-  
+  constructor(
+    public navCtrl: NavController, 
+    public menuCtrl: MenuController,
+    public navParams: NavParams,
+    public loginService: LoginService,
+    public alertCtrl: AlertController
+
+  ) {
+    console.log(this.navParams.get('key'));
+    this.lists = this.navParams.get('key')
+    console.log();
   }
+
+  ionViewDidLoad() {
+  }
+
+  ionViewDidEnter() {
+    this.menuCtrl.enable(true, 'menuAdmin');
+  }  
+
+}

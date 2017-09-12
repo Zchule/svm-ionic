@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-buttons end color="primary">
+      <button ion-button (click)="info()">
+        <ion-icon name="md-information-circle"></ion-icon>
+      </button>
+   </ion-buttons>
+    <ion-title class="Title">Venta Movil</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding="">
+  <img class="logo" src="assets/imgs/pil_logo.png" alt="logo">
+  <form novalidate [formGroup]="loginForm" (ngSubmit)="doLogin( $event )">
+    <ion-list>
+
+      <ion-item>
+        <ion-label floating>Usuario: </ion-label>
+        <ion-input formControlName="usuario"></ion-input>
+        <ion-item *ngIf="loginForm.get('usuario').errors && loginForm.get('usuario').dirty">
+            <p *ngIf="loginForm.get('usuario').hasError('required')" ion-text color="danger">Este campo es requerido.</p>
+            <p *ngIf="loginForm.get('usuario').hasError('minlength')" ion-text color="danger">Minimo tiene que ser de 6 caracteres.</p>
+          </ion-item>
+      </ion-item>
+
+      <ion-item>
+        <ion-label floating>Password: </ion-label>
+        <ion-input formControlName="password" type="password"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="loginForm.get('password').errors && loginForm.get('password').dirty">
+        <p *ngIf="loginForm.get('password').hasError('required')" ion-text color="danger">Este campo es requerido.</p>
+        <p *ngIf="loginForm.get('password').hasError('minlength')" ion-text color="danger">Minimo tiene que ser de 6 caracteres.</p>
+      </ion-item>
+    </ion-list>
+
+    <div padding>
+
+    <button block ion-button round type="submit" icon-left>
+      <ion-icon name="key"></ion-icon>
+        Ingresar
+      </button>
+  </div>
+
+  </form>
+</ion-content>
+    

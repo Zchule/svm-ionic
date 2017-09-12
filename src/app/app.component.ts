@@ -5,14 +5,15 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { SQLite } from '@ionic-native/sqlite';
 import { SqlService } from '../providers/sql.service';
+import { LoginService } from '../providers/login.service';
 
 @Component({
   templateUrl: 'app.html'
 })
 export class MyApp {
-  @ViewChild(Nav) nav: Nav;
+  @ViewChild(Nav) navMaster: Nav;
 
-  rootPage: any = 'HomePage';
+  rootPage: any = 'LoginPage';
 
   pages: Array<{title: string, component: any}>;
 
@@ -22,17 +23,17 @@ export class MyApp {
     public splashScreen: SplashScreen,
     public sqlite: SQLite,
     public sqlService: SqlService,
+    private auth: LoginService,
     ) {
     this.initializeApp();
 
     // used for an example of ngFor and navigation
     this.pages = [
-      { title: 'Inicio', component: 'AdmSuperPage' },
+      { title: 'Inicio', component: 'HomePage' },
       { title: 'Vendedores', component: 'PreventaPage' },
       { title: 'Mapa', component: 'InfoMapPage' },
       { title: 'SqlList', component: 'ListUserPage' },
-      { title: 'Mapa Prueba', component: 'MapGenericPage' },
-      { title: 'Salir', component: 'HomePage' }
+      { title: 'Mapa Prueba', component: 'MapGenericPage' }
     ];
 
   }
@@ -42,6 +43,7 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
+      this.checkSession();
       this.splashScreen.hide();
       this.createDatabase();
     });
@@ -50,7 +52,7 @@ export class MyApp {
   openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
-    this.nav.setRoot(page.component);
+    this.navMaster.setRoot(page.component);
   }
 
   private createDatabase(){
@@ -70,4 +72,19 @@ export class MyApp {
       console.error(error);
     });
   }
+
+  logout() {
+    this.auth.logout();
+    this.navMaster.setRoot('LoginPage');
+  }
+
+  private checkSession(){
+    if(this.auth.isLoggedIn()){
+      this.navMaster.setRoot('HomePage');
+    }else{
+      this.navMaster.setRoot('LoginPage');
+    }
+    this.splashScreen.hide();
+  }
+
 }

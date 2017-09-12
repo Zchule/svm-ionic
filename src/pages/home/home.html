@@ -1,46 +1,44 @@
 <ion-header>
-  <ion-navbar color="primary">
-    <ion-buttons end color="primary">
-      <button ion-button (click)="info()">
-        <ion-icon name="md-information-circle"></ion-icon>
-      </button>
-   </ion-buttons>
-    <ion-title class="Title">Venta Movil</ion-title>
-  </ion-navbar>
-</ion-header>
+    <ion-navbar color="primary">
+      <ion-buttons left>
+        <button ion-button icon-only menuToggle>
+          <ion-icon name="menu"></ion-icon>
+        </button>
+      </ion-buttons>
+      <ion-title class="Title">ADMINISTRADOR</ion-title>
+    </ion-navbar>
+  </ion-header>
 
-<ion-content padding="">
-  <img class="logo" src="assets/imgs/pil_logo.png" alt="logo">
-  <form novalidate [formGroup]="loginForm" (ngSubmit)="doLogin( $event )">
-    <ion-list>
+<ion-content padding>
+    <img class="logo" src="assets/imgs/pil_logo.png" alt="logo">
+ 
+    <p>FECHA SISTEMA: {{ myDate | date: 'dd-MM-yyyy' }} </p>
 
-      <ion-item>
-        <ion-label floating>Usuario: </ion-label>
-        <ion-input formControlName="usuario"></ion-input>
-        <ion-item *ngIf="loginForm.get('usuario').errors && loginForm.get('usuario').dirty">
-            <p *ngIf="loginForm.get('usuario').hasError('required')" ion-text color="danger">Este campo es requerido.</p>
-            <p *ngIf="loginForm.get('usuario').hasError('minlength')" ion-text color="danger">Minimo tiene que ser de 6 caracteres.</p>
-          </ion-item>
-      </ion-item>
 
-      <ion-item>
-        <ion-label floating>Password: </ion-label>
-        <ion-input formControlName="password" type="password"></ion-input>
-      </ion-item>
-      <ion-item *ngIf="loginForm.get('password').errors && loginForm.get('password').dirty">
-        <p *ngIf="loginForm.get('password').hasError('required')" ion-text color="danger">Este campo es requerido.</p>
-        <p *ngIf="loginForm.get('password').hasError('minlength')" ion-text color="danger">Minimo tiene que ser de 6 caracteres.</p>
-      </ion-item>
-    </ion-list>
+    <ion-fab right bottom>
+        <button ion-fab color="primary"><ion-icon name="arrow-dropup"></ion-icon></button>
+        <ion-fab-list side="top">
 
-    <div padding>
+          <button ion-fab color="primary">
+            <ion-icon name="refresh-circle"></ion-icon>
+            <ion-label>Recarga Saldo</ion-label>
+          </button>
 
-    <button block ion-button round type="submit" icon-left>
-      <ion-icon name="key"></ion-icon>
-        Ingresar
-      </button>
-  </div>
+          <button ion-fab color="primary">
+            <ion-icon name="paper"></ion-icon>
+            <ion-label>Exportar Solicitud</ion-label>
+          </button>
 
-  </form>
+          <button ion-fab color="primary">
+            <ion-icon name="arrow-round-up"></ion-icon>
+            <ion-label>Exportar Datos</ion-label>
+          </button>
+
+          <button ion-fab color="primary">
+            <ion-icon name="download"></ion-icon>
+            <ion-label>Importar Datos</ion-label>
+          </button>
+        </ion-fab-list>
+      </ion-fab>
+          
 </ion-content>
-    
