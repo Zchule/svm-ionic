@@ -45,11 +45,6 @@ export class PreventaPage {
       load.dismiss(); 
     })
   }
- 
-  addPreventa(){
-    let modal = this.modalCtrl.create('CreatePage');
-    modal.present();
-  }
 
   goToMapPage(vendedor){
     this.dataService.getVendedor(vendedor.imei).subscribe(data=>{

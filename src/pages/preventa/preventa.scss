@@ -24,11 +24,16 @@ page-preventa {
         background-color: map-get($colors, primary);
     }
     .progress{
-        background-color: #1A367B;
+        min-width: 0%;
+        color:#1A357B;
     }
 
     .mover
     {
         float: right;
+        right: 80px;
+        position: relative;
+        bottom: -15px;
+
     }
 }
