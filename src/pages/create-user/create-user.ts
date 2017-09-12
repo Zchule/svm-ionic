@@ -14,7 +14,6 @@ export class CreateUserPage {
   createForm: FormGroup;
   create: any= null;
 
-
   constructor(
     public viewCtrl: ViewController,
     public navCtrl: NavController, 

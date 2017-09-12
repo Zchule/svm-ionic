@@ -13,7 +13,6 @@
 
   <form novalidate [formGroup]="createForm" (ngSubmit)="saveUser( $event )">
     <ion-list>
-
       <ion-item>
         <ion-label floating>Nombre: </ion-label>
         <ion-input formControlName="name" type="text"></ion-input>
@@ -29,7 +28,6 @@
       <ion-item *ngIf="createForm.get('apPat').errors && createForm.get('apPat').dirty">
         <p *ngIf="createForm.get('apPat').hasError('required')" ion-text color="danger">Este campo es requerido.</p>
       </ion-item>
-
     </ion-list>
 
     <div padding>
@@ -37,7 +35,7 @@
         Guardar
       </button>
     </div>
-    
+
   </form>
 
 </ion-content>

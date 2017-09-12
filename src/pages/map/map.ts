@@ -3,9 +3,8 @@ import { IonicPage, NavController, NavParams, Loading, LoadingController} from '
 
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 
-import { DataService } from '../../providers/data.service';
-
 import { FirebaseListObservable } from 'angularfire2/database';
+import { DataService } from '../../providers/data.service';
 
 declare var google;
 
@@ -28,7 +27,7 @@ export class MapPage {
     public dataService: DataService,
     private loadCtrl: LoadingController
   ) {
-    this.dato = this.navParams.get('dato');
+    this.dato = this.navParams.get('vendedor');
     console.log(this.dato);
   }
 
@@ -40,8 +39,8 @@ export class MapPage {
     this.datos = this.dataService.getAll();
     this.datos.subscribe(data=>{
       load.dismiss(); 
-      let latitude = this.dato.latitude;
-      let longitude =  this.dato.longitude;
+      let latitude = this.dato.PosicionActual.latitude;
+      let longitude =  this.dato.PosicionActual.longitud;
       console.log(latitude, longitude);
       
       // create a new map by passing HTMLElement

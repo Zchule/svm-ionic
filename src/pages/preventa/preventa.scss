@@ -2,4 +2,33 @@ page-preventa {
     .Title{
          text-align: center;
     }
+    
+    .progress-outer {
+        float: right;
+        width: 35%;
+        margin: 10px 2%;
+        padding: 3px;
+        text-align: center;
+        background-color: #f4f4f4;
+        border: 1px solid #dcdcdc;
+        color: #1A367B;
+        border-radius: 20px;
+    }
+ 
+    .progress-inner {
+        min-width: 0%;
+        white-space: nowrap;
+        overflow: hidden;
+        padding: 0px;
+        border-radius: 20px;
+        background-color: map-get($colors, primary);
+    }
+    .progress{
+        background-color: #1A367B;
+    }
+
+    .mover
+    {
+        float: right;
+    }
 }

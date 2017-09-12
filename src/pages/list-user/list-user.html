@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar color="primary">
-    <ion-title class="Title">Preventa</ion-title>
+    <ion-title class="title">List User Page</ion-title>
     <ion-buttons left>
       <button ion-button icon-only menuToggle>
         <ion-icon name="menu"></ion-icon>
@@ -16,7 +16,10 @@
 
 <ion-content>
     <ion-list>
-        <button ion-item *ngFor="let user of users"  (click)="goToMapPage(dato)">
+        <ion-item *ngIf="users.length == 0"> 
+            Empty
+          </ion-item>
+        <button ion-item *ngFor="let user of users let i = index">
             <ion-icon name="map" item-right ></ion-icon>
             <ion-thumbnail item-left>
                 <img [src]="user.photo" alt="avatar">

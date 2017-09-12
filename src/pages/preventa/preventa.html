@@ -16,16 +16,17 @@
 
 <ion-content>
     <ion-list>
-        <button ion-item *ngFor="let dato of datos | async; let i = index"  (click)="goToMapPage(dato)">
-            <ion-icon name="map" item-right ></ion-icon>
-            <ion-thumbnail item-left>
-                <img [src]="dato.photo" alt="avatar">
-              </ion-thumbnail>
-          <h2>{{ dato.name }} {{ dato.apPat}} </h2>
-          <p>{{dato.fecha | date: 'yyyy-MM-dd'}}</p>
-          
+        <button ion-item *ngFor="let vendedor of listsVendedores; let i = index"  (click)="goToMapPage(vendedor)">
+          <h2>{{ vendedor.nombreVendedor}} </h2>
+          <p>{{ vendedor.imei }} </p>
+          <p class="mover" >{{ vendedor['registro: 09-08-2017'].efectividad }} % </p>
+          <div class="progress-outer">
+              <div class="mover" class="progress-inner" [style.width]="vendedor['registro: 09-08-2017'].efectividad + '%'">
+                  <p class="progress" >{{ vendedor['registro: 09-08-2017'].efectividad }} %</p>
+              </div>
+            </div>
         </button>
-        
       </ion-list>
+        
 </ion-content>
 

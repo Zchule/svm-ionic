@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, MenuController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, MenuController, AlertController } from 'ionic-angular';
+
+import { LoginService } from '../../providers/login.service';
 
 @IonicPage()
 @Component({
@@ -7,25 +9,30 @@ import { IonicPage, NavController, MenuController, AlertController } from 'ionic
   templateUrl: 'adm-super.html',
 })
 export class AdmSuperPage {
-  
+
+  lists: any[] = [];
   myDate: String = new Date().toISOString().substring(0, 10);
+  progressPercent;
+  date = new Date();
 
   constructor(
     public navCtrl: NavController, 
     public menuCtrl: MenuController,
+    public navParams: NavParams,
+    public loginService: LoginService,
     public alertCtrl: AlertController
 
   ) {
+    console.log(this.navParams.get('key'));
+    this.lists = this.navParams.get('key')
+    console.log();
   }
 
   ionViewDidLoad() {
-    console.log("AdminUser");
   }
 
   ionViewDidEnter() {
     this.menuCtrl.enable(true, 'menuAdmin');
   }  
 
-  options(){
-  }
 }

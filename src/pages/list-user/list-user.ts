@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 
-import { SQLite } from '@ionic-native/sqlite';
 import { SqlService } from '../../providers/sql.service';
 
 @IonicPage()

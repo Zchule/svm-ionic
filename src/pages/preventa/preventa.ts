@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, ModalController, LoadingController} from 'ionic-angular';
+import { IonicPage, NavController, NavParams, MenuController, ModalController, LoadingController} from 'ionic-angular';
 import { FirebaseListObservable } from 'angularfire2/database';
+import { AfoListObservable, AngularFireOfflineDatabase } from 'angularfire2-offline/database';
 
 import { DataService } from '../../providers/data.service';
+import { LoginService } from '../../providers/login.service';
 
 @IonicPage()
 @Component({
@@ -11,13 +13,25 @@ import { DataService } from '../../providers/data.service';
 })
 export class PreventaPage {
 
-  datos: FirebaseListObservable<any>;
+  listsVendedores: any;
+  vendedores: FirebaseListObservable<any>;
+  myDate: String = new Date().toISOString().substring(0, 10);
+  key = "";
   constructor(
     private navCtrl: NavController,
-    private dataService: DataService,
+    public navParams: NavParams,
     private modalCtrl: ModalController,
-    public loadCtrl: LoadingController
+    public menuCtrl: MenuController,
+    public loadCtrl: LoadingController,
+    public loginService: LoginService,
+    public dataService: DataService
     ) {
+      console.log(this.navParams.get('key')); 
+      this.key =  this.navParams.get('key');
+  }
+
+  ionViewDidEnter() {
+    this.menuCtrl.enable(true, 'menuAdmin');
   }
 
   ionViewDidLoad() {
@@ -25,20 +39,23 @@ export class PreventaPage {
       content: 'Cargando...'
     });
     load.present();
-    this.datos = this.dataService.getAll();
-    this.datos.subscribe(data=>{
+    this.loginService.getVendedorAll(this.key).then(data=>{
+      console.log(data);
+      this.listsVendedores = data;
       load.dismiss(); 
     })
-    
   }
-
+ 
   addPreventa(){
     let modal = this.modalCtrl.create('CreatePage');
     modal.present();
   }
-  goToMapPage(dato){
-    this.navCtrl.push('MapPage', {
-      dato: dato
+
+  goToMapPage(vendedor){
+    this.dataService.getVendedor(vendedor.imei).subscribe(data=>{
+      this.navCtrl.push('MapPage', {
+        vendedor: data
+      });
     });
   }
 

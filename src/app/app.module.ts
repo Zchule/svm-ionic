@@ -12,18 +12,20 @@ import { GoogleMaps } from '@ionic-native/google-maps';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
-import { DataService } from '../providers/data.service';
+import { AngularFireOfflineModule } from 'angularfire2-offline';
 
+import { DataService } from '../providers/data.service';
 import { SQLite } from '@ionic-native/sqlite';
 import { SqlService } from '../providers/sql.service';
+import { LoginService } from '../providers/login.service';
 
-const configFirebase ={
-  apiKey: "AIzaSyCHkCq2n-zXmNHb5BpfrMKz6qSGBhUkSOw",
-  authDomain: "dmimovil-f7e74.firebaseapp.com",
-  databaseURL: "https://dmimovil-f7e74.firebaseio.com",
-  projectId: "dmimovil-f7e74",
-  storageBucket: "dmimovil-f7e74.appspot.com",
-  messagingSenderId: "595861180440"
+var configFirebase = {
+  apiKey: "AIzaSyAJDgpY9ssAyjIX_vA7S1D_fgcA26BBvxQ",
+  authDomain: "svmmoviltest.firebaseapp.com",
+  databaseURL: "https://svmmoviltest.firebaseio.com",
+  projectId: "svmmoviltest",
+  storageBucket: "svmmoviltest.appspot.com",
+  messagingSenderId: "1094384829553"
 };
 
 @NgModule({
@@ -34,7 +36,8 @@ const configFirebase ={
     BrowserModule,
     IonicModule.forRoot(MyApp),
     AngularFireModule.initializeApp( configFirebase ),
-    AngularFireDatabaseModule
+    AngularFireDatabaseModule,
+    AngularFireOfflineModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -48,7 +51,8 @@ const configFirebase ={
     SQLite,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     DataService,
-    SqlService
+    SqlService,
+    LoginService
   ]
 })
 export class AppModule {}
