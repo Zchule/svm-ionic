@@ -8,7 +8,6 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { Geolocation } from '@ionic-native/geolocation';
-import { GoogleMaps } from '@ionic-native/google-maps';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
@@ -51,7 +50,6 @@ var configFirebase = {
     StatusBar,
     SplashScreen,
     Geolocation,
-    GoogleMaps,
     SQLite,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     VendedorService,

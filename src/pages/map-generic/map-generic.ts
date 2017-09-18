@@ -4,6 +4,8 @@ import { IonicPage, NavController, NavParams, Loading, LoadingController } from 
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import { VendedorService } from '../../providers/vendedor.service';
 
+import { LoginService } from '../../providers/login.service';
+
 declare var google;
 
 @IonicPage()
@@ -24,19 +26,16 @@ export class MapGenericPage {
     public navParams: NavParams,
     private loadCtrl: LoadingController,
     public geolocation: Geolocation,
-    public vendedorService: VendedorService
-  ) {
-
-  }
+    public vendedorService: VendedorService,
+    public loginService: LoginService
+  ) {  }
 
   ionViewDidLoad() {
     let load = this.loadCtrl.create({
       content: 'Cargando...'
     });
-
     this.loadMap();
   }
-  
 
 private loadMap(){   
     //create a new map by passing HTMLElement
@@ -61,10 +60,13 @@ private loadMap(){
    }
 
    private obtenerVendedores(){
-    let list = this.vendedorService.getVendedorAll(); 
-    console.log(list);
-  }
 
+    this.loginService.getVendedorAll('212').then(data =>{
+      console.log(data);
+      // this.listsVendedores = data;
+      // load.dismiss(); 
+    })
+  }
 
    private createMarker(lat: number, lng: number, icon: string, title: string){
         let options = {
@@ -80,8 +82,6 @@ private loadMap(){
         let marker = new google.maps.Marker(options);
         return marker;
       }
-
-
 
   }
 

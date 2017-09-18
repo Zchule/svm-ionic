@@ -24,10 +24,8 @@ export class PreventaPage {
     public menuCtrl: MenuController,
     public loadCtrl: LoadingController,
     public loginService: LoginService,
-    public VendedorService: VendedorService,
-    // public sqlService: SqlService
+    public VendedorService: VendedorService
     ) {
-      //this.getAllUser();
   }
 
   ionViewDidEnter() {
@@ -49,18 +47,8 @@ export class PreventaPage {
     })
   }
 
-  // getAllUser(){
-  //   this.sqlService.getAll()
-  //   .then(users => {
-  //     this.users = users;
-  //   })
-  //   .catch( error => {
-  //     console.error( error );
-  //   });
-  // }
-
-    goToMapPage(vendedor){
-    this.VendedorService.getVendedor('356812072372426').subscribe(data=>{
+  goToMapPage(vendedor){
+    this.VendedorService.getVendedor(vendedor.$key).subscribe(data=>{
       this.navCtrl.push('MapPage', {
         vendedor: data
       });
