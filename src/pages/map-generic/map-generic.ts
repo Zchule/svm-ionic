@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Loading, LoadingController } from 'ionic-angular';
 
-import { Geolocation, Geoposition } from '@ionic-native/geolocation';
+import { Geolocation } from '@ionic-native/geolocation';
 import { VendedorService } from '../../providers/vendedor.service';
 
 import { LoginService } from '../../providers/login.service';
@@ -20,6 +20,7 @@ export class MapGenericPage {
   myLatLng: any;
   waypoints: any[];
   load: Loading;
+  vendedores: any[];
 
   constructor(
     public navCtrl: NavController, 
@@ -31,9 +32,9 @@ export class MapGenericPage {
   ) {  }
 
   ionViewDidLoad() {
-    let load = this.loadCtrl.create({
-      content: 'Cargando...'
-    });
+    // let load = this.loadCtrl.create({
+    //   content: 'Cargando...'
+    // });
     this.loadMap();
   }
 
@@ -60,10 +61,17 @@ private loadMap(){
    }
 
    private obtenerVendedores(){
-
     this.loginService.getVendedorAll('212').then(data =>{
-      console.log(data);
-      // this.listsVendedores = data;
+      this.vendedores = data;
+      let icon = `https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld`;
+      console.log(this.vendedores);
+      this.vendedores.map(vendedor=>{
+        let latitud = vendedor.PosicionActual.latitud; 
+        let longitud = vendedor.PosicionActual.longitud;
+        let title = vendedor.nombreVendedor;
+        console.log(latitud);
+        this.createMarker(latitud, longitud, icon, title);
+      })                                                                  
       // load.dismiss(); 
     })
   }

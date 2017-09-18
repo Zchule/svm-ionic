@@ -24,26 +24,6 @@ export class LoginService {
     this.supervisoresRef = this.supervisores.$ref;
   }
 
-  buscarUser(imei): Promise<any>{
-    return new Promise((resolve, reject)=>{
-      const query = this.supervisoresRef.orderByChild('deviceId').equalTo(imei);
-      query.once('value', snap =>{
-        let data = "";
-        snap.forEach(item => {
-          data = item.key ;
-          this.getSupervisor(item.key).then( user=> {
-            if(user !== null ){
-              resolve(user);
-            }else{
-              reject(user);
-            }  
-          }).catch(error => Promise.reject(error))
-          return false;    
-        });
-      })
-    })
-  }
-
   doLoginOnline(usuario: string, password: string, imei: string): Promise<any>{
     return new Promise((resolve, reject)=>{
       const query = this.supervisoresRef.orderByKey().equalTo('212');
@@ -140,7 +120,9 @@ export class LoginService {
 
   getVendedorAll(id){
     if(this.platform.is('cordova')){
+      console.log(this.network.type); 
       if(this.network.type !== "none"){
+        console.log(this.network.type); 
         return this.getVendedorAllOnline(id);
       }else{
         return this.getVendedorAllOffline(id);
@@ -153,6 +135,10 @@ export class LoginService {
 
   getListVendedores(id){
     return this.fireDatabase.list('/Supervisores/'+ id + '/VendedoresList');
+  }
+
+  getFechaServidor(){
+    return this.fireDatabase.list('/Servidor/'+ 'fecha');
   }
 
 }

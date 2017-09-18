@@ -4,7 +4,6 @@ import { IonicPage, NavController, NavParams, AlertController, ModalController, 
 
 import { FirebaseListObservable } from 'angularfire2/database';
 import { LoginService } from '../../providers/login.service';
-// import { SqlService } from '../../providers/sql.service';
 
 @IonicPage()
 @Component({
@@ -34,7 +33,6 @@ export class LoginPage {
 
     ionViewDidLoad() {
       console.log('ionViewDidLoad ListUserPage');
-      //this.getAllUser();
     }
     
     ionViewDidEnter() {
@@ -45,17 +43,6 @@ export class LoginPage {
       let modal = this.modalCtrl.create('InfoPage');
       modal.present();
     }
-
-    // getAllUser(){
-    //   this.sqlService.getAll()
-    //   .then(users => {
-    //     this.users = users;
-    //   })
-    //   .catch( error => {
-    //     console.error( error );
-    //   });
-    // }
-
 
     doLogin( event: Event ){
       event.preventDefault();

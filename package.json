@@ -64,7 +64,8 @@
             "cordova-plugin-whitelist": {},
             "ionic-plugin-keyboard": {},
             "cordova-sqlite-storage": {},
-            "cordova-plugin-sim": {}
+            "cordova-plugin-sim": {},
+            "cordova-plugin-network-information": {}
         },
         "platforms": [
             "android"

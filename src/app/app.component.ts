@@ -6,6 +6,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { SQLite } from '@ionic-native/sqlite';
 import { LoginService } from '../providers/login.service';
 import { Sim } from '@ionic-native/sim';
+import { Storage } from '@ionic/storage';
 
 @Component({
   templateUrl: 'app.html'
@@ -23,9 +24,9 @@ export class MyApp {
     public statusBar: StatusBar, 
     public splashScreen: SplashScreen,
     public sqlite: SQLite,
-    // public sqlService: SqlService,
     private auth: LoginService,
-    private sim: Sim
+    private sim: Sim,
+    private storage: Storage
     ) {
     this.initializeApp();
 
@@ -57,36 +58,11 @@ export class MyApp {
 
   private obtenerImei(){
     this.sim.getSimInfo().then( info => {
-     let imei= '359825061511512';
-      this.auth.buscarUser(imei).then(supervisor =>{
-        this.user = supervisor;
-        console.log(supervisor);
-        this.navMaster.setRoot('LoginPage', {
-          user: this.user
-        }); 
-      });
-      
+     let imei = '359825061511512';
+      console.log(imei);
     })
   }
-
-  // private createDatabase(){
-  //   this.sqlite.create({
-  //     name: 'data.db',
-  //     location: 'default' // the location field is required
-  //   })
-  //   .then((db) => {
-  //     this.sqlService.setDatabase(db);
-  //     return this.sqlService.createTable();
-  //   })
-  //   .then(() =>{
-  //     this.splashScreen.hide();
-  //     this.rootPage = 'HomePage';
-  //   })
-  //   .catch(error =>{
-  //     console.error(error);
-  //   });
-  // }
-
+    
   logout() {
     this.navMaster.setRoot('LoginPage');
   }
