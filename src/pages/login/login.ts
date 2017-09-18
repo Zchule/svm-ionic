@@ -4,6 +4,7 @@ import { IonicPage, NavController, NavParams, AlertController, ModalController, 
 
 import { FirebaseListObservable } from 'angularfire2/database';
 import { LoginService } from '../../providers/login.service';
+// import { SqlService } from '../../providers/sql.service';
 
 @IonicPage()
 @Component({
@@ -11,10 +12,11 @@ import { LoginService } from '../../providers/login.service';
   templateUrl: 'login.html'
 })
 export class LoginPage {
+
   loginForm: FormGroup;
   supervisores: FirebaseListObservable<any>;
   data: any [];
-  user: any[];
+  users: any[] = [];
 
     constructor(
       public navCtrl: NavController, 
@@ -24,20 +26,37 @@ export class LoginPage {
       public loadingCtrl: LoadingController,
       public menuCtrl: MenuController,
       public modalCtrl: ModalController,
-      public loginService: LoginService
+      public loginService: LoginService,
+      // public sqlService: SqlService
     ) {
       this.loginForm = this.makeLoginForm();
     }
 
+    ionViewDidLoad() {
+      console.log('ionViewDidLoad ListUserPage');
+      //this.getAllUser();
+    }
+    
     ionViewDidEnter() {
       this.menuCtrl.enable(false, 'menuAdmin');
-    }
+    }   
     
     info(){
       let modal = this.modalCtrl.create('InfoPage');
       modal.present();
     }
-    
+
+    // getAllUser(){
+    //   this.sqlService.getAll()
+    //   .then(users => {
+    //     this.users = users;
+    //   })
+    //   .catch( error => {
+    //     console.error( error );
+    //   });
+    // }
+
+
     doLogin( event: Event ){
       event.preventDefault();
       let load = this.loadingCtrl.create({
@@ -45,7 +64,7 @@ export class LoginPage {
       });
       let usuario = this.loginForm.value.usuario;
       let password = this.loginForm.value.password;
-      this.loginService.doLogin(usuario, password)
+      this.loginService.doLogin(usuario, password, '212')
       .then( usuario => {
         this.navCtrl.setRoot("HomePage");
       })

@@ -4,8 +4,8 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { SQLite } from '@ionic-native/sqlite';
-import { SqlService } from '../providers/sql.service';
 import { LoginService } from '../providers/login.service';
+import { Sim } from '@ionic-native/sim';
 
 @Component({
   templateUrl: 'app.html'
@@ -14,6 +14,7 @@ export class MyApp {
   @ViewChild(Nav) navMaster: Nav;
 
   rootPage: any = 'LoginPage';
+  user: any[];
 
   pages: Array<{title: string, component: any}>;
 
@@ -22,8 +23,9 @@ export class MyApp {
     public statusBar: StatusBar, 
     public splashScreen: SplashScreen,
     public sqlite: SQLite,
-    public sqlService: SqlService,
+    // public sqlService: SqlService,
     private auth: LoginService,
+    private sim: Sim
     ) {
     this.initializeApp();
 
@@ -31,9 +33,7 @@ export class MyApp {
     this.pages = [
       { title: 'Inicio', component: 'HomePage' },
       { title: 'Vendedores', component: 'PreventaPage' },
-      { title: 'Mapa', component: 'InfoMapPage' },
-      { title: 'SqlList', component: 'ListUserPage' },
-      { title: 'Mapa Prueba', component: 'MapGenericPage' }
+      { title: 'Mapa', component: 'MapGenericPage' }
     ];
 
   }
@@ -43,9 +43,9 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
-      this.checkSession();
+      this.obtenerImei();
       this.splashScreen.hide();
-      this.createDatabase();
+      // this.createDatabase();
     });
   }
 
@@ -55,36 +55,41 @@ export class MyApp {
     this.navMaster.setRoot(page.component);
   }
 
-  private createDatabase(){
-    this.sqlite.create({
-      name: 'data.db',
-      location: 'default' // the location field is required
+  private obtenerImei(){
+    this.sim.getSimInfo().then( info => {
+     let imei= '359825061511512';
+      this.auth.buscarUser(imei).then(supervisor =>{
+        this.user = supervisor;
+        console.log(supervisor);
+        this.navMaster.setRoot('LoginPage', {
+          user: this.user
+        }); 
+      });
+      
     })
-    .then((db) => {
-      this.sqlService.setDatabase(db);
-      return this.sqlService.createTable();
-    })
-    .then(() =>{
-      this.splashScreen.hide();
-      this.rootPage = 'HomePage';
-    })
-    .catch(error =>{
-      console.error(error);
-    });
   }
 
+  // private createDatabase(){
+  //   this.sqlite.create({
+  //     name: 'data.db',
+  //     location: 'default' // the location field is required
+  //   })
+  //   .then((db) => {
+  //     this.sqlService.setDatabase(db);
+  //     return this.sqlService.createTable();
+  //   })
+  //   .then(() =>{
+  //     this.splashScreen.hide();
+  //     this.rootPage = 'HomePage';
+  //   })
+  //   .catch(error =>{
+  //     console.error(error);
+  //   });
+  // }
+
   logout() {
-    this.auth.logout();
     this.navMaster.setRoot('LoginPage');
   }
 
-  private checkSession(){
-    if(this.auth.isLoggedIn()){
-      this.navMaster.setRoot('HomePage');
-    }else{
-      this.navMaster.setRoot('LoginPage');
-    }
-    this.splashScreen.hide();
-  }
 
 }

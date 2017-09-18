@@ -23,9 +23,6 @@ export class HomePage {
     public alertCtrl: AlertController
 
   ) {
-    console.log(this.navParams.get('key'));
-    this.lists = this.navParams.get('key')
-    console.log();
   }
 
   ionViewDidLoad() {
@@ -34,5 +31,9 @@ export class HomePage {
   ionViewDidEnter() {
     this.menuCtrl.enable(true, 'menuAdmin');
   }  
+
+  saveDatos(){
+    
+  }
 
 }

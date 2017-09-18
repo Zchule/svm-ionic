@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Loading, LoadingController} from 'ionic-angular';
 
-import { Geolocation, Geoposition } from '@ionic-native/geolocation';
+import { Geolocation } from '@ionic-native/geolocation';
 
 import { FirebaseListObservable } from 'angularfire2/database';
-import { DataService } from '../../providers/data.service';
+import { VendedorService } from '../../providers/vendedor.service';
 
 declare var google;
 
@@ -19,13 +19,14 @@ export class MapPage {
   dato: any = null;
   load: Loading;
   datos: FirebaseListObservable<any>;
+  vendedor: any;
 
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
+    private loadCtrl: LoadingController,
     public geolocation: Geolocation,
-    public dataService: DataService,
-    private loadCtrl: LoadingController
+    public vendedorService: VendedorService
   ) {
     this.dato = this.navParams.get('vendedor');
     console.log(this.dato);
@@ -35,38 +36,92 @@ export class MapPage {
     let load = this.loadCtrl.create({
       content: 'Cargando...'
     });
-    load.present();
-    this.datos = this.dataService.getAll();
-    this.datos.subscribe(data=>{
-      load.dismiss(); 
-      let latitude = this.dato.PosicionActual.latitude;
-      let longitude =  this.dato.PosicionActual.longitud;
-      console.log(latitude, longitude);
-      
-      // create a new map by passing HTMLElement
-      let mapEle: HTMLElement = document.getElementById('map');
-      let panelEle: HTMLElement = document.getElementById('panel');
-      
-      // create LatLng object
-      let myLatLng = {lat: latitude, lng: longitude};
-    
-      // create map
-      this.map = new google.maps.Map(mapEle, {
-        center: myLatLng,
-        zoom: 12
-      });
-    
-      google.maps.event.addListenerOnce(this.map, 'idle', () => {
-        mapEle.classList.add('show-map');
-        let marker = new google.maps.Marker({
-          position: myLatLng,
-          map: this.map,
-          title: 'Hello World!'
-        });
-      }); 
-      
-    })
-  
+    // load.present();
+    // load.dismiss(); 
+    this.loadMap();
   }
   
+  private loadMap(){   
+    //create a new map by passing HTMLElement
+    let mapEle: HTMLElement = document.getElementById('map');
+  
+    let latitud = -17.2378799;
+    let longitud = -66.7239997;
+
+    // create LatLng object
+    let myLatLng = { lat: latitud, lng: longitud };
+    
+    // create map
+    this.map = new google.maps.Map(mapEle, {
+      center: myLatLng,
+      zoom: 12
+    });
+      
+    google.maps.event.addListenerOnce(this.map, 'idle', () => {
+      mapEle.classList.add('show-map');
+        this.obtenerVendedor();
+    }); 
+    
+  }
+
+  private obtenerVendedor(){
+    this.vendedorService.getVendedor(this.dato.$key).subscribe((vendedor)=>{ 
+      this.vendedor = vendedor;
+      console.log(this.vendedor);
+      let latitud = this.vendedor.PosicionActual.latitud;
+      let longitud = this.vendedor.PosicionActual.longitud;
+      this.map.setCenter({
+        lat: latitud, 
+        lng: longitud
+      });
+      let icon = `https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld`;
+      this.createMarker(latitud, longitud, icon, 'myMarker');
+      this.renderMarkers();
+    });
+  }
+
+  private createMarker(lat: number, lng: number, icon: string, title: string){
+        let options = {
+          position: {
+            lat: lat,
+            lng: lng
+          },
+          title: title,
+          map: this.map,
+          icon: icon,
+          zIndex: Math.round(lat*-100000)<<5
+        }
+        let marker = new google.maps.Marker(options);
+        return marker;
+      }
+  
+  private renderMarkers(){
+  let geoPuntosList = this.vendedor['registro:09-13-2017'].geoPuntoList;
+  let lines = [];
+    for(let key in geoPuntosList) {
+        let client = geoPuntosList[key];
+        let icon = './assets/imgs/default.png';
+        if(client.tipo == 'PEDIDO'){
+          icon = './assets/imgs/pedido.png';
+        }else if(client.tipo == 'DEVOLUCION' ){
+          icon = './assets/imgs/devolucion.png';
+        }else if(client.tipo == 'VISITA'){
+          icon = './assets/imgs/visita.png';
+        }else if(client.tipo == 'VENTA'){
+          icon = './assets/imgs/venta.png';
+        }
+    this.createMarker(client.latitud, client.longitud, icon, client.tipo);
+    lines.push({ lat: client.latitud, lng: client.longitud });   
+  }
+
+  let linesPath = new google.maps.Polyline({
+    path: lines,
+    geodesic: true,           
+    strokeColor: '#FF0000',           
+    strokeOpacity: 1.0,           
+    strokeWeight: 2
+  });
+  linesPath.setMap(this.map);
+
+  } 
 }

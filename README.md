@@ -24,3 +24,10 @@ $ ionic cordova run ios
 
 Substitute ios for android if not on a Mac.
 
+link de repositorio= https://bocbap2.pilandina.com.bo:8888/root/svm-ionic.git
+
+git remote -v        //veo el link del repo enlazado
+git remote rm origin    //quito el repo
+
+git remote add orgin {link}     // agregar repo
+

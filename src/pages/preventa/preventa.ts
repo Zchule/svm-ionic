@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, MenuController, LoadingController} from 'ionic-angular';
 import { FirebaseListObservable } from 'angularfire2/database';
 
-import { DataService } from '../../providers/data.service';
+import { VendedorService } from '../../providers/vendedor.service';
 import { LoginService } from '../../providers/login.service';
 
 @IonicPage()
@@ -16,15 +16,18 @@ export class PreventaPage {
   vendedores: FirebaseListObservable<any>;
   myDate: String = new Date().toISOString().substring(0, 10);
   UserLogged : any;
+  users: any[] = [];
+
   constructor(
     private navCtrl: NavController,
     public navParams: NavParams,
     public menuCtrl: MenuController,
     public loadCtrl: LoadingController,
     public loginService: LoginService,
-    public dataService: DataService
+    public VendedorService: VendedorService,
+    // public sqlService: SqlService
     ) {
-      console.log(this.loginService.getUser());
+      //this.getAllUser();
   }
 
   ionViewDidEnter() {
@@ -32,20 +35,32 @@ export class PreventaPage {
   }
 
   ionViewDidLoad() {
+    console.log('ionViewDidLoad PreventaPage');
+    
     let load = this.loadCtrl.create({
       content: 'Cargando...'
     });
     load.present();
-    this.UserLogged = this.loginService.getUser();
-    this.loginService.getVendedorAll(this.UserLogged.IdSupervisor).then(data=>{
+    
+    this.loginService.getVendedorAll('212').then(data =>{
       console.log(data);
       this.listsVendedores = data;
       load.dismiss(); 
     })
   }
 
-  goToMapPage(vendedor){
-    this.dataService.getVendedor(vendedor.imei).subscribe(data=>{
+  // getAllUser(){
+  //   this.sqlService.getAll()
+  //   .then(users => {
+  //     this.users = users;
+  //   })
+  //   .catch( error => {
+  //     console.error( error );
+  //   });
+  // }
+
+    goToMapPage(vendedor){
+    this.VendedorService.getVendedor('356812072372426').subscribe(data=>{
       this.navCtrl.push('MapPage', {
         vendedor: data
       });

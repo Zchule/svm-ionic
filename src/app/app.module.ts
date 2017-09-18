@@ -12,12 +12,15 @@ import { GoogleMaps } from '@ionic-native/google-maps';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
-import { AngularFireOfflineModule } from 'angularfire2-offline';
 
-import { DataService } from '../providers/data.service';
-import { SQLite } from '@ionic-native/sqlite';
-import { SqlService } from '../providers/sql.service';
+import { VendedorService } from '../providers/vendedor.service';
 import { LoginService } from '../providers/login.service';
+
+import { SQLite } from '@ionic-native/sqlite';
+import { Sim } from '@ionic-native/sim';
+
+import { IonicStorageModule } from '@ionic/storage';
+import { Network } from '@ionic-native/network';
 
 var configFirebase = {
   apiKey: "AIzaSyAJDgpY9ssAyjIX_vA7S1D_fgcA26BBvxQ",
@@ -37,22 +40,23 @@ var configFirebase = {
     IonicModule.forRoot(MyApp),
     AngularFireModule.initializeApp( configFirebase ),
     AngularFireDatabaseModule,
-    AngularFireOfflineModule
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp
   ],
   providers: [
+    Sim,
     StatusBar,
     SplashScreen,
     Geolocation,
     GoogleMaps,
     SQLite,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    DataService,
-    SqlService,
-    LoginService
+    VendedorService,
+    LoginService,
+    Network
   ]
 })
 export class AppModule {}
