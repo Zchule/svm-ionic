@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Loading, LoadingController } from 'ionic-angular';
 
-import { Geolocation, Geoposition } from '@ionic-native/geolocation';
-import { VendedorService } from '../../providers/vendedor.service';
+import { Geolocation } from '@ionic-native/geolocation';
+import { LoginService } from '../../providers/login.service';
 
 declare var google;
 
@@ -18,14 +18,17 @@ export class MapGenericPage {
   myLatLng: any;
   waypoints: any[];
   load: Loading;
+  vendedores: any = {};
 
   constructor(
-    public navCtrl: NavController, 
-    public navParams: NavParams,
+    private navCtrl: NavController, 
+    private navParams: NavParams,
     private loadCtrl: LoadingController,
-    public geolocation: Geolocation,
-    public vendedorService: VendedorService
-  ) {}
+    private geolocation: Geolocation,
+    private loginService: LoginService
+  ) {
+    this.bounds = new google.maps.LatLngBounds();
+  }
 
   ionViewDidLoad() {
     let load = this.loadCtrl.create({
@@ -53,13 +56,35 @@ private loadMap(){
       
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
       mapEle.classList.add('show-map');
-        this.obtenerVendedores();
+      this.obtenerVendedores();
     });   
    }
 
-   private obtenerVendedores(){
-    let list = this.vendedorService.getVendedorAll(); 
-    console.log(list);
+  private obtenerVendedores(){
+    let lat: number;
+    let lng: number;
+    this.loginService.getVendedorAllOnlineRealtimeoOb()
+    .subscribe(vendedor =>{
+      if(vendedor){
+        if(!this.vendedores[vendedor.imei]){
+          this.vendedores[vendedor.imei] = {};
+          this.vendedores[vendedor.imei].info = vendedor;
+          lat = vendedor.PosicionActual.latitud;
+          lng = vendedor.PosicionActual.longitud;
+          this.vendedores[vendedor.imei].marker = this.createMarker(lat, lng, '', 'Hola');
+        }else{
+          this.vendedores[vendedor.imei].info = vendedor;
+          lat = vendedor.PosicionActual.latitud;
+          lng = vendedor.PosicionActual.longitud;
+          this.vendedores[vendedor.imei].marker.setPosition({
+            lat: lat,
+            lng: lng
+          });
+        }
+        this.fixBounds(lat,lng);
+      }
+    });
+    this.loginService.getVendedorAllOnlineRealtime('212');
   }
 
 
@@ -76,6 +101,12 @@ private loadMap(){
     }
     let marker = new google.maps.Marker(options);
     return marker;
+  }
+
+  private fixBounds(lat: number, lng: number){
+    const point = new google.maps.LatLng(lat,lng);
+    this.bounds.extend(point);
+    this.map.fitBounds(this.bounds);
   }
 
 }

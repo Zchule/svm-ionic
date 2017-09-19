@@ -159,25 +159,16 @@ export class LoginService {
   }
 
   getVendedorAllOnlineRealtime(id){
-    let vendedores = [];
-    let sizeVendedores = 0;
-    
     this.fireDatabase.list('/Supervisores/'+ id + '/VendedoresList')
     .subscribe(list=>{
-      sizeVendedores = list.length;
       list.forEach(vendedor=>{
-        let imei = vendedor.imei;
-        let nombre = vendedor.nombreVendedor;
+        const imei = vendedor.imei;
         this.fireDatabase.object('/vendedores/'+ imei)
         .subscribe(dataVendedor=>{
-          dataVendedor.nombreVendedor = nombre;
-          vendedores.push(dataVendedor);
-          if(vendedores.length == sizeVendedores){
-            let dataoffline = JSON.stringify(vendedores);
-            this.storage.set("vendedoresList", dataoffline);
-            this.getVendedorAllOnlineRealtimeRef.next(vendedores);
-            //resolve(vendedores);
-          }
+          console.log(dataVendedor);
+          //dataVendedor.nombreVendedor = nombre;
+          dataVendedor.imei = imei;
+          this.getVendedorAllOnlineRealtimeRef.next(dataVendedor);
         })
       })
     })
