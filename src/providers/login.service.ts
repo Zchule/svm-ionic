@@ -144,10 +144,11 @@ export class LoginService {
     .subscribe(list=>{
       list.forEach(vendedor=>{
         const imei = vendedor.imei;
+        let nombre = vendedor.nombreVendedor;
         this.fireDatabase.object('/vendedores/'+ imei)
         .subscribe(dataVendedor=>{
+          dataVendedor.nombreVendedor = nombre;
           console.log(dataVendedor);
-          //dataVendedor.nombreVendedor = nombre;
           dataVendedor.imei = imei;
           this.getVendedorAllOnlineRealtimeRef.next(dataVendedor);
         })

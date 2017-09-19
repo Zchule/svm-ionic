@@ -6,7 +6,7 @@ page-preventa {
     .progress-outer {
         float: right;
         width: 35%;
-        margin: 10px 2%;
+        // margin: 10px 2%;
         padding: 3px;
         text-align: center;
         background-color: #f4f4f4;
@@ -33,9 +33,9 @@ page-preventa {
     .mover
     {
         float: right;
-        right: 80px;
-        position: relative;
-        bottom: -15px;
-
+        right: 50px;
+        position: absolute;
+        bottom: 22px;
+        color: black;
     }
 }

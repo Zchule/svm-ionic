@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Loading, LoadingController } from 'ionic-angular';
+import { IonicPage, Loading, LoadingController, MenuController } from 'ionic-angular';
 
-import { Geolocation } from '@ionic-native/geolocation';
 import { LoginService } from '../../providers/login.service';
 
 declare var google;
@@ -19,22 +18,23 @@ export class MapGenericPage {
   waypoints: any[];
   load: Loading;
   vendedores: any = {};
-
+  infowindow: any;
+  
   constructor(
-    private navCtrl: NavController, 
-    private navParams: NavParams,
     private loadCtrl: LoadingController,
-    private geolocation: Geolocation,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private menuCtrl: MenuController
   ) { 
     this.bounds = new google.maps.LatLngBounds();
+    this.infowindow = new google.maps.InfoWindow();
    }
 
   ionViewDidLoad() {
-    let load = this.loadCtrl.create({
+    this.load = this.loadCtrl.create({
       content: 'Cargando...'
     });
     this.loadMap();
+    this.load.present();
   }
 
 private loadMap(){   
@@ -56,12 +56,14 @@ private loadMap(){
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
       mapEle.classList.add('show-map');
       this.obtenerVendedores();
+      this.load.dismiss();
     });   
    }
 
   private obtenerVendedores(){
     let lat: number;
     let lng: number;
+    let title: string;
     this.loginService.getVendedorAllOnlineRealtimeoOb()
     .subscribe(vendedor =>{
       if(vendedor){
@@ -70,7 +72,8 @@ private loadMap(){
           this.vendedores[vendedor.imei].info = vendedor;
           lat = vendedor.PosicionActual.latitud;
           lng = vendedor.PosicionActual.longitud;
-          this.vendedores[vendedor.imei].marker = this.createMarker(lat, lng, '', 'Hola');
+          title = vendedor.nombreVendedor;
+          this.vendedores[vendedor.imei].marker = this.createMarker(lat, lng, '', title);
         }else{
           this.vendedores[vendedor.imei].info = vendedor;
           lat = vendedor.PosicionActual.latitud;
@@ -98,6 +101,13 @@ private loadMap(){
       zIndex: Math.round(lat*-100000)<<5
     }
     let marker = new google.maps.Marker(options);
+
+    var popup = new google.maps.InfoWindow({
+        content: title
+      });
+
+    popup.open(this.map, marker);
+
     return marker;
   }
 

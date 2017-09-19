@@ -3,12 +3,10 @@
     <ion-content>
       <div class="profile primary">
         <div class="cover">
-          <img class="photo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1kE5Udx85NgpPzQqnsa-9tNscRlWjAPveihRgvD63DfkRUQEK" alt="logo">
+          <img class="photo"  src="assets/imgs/pilAndina.png" alt="logo">
         </div>
         
         <h5>SUPERVISOR</h5>
-        <!-- <p>Usuario: {{ user.NombreUsuario }}</p>
-        <p> {{ user.NombreSupervisore }}<p>  -->
       </div>
       <ion-list>
         <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
@@ -20,7 +18,6 @@
       </ion-list>
     </ion-content>
   </ion-menu>
-
 
   <ion-nav #content [root]="rootPage" main></ion-nav>
 </ion-split-pane>

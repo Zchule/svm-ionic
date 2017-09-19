@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Loading, LoadingController} from 'ionic-angular';
+import { IonicPage, NavController, NavParams, MenuController, Loading, LoadingController} from 'ionic-angular';
 
 import { Geolocation } from '@ionic-native/geolocation';
 import { VendedorService } from '../../providers/vendedor.service';
@@ -20,6 +20,7 @@ export class MapPage {
   myPosition: any = {};
   bounds: any = null;
   infowindow: any;
+  fecha: string;
 
   indicadores = {
     venta:{
@@ -45,20 +46,31 @@ export class MapPage {
     public navParams: NavParams,
     private loadCtrl: LoadingController,
     public geolocation: Geolocation,
-    public vendedorService: VendedorService
+    public vendedorService: VendedorService,
+    private menuCtrl: MenuController
   ) {
     this.key = this.navParams.get('key');
     console.log('key', this.key);
     this.bounds = new google.maps.LatLngBounds();
     this.infowindow = new google.maps.InfoWindow();
+    this.vendedorService.getFechaServidor()
+    .subscribe(data=>{
+      this.fecha = data.fecha;
+      console.log(this.fecha)
+    })
   }
 
   ionViewDidLoad() {
-    let load = this.loadCtrl.create({
+    this.load = this.loadCtrl.create({
       content: 'Cargando...'
     });
+    this.load.present();
     this.loadMap();
   }
+
+  ionViewDidEnter() {
+    this.menuCtrl.enable(false, 'menuAdmin');
+  } 
   
   private loadMap(){   
     //create a new map by passing HTMLElement
@@ -84,7 +96,9 @@ export class MapPage {
   }
 
   private obtenerVendedor(){
-    this.vendedorService.getVendedor(this.key).subscribe((vendedor)=>{ 
+    this.vendedorService.getVendedor(this.key)
+    .subscribe((vendedor)=>{ 
+
       this.vendedor = vendedor;
       console.log('getVendedor', this.vendedor);
       const latitud = this.vendedor.PosicionActual.latitud;
@@ -95,11 +109,11 @@ export class MapPage {
       this.createMarker(latitud, longitud, icon, 'myMarker');
       this.resetCounts();
       this.renderMarkers();
+      this.load.dismiss();
     });
   }
 
   private createMarker(lat: number, lng: number, icon: string, title: string){
-
     let options = {
       position: {
         lat: lat,
@@ -111,11 +125,18 @@ export class MapPage {
       zIndex: Math.round(lat*-100000)<<5
     }
     let marker = new google.maps.Marker(options);
+
+        marker.addListener('click', ()=>{
+          this.infowindow.setContent(title); 
+          this.infowindow.open(this.map, marker);
+        });
     return marker;
   }
   
   private renderMarkers(){
-    let geoPuntosList = this.vendedor['registro:09-12-2017'].geoPuntoList;
+    let geoPuntosList = this.vendedor['registro:""'].geoPuntoList;
+    console.log(this.fecha);
+    console.log(geoPuntosList);
     let lines = [];
     for(let key in geoPuntosList){
       let client = geoPuntosList[key];
@@ -133,7 +154,7 @@ export class MapPage {
         icon = './assets/imgs/venta.png';
         this.indicadores.venta.count++;
       }
-      this.createMarker(client.latitud, client.longitud, icon, client.tipo);
+      this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
       lines.push({ lat: client.latitud, lng: client.longitud }); 
   }
 

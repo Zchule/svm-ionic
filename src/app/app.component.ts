@@ -3,10 +3,7 @@ import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
-import { SQLite } from '@ionic-native/sqlite';
-import { LoginService } from '../providers/login.service';
 import { Sim } from '@ionic-native/sim';
-import { Storage } from '@ionic/storage';
 
 @Component({
   templateUrl: 'app.html'
@@ -23,10 +20,7 @@ export class MyApp {
     public platform: Platform, 
     public statusBar: StatusBar, 
     public splashScreen: SplashScreen,
-    public sqlite: SQLite,
-    private auth: LoginService,
-    private sim: Sim,
-    private storage: Storage
+    private sim: Sim
     ) {
     this.initializeApp();
 
@@ -46,7 +40,6 @@ export class MyApp {
       this.statusBar.styleDefault();
       this.obtenerImei();
       this.splashScreen.hide();
-      // this.createDatabase();
     });
   }
 
@@ -58,11 +51,11 @@ export class MyApp {
 
   private obtenerImei(){
     this.sim.getSimInfo().then( info => {
-     let imei = '359825061511512';
-      console.log(imei);
+      // let imei: 356812072372426;
+      console.log(info.imei);
     })
   }
-    
+      
   logout() {
     this.navMaster.setRoot('LoginPage');
   }
