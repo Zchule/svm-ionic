@@ -11,10 +11,11 @@ export class VendedorService {
 
   constructor(
     public fireDatabase: AngularFireDatabase
-    ) {
+  ) {
     this.vendedores = this.fireDatabase.list('/vendedores');
     this.vendedoresRef = this.vendedores.$ref;
   }
+
   getVendedorAll(){
     return this.vendedores;
   }

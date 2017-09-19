@@ -18,6 +18,9 @@ page-map {
     width: 200px;
     .item{
       min-height: 30px;
+      img{
+        max-height: 20px;
+      }
       .label{
         margin: 0px;
         p{

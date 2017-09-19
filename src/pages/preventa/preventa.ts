@@ -24,11 +24,8 @@ export class PreventaPage {
     public menuCtrl: MenuController,
     public loadCtrl: LoadingController,
     public loginService: LoginService,
-    public VendedorService: VendedorService,
-    // public sqlService: SqlService
-    ) {
-      //this.getAllUser();
-  }
+    public VendedorService: VendedorService
+  ) {}
 
   ionViewDidEnter() {
     this.menuCtrl.enable(true, 'menuAdmin');
@@ -39,7 +36,8 @@ export class PreventaPage {
       content: 'Cargando...'
     });
     load.present();
-    this.loginService.getVendedorAll('212').then(data =>{
+    this.loginService.getVendedorAll('212')
+    .then(data =>{
       console.log('getVendedorAll');
       this.listsVendedores = Object.assign([],data);
       load.dismiss(); 

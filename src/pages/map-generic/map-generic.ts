@@ -25,15 +25,12 @@ export class MapGenericPage {
     private loadCtrl: LoadingController,
     public geolocation: Geolocation,
     public vendedorService: VendedorService
-  ) {
-
-  }
+  ) {}
 
   ionViewDidLoad() {
     let load = this.loadCtrl.create({
       content: 'Cargando...'
     });
-
     this.loadMap();
   }
   
@@ -66,22 +63,19 @@ private loadMap(){
   }
 
 
-   private createMarker(lat: number, lng: number, icon: string, title: string){
-        let options = {
-          position: {
-            lat: lat,
-            lng: lng
-          },
-          title: title,
-          map: this.map,
-          icon: icon,
-          zIndex: Math.round(lat*-100000)<<5
-        }
-        let marker = new google.maps.Marker(options);
-        return marker;
-      }
-
-
-
+  private createMarker(lat: number, lng: number, icon: string, title: string){
+    let options = {
+      position: {
+        lat: lat,
+        lng: lng
+      },
+      title: title,
+      map: this.map,
+      icon: icon,
+      zIndex: Math.round(lat*-100000)<<5
+    }
+    let marker = new google.maps.Marker(options);
+    return marker;
   }
 
+}

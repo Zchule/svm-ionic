@@ -108,9 +108,9 @@ export class MapPage {
   }
   
   private renderMarkers(){
-    let geoPuntosList = this.vendedor['registro:09-13-2017'].geoPuntoList;
+    let geoPuntosList = this.vendedor['registro:09-12-2017'].geoPuntoList;
     let lines = [];
-    for(let key in geoPuntosList) {
+    for(let key in geoPuntosList){
       let client = geoPuntosList[key];
       let icon = './assets/imgs/default.png';
       if(client.tipo == 'PEDIDO'){
