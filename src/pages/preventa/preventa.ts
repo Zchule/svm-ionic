@@ -35,16 +35,13 @@ export class PreventaPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad PreventaPage');
-    
     let load = this.loadCtrl.create({
       content: 'Cargando...'
     });
     load.present();
-    
     this.loginService.getVendedorAll('212').then(data =>{
-      console.log(data);
-      this.listsVendedores = data;
+      console.log('getVendedorAll');
+      this.listsVendedores = Object.assign([],data);
       load.dismiss(); 
     })
   }
@@ -59,11 +56,10 @@ export class PreventaPage {
   //   });
   // }
 
-    goToMapPage(vendedor){
-    this.VendedorService.getVendedor('356812072372426').subscribe(data=>{
-      this.navCtrl.push('MapPage', {
-        vendedor: data
-      });
+  goToMapPage(vendedor){
+    const key = vendedor.$key;
+    this.navCtrl.push('MapPage', {
+      key: key
     });
   }
 

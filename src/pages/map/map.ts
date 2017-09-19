@@ -16,7 +16,7 @@ declare var google;
 export class MapPage {
 
   map: any;
-  dato: any = null;
+  key: string;
   load: Loading;
   datos: FirebaseListObservable<any>;
   vendedor: any;
@@ -28,16 +28,14 @@ export class MapPage {
     public geolocation: Geolocation,
     public vendedorService: VendedorService
   ) {
-    this.dato = this.navParams.get('vendedor');
-    console.log(this.dato);
+    this.key = this.navParams.get('key');
+    console.log('key', this.key);
   }
 
   ionViewDidLoad() {
     let load = this.loadCtrl.create({
       content: 'Cargando...'
     });
-    // load.present();
-    // load.dismiss(); 
     this.loadMap();
   }
   
@@ -65,15 +63,13 @@ export class MapPage {
   }
 
   private obtenerVendedor(){
-    this.vendedorService.getVendedor(this.dato.$key).subscribe((vendedor)=>{ 
+    this.vendedorService.getVendedor(this.key).subscribe((vendedor)=>{ 
       this.vendedor = vendedor;
-      console.log(this.vendedor);
-      let latitud = this.vendedor.PosicionActual.latitud;
-      let longitud = this.vendedor.PosicionActual.longitud;
-      this.map.setCenter({
-        lat: latitud, 
-        lng: longitud
-      });
+      console.log('getVendedor', this.vendedor);
+      const latitud = this.vendedor.PosicionActual.latitud;
+      const longitud = this.vendedor.PosicionActual.longitud;
+      const newCenter = new google.maps.LatLng(latitud, longitud);
+      this.map.setCenter( newCenter );
       let icon = `https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld`;
       this.createMarker(latitud, longitud, icon, 'myMarker');
       this.renderMarkers();
@@ -81,23 +77,23 @@ export class MapPage {
   }
 
   private createMarker(lat: number, lng: number, icon: string, title: string){
-        let options = {
-          position: {
-            lat: lat,
-            lng: lng
-          },
-          title: title,
-          map: this.map,
-          icon: icon,
-          zIndex: Math.round(lat*-100000)<<5
-        }
-        let marker = new google.maps.Marker(options);
-        return marker;
-      }
+    let options = {
+      position: {
+        lat: lat,
+        lng: lng
+      },
+      title: title,
+      map: this.map,
+      icon: icon,
+      zIndex: Math.round(lat*-100000)<<5
+    }
+    let marker = new google.maps.Marker(options);
+    return marker;
+  }
   
   private renderMarkers(){
-  let geoPuntosList = this.vendedor['registro:09-13-2017'].geoPuntoList;
-  let lines = [];
+    let geoPuntosList = this.vendedor['registro:09-13-2017'].geoPuntoList;
+    let lines = [];
     for(let key in geoPuntosList) {
         let client = geoPuntosList[key];
         let icon = './assets/imgs/default.png';
