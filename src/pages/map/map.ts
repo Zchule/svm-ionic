@@ -57,7 +57,7 @@ export class MapPage {
     .subscribe(data=>{
       this.fecha = data.fecha;
       console.log(this.fecha)
-    })
+    });
   }
 
   ionViewDidLoad() {

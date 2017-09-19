@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, Loading, LoadingController, MenuController } from 'ionic-angular';
+import { IonicPage, Loading, LoadingController } from 'ionic-angular';
 
 import { LoginService } from '../../providers/login.service';
 
@@ -22,8 +22,7 @@ export class MapGenericPage {
   
   constructor(
     private loadCtrl: LoadingController,
-    private loginService: LoginService,
-    private menuCtrl: MenuController
+    private loginService: LoginService
   ) { 
     this.bounds = new google.maps.LatLngBounds();
     this.infowindow = new google.maps.InfoWindow();
