@@ -25,33 +25,28 @@ export class PreventaPage {
     public loadCtrl: LoadingController,
     public loginService: LoginService,
     public VendedorService: VendedorService
-    ) {
-  }
+  ) {}
 
   ionViewDidEnter() {
     this.menuCtrl.enable(true, 'menuAdmin');
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad PreventaPage');
-    
     let load = this.loadCtrl.create({
       content: 'Cargando...'
     });
     load.present();
-    
-    this.loginService.getVendedorAll('212').then(data =>{
-      console.log(data);
-      this.listsVendedores = data;
+    this.loginService.getVendedorAll('212')
+    .then(data =>{
+      console.log('getVendedorAll');
+      this.listsVendedores = Object.assign([],data);
       load.dismiss(); 
     })
   }
-
   goToMapPage(vendedor){
-    this.VendedorService.getVendedor(vendedor.$key).subscribe(data=>{
-      this.navCtrl.push('MapPage', {
-        vendedor: data
-      });
+    const key = vendedor.$key;
+    this.navCtrl.push('MapPage', {
+      key: key
     });
   }
 

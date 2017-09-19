@@ -2,8 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Loading, LoadingController } from 'ionic-angular';
 
 import { Geolocation } from '@ionic-native/geolocation';
-import { VendedorService } from '../../providers/vendedor.service';
-
 import { LoginService } from '../../providers/login.service';
 
 declare var google;
@@ -20,21 +18,22 @@ export class MapGenericPage {
   myLatLng: any;
   waypoints: any[];
   load: Loading;
-  vendedores: any[];
+  vendedores: any = {};
 
   constructor(
-    public navCtrl: NavController, 
-    public navParams: NavParams,
+    private navCtrl: NavController, 
+    private navParams: NavParams,
     private loadCtrl: LoadingController,
-    public geolocation: Geolocation,
-    public vendedorService: VendedorService,
-    public loginService: LoginService
-  ) {  }
+    private geolocation: Geolocation,
+    private loginService: LoginService
+  ) { 
+    this.bounds = new google.maps.LatLngBounds();
+   }
 
   ionViewDidLoad() {
-    // let load = this.loadCtrl.create({
-    //   content: 'Cargando...'
-    // });
+    let load = this.loadCtrl.create({
+      content: 'Cargando...'
+    });
     this.loadMap();
   }
 
@@ -56,40 +55,56 @@ private loadMap(){
       
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
       mapEle.classList.add('show-map');
-        this.obtenerVendedores();
+      this.obtenerVendedores();
     });   
    }
 
-   private obtenerVendedores(){
-    this.loginService.getVendedorAll('212').then(data =>{
-      this.vendedores = data;
-      let icon = `https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld`;
-      console.log(this.vendedores);
-      this.vendedores.map(vendedor=>{
-        let latitud = vendedor.PosicionActual.latitud; 
-        let longitud = vendedor.PosicionActual.longitud;
-        let title = vendedor.nombreVendedor;
-        console.log(latitud);
-        this.createMarker(latitud, longitud, icon, title);
-      })                                                                  
-      // load.dismiss(); 
-    })
-  }
-
-   private createMarker(lat: number, lng: number, icon: string, title: string){
-        let options = {
-          position: {
+  private obtenerVendedores(){
+    let lat: number;
+    let lng: number;
+    this.loginService.getVendedorAllOnlineRealtimeoOb()
+    .subscribe(vendedor =>{
+      if(vendedor){
+        if(!this.vendedores[vendedor.imei]){
+          this.vendedores[vendedor.imei] = {};
+          this.vendedores[vendedor.imei].info = vendedor;
+          lat = vendedor.PosicionActual.latitud;
+          lng = vendedor.PosicionActual.longitud;
+          this.vendedores[vendedor.imei].marker = this.createMarker(lat, lng, '', 'Hola');
+        }else{
+          this.vendedores[vendedor.imei].info = vendedor;
+          lat = vendedor.PosicionActual.latitud;
+          lng = vendedor.PosicionActual.longitud;
+          this.vendedores[vendedor.imei].marker.setPosition({
             lat: lat,
             lng: lng
-          },
-          title: title,
-          map: this.map,
-          icon: icon,
-          zIndex: Math.round(lat*-100000)<<5
+          });
         }
-        let marker = new google.maps.Marker(options);
-        return marker;
+        this.fixBounds(lat,lng);
       }
-
+    });
+    this.loginService.getVendedorAllOnlineRealtime('212');
+  }
+  
+  private createMarker(lat: number, lng: number, icon: string, title: string){
+    let options = {
+      position: {
+        lat: lat,
+        lng: lng
+      },
+      title: title,
+      map: this.map,
+      icon: icon,
+      zIndex: Math.round(lat*-100000)<<5
+    }
+    let marker = new google.maps.Marker(options);
+    return marker;
   }
 
+  private fixBounds(lat: number, lng: number){
+    const point = new google.maps.LatLng(lat,lng);
+    this.bounds.extend(point);
+    this.map.fitBounds(this.bounds);
+  }
+
+}

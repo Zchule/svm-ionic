@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
@@ -12,6 +13,7 @@ export class LoginService {
 
   supervisores: FirebaseListObservable<any>;
   supervisoresRef: firebase.database.Query;
+  getVendedorAllOnlineRealtimeRef:BehaviorSubject<any>;
 
   constructor(
     public fireDatabase: AngularFireDatabase,
@@ -22,6 +24,7 @@ export class LoginService {
    {
     this.supervisores = this.fireDatabase.list('/Supervisores');
     this.supervisoresRef = this.supervisores.$ref;
+    this.getVendedorAllOnlineRealtimeRef = new BehaviorSubject(null);
   }
 
   doLoginOnline(usuario: string, password: string, imei: string): Promise<any>{
@@ -136,9 +139,24 @@ export class LoginService {
   getListVendedores(id){
     return this.fireDatabase.list('/Supervisores/'+ id + '/VendedoresList');
   }
+  getVendedorAllOnlineRealtime(id){
+    this.fireDatabase.list('/Supervisores/'+ id + '/VendedoresList')
+    .subscribe(list=>{
+      list.forEach(vendedor=>{
+        const imei = vendedor.imei;
+        this.fireDatabase.object('/vendedores/'+ imei)
+        .subscribe(dataVendedor=>{
+          console.log(dataVendedor);
+          //dataVendedor.nombreVendedor = nombre;
+          dataVendedor.imei = imei;
+          this.getVendedorAllOnlineRealtimeRef.next(dataVendedor);
+        })
+      })
+    })
+  }
 
-  getFechaServidor(){
-    return this.fireDatabase.list('/Servidor/'+ 'fecha');
+  getVendedorAllOnlineRealtimeoOb(){
+    return this.getVendedorAllOnlineRealtimeRef.asObservable();
   }
 
 }
