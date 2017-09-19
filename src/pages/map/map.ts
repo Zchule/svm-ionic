@@ -134,7 +134,7 @@ export class MapPage {
   }
   
   private renderMarkers(){
-    let geoPuntosList = this.vendedor['registro:""'].geoPuntoList;
+    let geoPuntosList = this.vendedor['registro:'+ this.fecha].geoPuntoList;
     console.log(this.fecha);
     console.log(geoPuntosList);
     let lines = [];

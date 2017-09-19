@@ -25,8 +25,7 @@ export class LoginPage {
       public loadingCtrl: LoadingController,
       public menuCtrl: MenuController,
       public modalCtrl: ModalController,
-      public loginService: LoginService,
-      // public sqlService: SqlService
+      public loginService: LoginService
     ) {
       this.loginForm = this.makeLoginForm();
     }

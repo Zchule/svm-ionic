@@ -31,9 +31,4 @@ export class HomePage {
   ionViewDidEnter() {
     this.menuCtrl.enable(true, 'menuAdmin');
   }  
-
-  saveDatos(){
-    
-  }
-
 }
