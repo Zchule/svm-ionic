@@ -25,7 +25,7 @@ export class VendedorService {
   }
 
   getRegistro(id){
-     return this.fireDatabase.object('/vendedores/'+ id + '/registro:09-16-2017' + '/geoPuntoList');
+     return this.fireDatabase.object('/vendedores/'+ id + '/registro:09-19-2017' + '/geoPuntoList');
   }
 
   getFechaServidor(){

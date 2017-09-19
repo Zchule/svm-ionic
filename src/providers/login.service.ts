@@ -29,14 +29,14 @@ export class LoginService {
 
   doLoginOnline(usuario: string, password: string, imei: string): Promise<any>{
     return new Promise((resolve, reject)=>{
-      const query = this.supervisoresRef.orderByKey().equalTo('212');
+      const query = this.supervisoresRef.orderByKey().equalTo('357815085654648');
       query.once('value', snap =>{
-        let user = snap.val()['212'];
+        let user = snap.val()['357815085654648'];
         console.log(user.NombreUsuario, user.Contraseña);
         console.log(user);
         console.log(usuario, password);
         if(user.NombreUsuario == usuario && user.Contraseña == password ){
-          this.getVendedorAllOnline('212');
+          // this.getVendedorAllOnline('357815085654648');
           let userOff = JSON.stringify(user)
           this.storage.set('user', userOff);
           this.storage.set('offline', true);
@@ -62,10 +62,10 @@ export class LoginService {
     return this.storage.get('offline')
     .then(estado =>{
       if(estado){
-        console.log("login off",estado);
+        console.log("login off", estado);
         return this.doLoginOffline(usuario, password);
       }else{
-        console.log("login on",estado);
+        console.log("login on", estado);
         return this.doLoginOnline(usuario, password, imei)
       }
     })
@@ -90,9 +90,11 @@ export class LoginService {
     console.log("entro Online");
     let vendedores = [];
     let sizeVendedores = 0;
+    id = '357815085654648';
     return new Promise((resolve, reject)=>{
       this.fireDatabase.list('/Supervisores/'+ id + '/VendedoresList')
       .subscribe(list=>{
+        console.log(list);
         sizeVendedores = list.length;
         list.forEach(vendedor=>{
           let imei = vendedor.imei;
@@ -104,6 +106,7 @@ export class LoginService {
             if(vendedores.length == sizeVendedores){
               let dataoffline = JSON.stringify(vendedores);
               this.storage.set("vendedoresList", dataoffline);
+              console.log(vendedores);
               resolve(vendedores);
             }
           })
@@ -140,6 +143,7 @@ export class LoginService {
     return this.fireDatabase.list('/Supervisores/'+ id + '/VendedoresList');
   }
   getVendedorAllOnlineRealtime(id){
+    id = '357815085654648';
     this.fireDatabase.list('/Supervisores/'+ id + '/VendedoresList')
     .subscribe(list=>{
       list.forEach(vendedor=>{

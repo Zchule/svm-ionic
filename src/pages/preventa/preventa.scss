@@ -6,7 +6,7 @@ page-preventa {
     .progress-outer {
         float: right;
         width: 35%;
-        margin: 10px 2%;
+        // margin: 10px 2%;
         padding: 3px;
         text-align: center;
         background-color: #f4f4f4;
@@ -27,7 +27,9 @@ page-preventa {
         min-width: 0%;
         color:#1A357B;
     }
-
+    .item{
+        min-height: 30px;
+    }
     .mover
     {
         float: right;
@@ -35,10 +37,5 @@ page-preventa {
         position: absolute;
         bottom: 22px;
         color: black;
-
     }
-    .item{
-        min-height: 30px;
-    }
-        
 }

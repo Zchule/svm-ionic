@@ -50,7 +50,7 @@ export class LoginPage {
       });
       let usuario = this.loginForm.value.usuario;
       let password = this.loginForm.value.password;
-      this.loginService.doLogin(usuario, password, '212')
+      this.loginService.doLogin(usuario, password, '357815085654648')
       .then( usuario => {
         this.navCtrl.setRoot("HomePage");
       })

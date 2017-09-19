@@ -17,7 +17,6 @@ export class PreventaPage {
   myDate: String = new Date().toISOString().substring(0, 10);
   UserLogged : any;
   users: any[] = [];
-  fecha: string;
 
   constructor(
     private navCtrl: NavController,
@@ -25,14 +24,8 @@ export class PreventaPage {
     public menuCtrl: MenuController,
     public loadCtrl: LoadingController,
     public loginService: LoginService,
-    public vendedorService: VendedorService
-  ) {
-    this.vendedorService.getFechaServidor()
-    .subscribe(data=>{
-      this.fecha = data.fecha;
-      console.log(this.fecha)
-    });
-  }
+    public VendedorService: VendedorService
+  ) {}
 
   ionViewDidEnter() {
     this.menuCtrl.enable(true, 'menuAdmin');
@@ -43,14 +36,13 @@ export class PreventaPage {
       content: 'Cargando...'
     });
     load.present();
-    this.loginService.getVendedorAll('357815085654648')
+    this.loginService.getVendedorAll('212')
     .then(data =>{
-      console.log('getVendedorAll', data);
+      console.log('getVendedorAll');
       this.listsVendedores = Object.assign([],data);
       load.dismiss(); 
     })
   }
-
   goToMapPage(vendedor){
     const key = vendedor.$key;
     this.navCtrl.push('MapPage', {

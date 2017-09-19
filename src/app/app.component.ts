@@ -4,6 +4,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { Sim } from '@ionic-native/sim';
+import { Storage } from '@ionic/storage';
 
 @Component({
   templateUrl: 'app.html'
@@ -20,7 +21,8 @@ export class MyApp {
     public platform: Platform, 
     public statusBar: StatusBar, 
     public splashScreen: SplashScreen,
-    private sim: Sim
+    private sim: Sim,
+    private storage: Storage
     ) {
     this.initializeApp();
 
@@ -58,6 +60,7 @@ export class MyApp {
       
   logout() {
     this.navMaster.setRoot('LoginPage');
+    this.storage.clear();
   }
 
 
