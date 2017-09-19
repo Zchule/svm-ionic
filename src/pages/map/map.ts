@@ -142,9 +142,9 @@ export class MapPage {
   }
 
   private resetCounts(){
-    this.indicadores.devolucion.count++;
-    this.indicadores.pedido.count++;
-    this.indicadores.venta.count++;
-    this.indicadores.visita.count++;
+    this.indicadores.devolucion.count = 0;
+    this.indicadores.pedido.count     = 0;
+    this.indicadores.venta.count      = 0;
+    this.indicadores.visita.count     = 0;
   }
 }
