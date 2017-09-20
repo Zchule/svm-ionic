@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, MenuController, Loading, LoadingController} from 'ionic-angular';
+import { IonicPage, NavParams, MenuController, Loading, LoadingController} from 'ionic-angular';
 
-import { Geolocation } from '@ionic-native/geolocation';
 import { VendedorService } from '../../providers/vendedor.service';
 
 declare var google;
@@ -16,7 +15,7 @@ export class MapPage {
   map: any;
   key: string;
   load: Loading;
-  vendedor: any;
+  vendedor: any = {};
   myPosition: any = {};
   bounds: any = null;
   infowindow: any;
@@ -42,11 +41,9 @@ export class MapPage {
   }
 
   constructor(
-    public navCtrl: NavController, 
-    public navParams: NavParams,
+    private navParams: NavParams,
     private loadCtrl: LoadingController,
-    public geolocation: Geolocation,
-    public vendedorService: VendedorService,
+    private vendedorService: VendedorService,
     private menuCtrl: MenuController
   ) {
     this.key = this.navParams.get('key');
@@ -55,8 +52,8 @@ export class MapPage {
     this.infowindow = new google.maps.InfoWindow();
     this.vendedorService.getFechaServidor()
     .subscribe(data=>{
-      this.fecha = data.fecha;
-      console.log(this.fecha)
+      // this.fecha = data.fecha;
+      // console.log(this.fecha)
     });
   }
 
@@ -91,14 +88,13 @@ export class MapPage {
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
       mapEle.classList.add('show-map');
         this.obtenerVendedor();
-    }); 
-    
+    })
   }
 
   private obtenerVendedor(){
+
     this.vendedorService.getVendedor(this.key)
     .subscribe((vendedor)=>{ 
-
       this.vendedor = vendedor;
       console.log('getVendedor', this.vendedor);
       const latitud = this.vendedor.PosicionActual.latitud;
@@ -134,6 +130,7 @@ export class MapPage {
   }
   
   private renderMarkers(){
+    this.fecha = '09-19-2017';
     let geoPuntosList = this.vendedor['registro:'+ this.fecha].geoPuntoList;
     console.log(this.fecha);
     console.log(geoPuntosList);

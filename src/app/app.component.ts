@@ -51,16 +51,18 @@ export class MyApp {
     this.navMaster.setRoot(page.component);
   }
 
-  private obtenerImei(){
+  private obtenerImei(){           
     this.sim.getSimInfo().then( info => {
-      // let imei: 356812072372426;
-      console.log(info.imei);
+      console.log(info);
+      console.log(info.deviceId);
+      let imei = '357815085654648';
+      this.storage.set('imei', imei);
     })
   }
-      
+
   logout() {
     this.navMaster.setRoot('LoginPage');
-    this.storage.clear();
+    // this.storage.clear();
   }
 
 

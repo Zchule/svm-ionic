@@ -55,7 +55,7 @@ private loadMap(){
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
       mapEle.classList.add('show-map');
       this.obtenerVendedores();
-      this.load.dismiss();
+      
     });   
    }
 
@@ -85,7 +85,8 @@ private loadMap(){
         this.fixBounds(lat,lng);
       }
     });
-    this.loginService.getVendedorAllOnlineRealtime('212');
+    this.loginService.getVendedorAllOnlineRealtime('357815085654648');
+    this.load.dismiss();
   }
   
   private createMarker(lat: number, lng: number, icon: string, title: string){

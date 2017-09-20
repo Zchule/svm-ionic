@@ -12,12 +12,12 @@
 <ion-content>
     <ion-list>
         <button ion-item *ngFor="let vendedor of listsVendedores; let i = index"  (click)="goToMapPage(vendedor)">
-          <h3>Nombre:</h3>
-          <p>{{ vendedor.nombreVendedor}}</p>
-          <p class="mover" >{{ vendedor['registro:09-19-2017'].efectividad }} % </p>
+          <p>Nombre:</p>
+          <h5> {{ vendedor.nombreVendedor}}</h5> 
+          <p class="mover" >{{ vendedor['registro:'+fecha].efectividad }} % </p>
           <div item-end class="progress-outer">
-              <div class="mover" class="progress-inner" [style.width]="vendedor['registro:09-19-2017'].efectividad + '%'">
-                  <p class="progress" >{{ vendedor['registro:09-19-2017'].efectividad }} %</p>
+              <div class="mover" class="progress-inner" [style.width]="vendedor['registro:'+fecha].efectividad + '%'">
+                  <p class="progress" >{{ vendedor['registro:'+fecha].efectividad }} %</p>
               </div>
             </div> 
         </button>

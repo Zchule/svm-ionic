@@ -4,6 +4,7 @@ import { IonicPage, NavController, NavParams, AlertController, ModalController, 
 
 import { FirebaseListObservable } from 'angularfire2/database';
 import { LoginService } from '../../providers/login.service';
+import { Storage } from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -16,6 +17,7 @@ export class LoginPage {
   supervisores: FirebaseListObservable<any>;
   data: any [];
   users: any[] = [];
+  imeiCel: string;
 
     constructor(
       public navCtrl: NavController, 
@@ -25,7 +27,8 @@ export class LoginPage {
       public loadingCtrl: LoadingController,
       public menuCtrl: MenuController,
       public modalCtrl: ModalController,
-      public loginService: LoginService
+      public loginService: LoginService,
+      private storage: Storage
     ) {
       this.loginForm = this.makeLoginForm();
     }
@@ -43,6 +46,15 @@ export class LoginPage {
       modal.present();
     }
 
+    verficar(){
+      this.storage.get('imei')
+      .then(imei=>{
+        console.log('imei llego', imei)
+        this.imeiCel = imei;
+        this.loginService.searchImei(imei);
+      })
+    }
+
     doLogin( event: Event ){
       event.preventDefault();
       let load = this.loadingCtrl.create({
@@ -57,12 +69,9 @@ export class LoginPage {
       .catch(error =>{
         load.dismiss().then( () => {
         let alert = this.alertCtrl.create({
-          title: "Datos Invalidos",
-          message: "Revise sus Datos",
-          buttons: [{
-            text: "Ok",
-            role: 'cancel'
-          }]
+          title: 'Datos Invalidos',
+          subTitle: 'Revise sus datos',
+          buttons: ['OK']
         });
         alert.present();
         });
