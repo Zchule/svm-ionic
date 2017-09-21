@@ -64,6 +64,5 @@ export class MyApp {
     this.navMaster.setRoot('LoginPage');
     // this.storage.clear();
   }
-
-
+  
 }

@@ -24,20 +24,24 @@ export class PreventaPage {
     private loadCtrl: LoadingController,
     private vendedorService: VendedorService,
     private loginService: LoginService
-  ) {
-    this.vendedorService.getFechaServidor()
-    .subscribe(data=>{
-      // this.fecha = data.fecha;
-      this.fecha = '09-19-2017';
-      console.log(this.fecha);
-    });
-  }
+  ) {  }
 
   ionViewDidEnter() {
     this.menuCtrl.enable(true, 'menuAdmin');
   }
 
   ionViewDidLoad() {
+    
+    this.vendedorService.getFechaServidor()
+    .subscribe(data =>{
+      this.fecha = data.fecha;
+      console.log(this.fecha);
+      this.getVendedores();
+    });
+
+  }
+
+  private getVendedores(){
     let load = this.loadCtrl.create({
       content: 'Cargando...'
     });
@@ -45,13 +49,20 @@ export class PreventaPage {
     this.loginService.getVendedorAll('357815085654648')
     .then(data =>{
       console.log('getVendedorAll', data);
-      let listsVendedores = Object.assign([], data);
-      this.listsVendedores = listsVendedores.sort(); 
+      let lista = Object.assign([], data);
+      lista.map(item =>{
+        item.efectividad = 0;
+        if(item['registro:'+this.fecha] !== undefined)
+        {
+          item.efectividad = item['registro:'+this.fecha].efectividad;
+        }
+        return item;
+      }) 
+      this.listsVendedores = lista;
+      console.log(this.listsVendedores);
       load.dismiss(); 
     });
-    // this.vendedorService.getListVendedoresActual('357815085654648','09-20-2017').then(vendedor=>{
-    //   console.log(vendedor);
-    // })
+
   }
 
   goToMapPage(vendedor){

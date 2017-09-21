@@ -20,6 +20,7 @@ export class MapPage {
   bounds: any = null;
   infowindow: any;
   fecha: string;
+  markers=[];
 
   indicadores = {
     venta:{
@@ -50,14 +51,16 @@ export class MapPage {
     console.log('key', this.key);
     this.bounds = new google.maps.LatLngBounds();
     this.infowindow = new google.maps.InfoWindow();
-    this.vendedorService.getFechaServidor()
-    .subscribe(data=>{
-      // this.fecha = data.fecha;
-      // console.log(this.fecha)
-    });
   }
 
   ionViewDidLoad() {
+
+    this.vendedorService.getFechaServidor()
+    .subscribe(data=>{
+      this.fecha = data.fecha;
+      console.log(this.fecha)
+    })
+
     this.load = this.loadCtrl.create({
       content: 'Cargando...'
     });
@@ -118,7 +121,7 @@ export class MapPage {
       title: title,
       map: this.map,
       icon: icon,
-      zIndex: Math.round(lat*-100000)<<5
+      zIndex: Math.round(lat*-100000)
     }
     let marker = new google.maps.Marker(options);
 
@@ -130,14 +133,12 @@ export class MapPage {
   }
   
   private renderMarkers(){
-    this.fecha = '09-19-2017';
     let geoPuntosList = this.vendedor['registro:'+ this.fecha].geoPuntoList;
-    console.log(this.fecha);
     console.log(geoPuntosList);
     let lines = [];
     for(let key in geoPuntosList){
       let client = geoPuntosList[key];
-      let icon = './assets/imgs/default.png';
+      let icon = "";
       if(client.tipo == 'PEDIDO'){
         icon = './assets/imgs/pedido.png';
         this.indicadores.pedido.count++;
@@ -151,7 +152,12 @@ export class MapPage {
         icon = './assets/imgs/venta.png';
         this.indicadores.venta.count++;
       }
-      this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
+
+      let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
+      this.markers.push({
+        marker: marker,
+        tipo: client.tipo
+      });
       lines.push({ lat: client.latitud, lng: client.longitud }); 
   }
 
@@ -163,6 +169,14 @@ export class MapPage {
       strokeWeight: 2
     });
   linesPath.setMap(this.map);
+  }
+
+  ocultarVentas(){
+    this.markers.forEach(item=>{
+      if(item.tipo == 'VENTA'){
+        item.marker.setVisible(false);
+      }
+    })
   }
 
   private resetCounts(){

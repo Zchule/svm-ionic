@@ -26,15 +26,26 @@ export class MapGenericPage {
   ) { 
     this.bounds = new google.maps.LatLngBounds();
     this.infowindow = new google.maps.InfoWindow();
+    console.log('constructor');
    }
 
   ionViewDidLoad() {
+    console.log('entro ahi');
     this.load = this.loadCtrl.create({
       content: 'Cargando...'
     });
     this.loadMap();
     this.load.present();
   }
+
+ionViewDidEnter(){
+  console.log('entro did enter');
+}
+
+ionViewDidLeave(){
+  this.map = null;
+  console.log('entro did leave');
+}
 
 private loadMap(){   
     //create a new map by passing HTMLElement

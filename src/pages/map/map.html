@@ -12,7 +12,7 @@
 <ion-content>
   <div id="map"></div>
   <ion-list class="mylist">
-    <ion-item>
+    <ion-item (click)='ocultarVentas()'>
       <img item-start src="assets/imgs/venta.png" alt="venta">
       <p>{{ indicadores.venta.text }}</p>
       <ion-badge item-end>{{ indicadores.venta.count }}</ion-badge>
