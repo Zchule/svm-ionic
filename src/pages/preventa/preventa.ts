@@ -35,7 +35,6 @@ export class PreventaPage {
     this.vendedorService.getFechaServidor()
     .subscribe(data =>{
       this.fecha = data.fecha;
-      console.log(this.fecha);
       this.getVendedores();
     });
 
@@ -52,8 +51,7 @@ export class PreventaPage {
       let lista = Object.assign([], data);
       lista.map(item =>{
         item.efectividad = 0;
-        if(item['registro:'+this.fecha] !== undefined)
-        {
+        if(item['registro:'+this.fecha] !== undefined){
           item.efectividad = item['registro:'+this.fecha].efectividad;
         }
         return item;

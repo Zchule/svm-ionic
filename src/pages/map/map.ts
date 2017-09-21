@@ -48,7 +48,6 @@ export class MapPage {
     private menuCtrl: MenuController
   ) {
     this.key = this.navParams.get('key');
-    console.log('key', this.key);
     this.bounds = new google.maps.LatLngBounds();
     this.infowindow = new google.maps.InfoWindow();
   }
