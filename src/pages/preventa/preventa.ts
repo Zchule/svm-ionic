@@ -45,6 +45,7 @@ export class PreventaPage {
       content: 'Cargando...'
     });
     load.present();
+    
     this.loginService.getVendedorAll('357815085654648')
     .then(data =>{
       console.log('getVendedorAll', data);

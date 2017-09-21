@@ -28,27 +28,4 @@ export class VendedorService {
     return this.fireDatabase.object('/Servidor');
  }
 
-//  getListVendedoresActual(id, fecha): Promise<any>{
-//   let fechaA = '09-20-17';
-//   console.log("entro Online");
-//   let vendedores = [];
-//   let sizeVendedores = 0;
-//   return new Promise((resolve, reject)=>{
-//     this.fireDatabase.list('/Supervisores/'+ id + '/VendedoresList')
-//     .subscribe(list=>{
-//       console.log(list);
-//       sizeVendedores = list.length;
-//       list.forEach(vendedor=>{
-//         let imei = vendedor.imei;
-//         let nombre = vendedor.nombreVendedor;
-//         this.fireDatabase.object('/vendedores/')
-//         .subscribe(data=>{
-//             console.log(data);
-//             resolve(data);
-//         })
-//       })
-//     })
-//   });
-// }
-
 }

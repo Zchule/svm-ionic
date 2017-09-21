@@ -5,7 +5,7 @@
         <ion-icon name="md-information-circle"></ion-icon>
       </button>
    </ion-buttons>
-    <ion-title class="Title">Venta Movil</ion-title>
+    <ion-title class="centrado" (click)="nombre(userName)">Venta Movil </ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -33,13 +33,12 @@
       </ion-item>
     </ion-list>
 
-    <div padding>
-
-    <button block ion-button round type="submit" icon-left>
+    <div padding class="centrado">
+    <button  ion-button type="submit" icon-left>
       <ion-icon name="key"></ion-icon>
         Ingresar
       </button>
-  </div>
+    </div>
   </form>
       
 </ion-content>

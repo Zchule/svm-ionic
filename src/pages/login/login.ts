@@ -16,7 +16,7 @@ export class LoginPage {
   loginForm: FormGroup;
   supervisores: FirebaseListObservable<any>;
   data: any [];
-  users: any[] = [];
+  userName: "";
   imeiCel: string;
 
     constructor(
@@ -34,11 +34,21 @@ export class LoginPage {
     }
 
     ionViewDidLoad() {
+      // this.storage.get('user')
+      // .then(user=>{
+      //   let userOff = JSON.parse(user);
+      //   this.userName = userOff.NombreUsuario;
+      //   console.log(userOff);
+      // })
     }
     
     ionViewDidEnter() {
       this.menuCtrl.enable(false, 'menuAdmin');
-    }   
+    } 
+    
+    nombre(userName){
+      this.loginForm.value.usuario = userName;
+    }
     
     info(){
       let modal = this.modalCtrl.create('InfoPage');
@@ -55,7 +65,8 @@ export class LoginPage {
       this.storage.get('imei')
       .then(imei=>{
         console.log('imei llego', imei)
-        this.imeiCel = imei;
+      this.imeiCel = imei;
+      // this.imeiCel='357815085654648';
         this.loginService.doLogin(usuario, password, this.imeiCel)
         .then( usuario => {
           this.navCtrl.setRoot("HomePage");

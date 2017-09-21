@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, Loading, LoadingController } from 'ionic-angular';
 
 import { LoginService } from '../../providers/login.service';
+import { Storage } from '@ionic/storage';
 
 declare var google;
 
@@ -22,7 +23,8 @@ export class MapGenericPage {
   
   constructor(
     private loadCtrl: LoadingController,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private storage: Storage
   ) { 
     this.bounds = new google.maps.LatLngBounds();
     this.infowindow = new google.maps.InfoWindow();
@@ -96,7 +98,11 @@ private loadMap(){
         this.fixBounds(lat,lng);
       }
     });
-    this.loginService.getVendedorAllOnlineRealtime('357815085654648');
+    this.storage.get('imei')
+    .then(imei=>{
+      // let imei = '357815085654648';
+      this.loginService.getVendedorAllOnlineRealtime(imei);
+    })
     this.load.dismiss();
   }
   

@@ -133,42 +133,67 @@ export class MapPage {
   }
   
   private renderMarkers(){
-    let geoPuntosList = this.vendedor['registro:'+ this.fecha].geoPuntoList;
-      console.log(geoPuntosList);
-      let lines = [];
-      for(let key in geoPuntosList){
-        let client = geoPuntosList[key];
-        let icon = "";
-        if(client.tipo == 'PEDIDO'){
-          icon = './assets/imgs/pedido.png';
-          this.indicadores.pedido.count++;
-        }else if(client.tipo == 'DEVOLUCION' ){
-          icon = './assets/imgs/devolucion.png';
-          this.indicadores.devolucion.count++;
-        }else if(client.tipo == 'VISITA'){
-          icon = './assets/imgs/visita.png';
-          this.indicadores.visita.count++;
-        }else if(client.tipo == 'VENTA'){
-          icon = './assets/imgs/venta.png';
-          this.indicadores.venta.count++;
-        }
-    
-        let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
-        this.markers.push({
-          marker: marker,
-          tipo: client.tipo
-        });
-        lines.push({ lat: client.latitud, lng: client.longitud }); 
-      }
+    if(this.vendedor['registro:'+ this.fecha] !== undefined){
 
-      let linesPath = new google.maps.Polyline({
-        path: lines,
-        geodesic: true,           
-        strokeColor: '#FF0000',           
-        strokeOpacity: 1.0,           
-        strokeWeight: 2
+      console.log(this.vendedor);
+      let geoPuntosList = this.vendedor['registro:'+ this.fecha].geoPuntoList;
+        console.log(geoPuntosList);
+        let lines = [];
+        for(let key in geoPuntosList){
+          let client = geoPuntosList[key];
+          let icon = "";
+          if(client.tipo == 'PEDIDO'){
+            icon = './assets/imgs/pedido.png';
+            this.indicadores.pedido.count++;
+            let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
+            this.markers.push({
+              marker: marker,
+              tipo: client.tipo
+            });
+          }else if(client.tipo == 'DEVOLUCION' ){
+            icon = './assets/imgs/devolucion.png';
+            this.indicadores.devolucion.count++;
+            let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
+            this.markers.push({
+              marker: marker,
+              tipo: client.tipo
+            });
+          }else if(client.tipo == 'VISITA'){
+            icon = './assets/imgs/visita.png';
+            this.indicadores.visita.count++;
+            let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
+            this.markers.push({
+              marker: marker,
+              tipo: client.tipo
+            });
+          }else if(client.tipo == 'VENTA'){
+            icon = './assets/imgs/venta.png';
+            let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
+            this.markers.push({
+              marker: marker,
+              tipo: client.tipo
+            });
+            this.indicadores.venta.count++;
+          }        
+          lines.push({ lat: client.latitud, lng: client.longitud }); 
+        }
+  
+        let linesPath = new google.maps.Polyline({
+          path: lines,
+          geodesic: true,           
+          strokeColor: '#FF0000',           
+          strokeOpacity: 1.0,           
+          strokeWeight: 2
+        });
+      linesPath.setMap(this.map);
+    }else{
+      let alert = this.alertCtrl.create({
+        subTitle: 'Sin Registro Actual ',
+        buttons: ['OK']
       });
-    linesPath.setMap(this.map);
+      alert.present();
+      console.log('entro undefined');
+    }
   }
 
   ocultarVentas(){
