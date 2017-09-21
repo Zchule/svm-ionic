@@ -64,7 +64,7 @@ private loadMap(){
       center: myLatLng,
       zoom: 12
     });
-      
+
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
       mapEle.classList.add('show-map');
       this.obtenerVendedores();
@@ -85,7 +85,8 @@ private loadMap(){
           lat = vendedor.PosicionActual.latitud;
           lng = vendedor.PosicionActual.longitud;
           title = vendedor.nombreVendedor;
-          this.vendedores[vendedor.imei].marker = this.createMarker(lat, lng, '', title);
+          let icon = './assets/imgs/vendedor.png';
+          this.vendedores[vendedor.imei].marker = this.createMarker(lat, lng, icon, title);
         }else{
           this.vendedores[vendedor.imei].info = vendedor;
           lat = vendedor.PosicionActual.latitud;
@@ -98,11 +99,11 @@ private loadMap(){
         this.fixBounds(lat,lng);
       }
     });
-    this.storage.get('imei')
-    .then(imei=>{
-      // let imei = '357815085654648';
+    // this.storage.get('imei')
+    // .then(imei=>{
+      let imei = '357815085654648';
       this.loginService.getVendedorAllOnlineRealtime(imei);
-    })
+    // })
     this.load.dismiss();
   }
   

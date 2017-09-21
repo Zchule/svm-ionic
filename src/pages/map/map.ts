@@ -104,7 +104,7 @@ export class MapPage {
       const longitud = this.vendedor.PosicionActual.longitud;
       const newCenter = new google.maps.LatLng(latitud, longitud);
       this.map.setCenter( newCenter );
-      let icon = `https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld`;
+      let icon = './assets/imgs/vendedor.png';
       this.createMarker(latitud, longitud, icon, 'myMarker');
       this.resetCounts();
       this.renderMarkers();
@@ -187,12 +187,12 @@ export class MapPage {
         });
       linesPath.setMap(this.map);
     }else{
+      console.log('entro undefined');
       let alert = this.alertCtrl.create({
         subTitle: 'Sin Registro Actual ',
         buttons: ['OK']
       });
-      alert.present();
-      console.log('entro undefined');
+      alert.present(); 
     }
   }
 
@@ -200,6 +200,14 @@ export class MapPage {
     this.markers.forEach(item=>{
       if(item.tipo == 'VENTA'){
         item.marker.setVisible(false);
+      }
+    })
+  }
+
+  activarVentas(){
+    this.markers.forEach(item=>{
+      if(item.tipo == 'VENTA'){
+        item.marker.setVisible(true);
       }
     })
   }

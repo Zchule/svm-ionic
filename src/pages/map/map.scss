@@ -30,4 +30,8 @@ page-map {
     }
   }
 
+  .checkeable:checked  + img {
+    border-color: blue;
+  }
+
 }

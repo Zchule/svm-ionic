@@ -32,6 +32,7 @@ export class PreventaPage {
 
   ionViewDidLoad() {
     
+    
     this.vendedorService.getFechaServidor()
     .subscribe(data =>{
       this.fecha = data.fecha;
@@ -45,7 +46,7 @@ export class PreventaPage {
       content: 'Cargando...'
     });
     load.present();
-    
+
     this.loginService.getVendedorAll('357815085654648')
     .then(data =>{
       console.log('getVendedorAll', data);

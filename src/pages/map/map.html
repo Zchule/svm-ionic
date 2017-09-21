@@ -12,12 +12,12 @@
 <ion-content>
   <div id="map"></div>
   <ion-list class="mylist">
-    <ion-item (click)='ocultarVentas()'>
+    <ion-item type="checkbox" checked="true" (click)='ocultarVentas()'>
       <img item-start src="assets/imgs/venta.png" alt="venta">
       <p>{{ indicadores.venta.text }}</p>
       <ion-badge item-end>{{ indicadores.venta.count }}</ion-badge>
     </ion-item> 
-    <ion-item>
+    <ion-item type="checkbox" class="checkeable" >
       <img item-start src="assets/imgs/pedido.png" alt="pedido">
       <p>{{ indicadores.pedido.text }}</p>
       <ion-badge item-end>{{ indicadores.pedido.count }}</ion-badge>
