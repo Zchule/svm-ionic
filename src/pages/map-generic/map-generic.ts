@@ -112,12 +112,11 @@ private loadMap(){
       zIndex: Math.round(lat*-100000)<<5
     }
     let marker = new google.maps.Marker(options);
-
-    var popup = new google.maps.InfoWindow({
-        content: title
-      });
-
-    popup.open(this.map, marker);
+    
+        marker.addListener('click', ()=>{
+          this.infowindow.setContent(title); 
+          this.infowindow.open(this.map, marker);
+        }); 
 
     return marker;
   }

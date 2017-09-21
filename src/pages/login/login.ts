@@ -34,7 +34,6 @@ export class LoginPage {
     }
 
     ionViewDidLoad() {
-      console.log('ionViewDidLoad ListUserPage');
     }
     
     ionViewDidEnter() {
@@ -46,36 +45,33 @@ export class LoginPage {
       modal.present();
     }
 
-    verficar(){
-      this.storage.get('imei')
-      .then(imei=>{
-        console.log('imei llego', imei)
-        this.imeiCel = imei;
-        this.loginService.searchImei(imei);
-      })
-    }
-
-    doLogin( event: Event ){
+    doLogin( event: Event){
       event.preventDefault();
       let load = this.loadingCtrl.create({
         dismissOnPageChange: true,
       });
       let usuario = this.loginForm.value.usuario;
       let password = this.loginForm.value.password;
-      this.loginService.doLogin(usuario, password, '357815085654648')
-      .then( usuario => {
-        this.navCtrl.setRoot("HomePage");
+      this.storage.get('imei')
+      .then(imei=>{
+        console.log('imei llego', imei)
+        this.imeiCel = imei;
+        this.loginService.doLogin(usuario, password, this.imeiCel)
+        .then( usuario => {
+          this.navCtrl.setRoot("HomePage");
+        })
+        .catch(error =>{
+          load.dismiss().then( () => {
+          let alert = this.alertCtrl.create({
+            title: 'Datos Invalidos',
+            subTitle: 'Revise sus datos',
+            buttons: ['OK']
+          });
+          alert.present();
+          });
+        });
       })
-      .catch(error =>{
-        load.dismiss().then( () => {
-        let alert = this.alertCtrl.create({
-          title: 'Datos Invalidos',
-          subTitle: 'Revise sus datos',
-          buttons: ['OK']
-        });
-        alert.present();
-        });
-      });
+
     }
   
     private makeLoginForm(){

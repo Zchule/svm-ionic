@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavParams, MenuController, Loading, LoadingController} from 'ionic-angular';
+import { IonicPage, NavParams, MenuController, Loading, LoadingController, AlertController} from 'ionic-angular';
 
 import { VendedorService } from '../../providers/vendedor.service';
 
@@ -45,7 +45,8 @@ export class MapPage {
     private navParams: NavParams,
     private loadCtrl: LoadingController,
     private vendedorService: VendedorService,
-    private menuCtrl: MenuController
+    private menuCtrl: MenuController,
+    private alertCtrl: AlertController
   ) {
     this.key = this.navParams.get('key');
     this.bounds = new google.maps.LatLngBounds();
@@ -133,41 +134,41 @@ export class MapPage {
   
   private renderMarkers(){
     let geoPuntosList = this.vendedor['registro:'+ this.fecha].geoPuntoList;
-    console.log(geoPuntosList);
-    let lines = [];
-    for(let key in geoPuntosList){
-      let client = geoPuntosList[key];
-      let icon = "";
-      if(client.tipo == 'PEDIDO'){
-        icon = './assets/imgs/pedido.png';
-        this.indicadores.pedido.count++;
-      }else if(client.tipo == 'DEVOLUCION' ){
-        icon = './assets/imgs/devolucion.png';
-        this.indicadores.devolucion.count++;
-      }else if(client.tipo == 'VISITA'){
-        icon = './assets/imgs/visita.png';
-        this.indicadores.visita.count++;
-      }else if(client.tipo == 'VENTA'){
-        icon = './assets/imgs/venta.png';
-        this.indicadores.venta.count++;
+      console.log(geoPuntosList);
+      let lines = [];
+      for(let key in geoPuntosList){
+        let client = geoPuntosList[key];
+        let icon = "";
+        if(client.tipo == 'PEDIDO'){
+          icon = './assets/imgs/pedido.png';
+          this.indicadores.pedido.count++;
+        }else if(client.tipo == 'DEVOLUCION' ){
+          icon = './assets/imgs/devolucion.png';
+          this.indicadores.devolucion.count++;
+        }else if(client.tipo == 'VISITA'){
+          icon = './assets/imgs/visita.png';
+          this.indicadores.visita.count++;
+        }else if(client.tipo == 'VENTA'){
+          icon = './assets/imgs/venta.png';
+          this.indicadores.venta.count++;
+        }
+    
+        let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
+        this.markers.push({
+          marker: marker,
+          tipo: client.tipo
+        });
+        lines.push({ lat: client.latitud, lng: client.longitud }); 
       }
 
-      let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
-      this.markers.push({
-        marker: marker,
-        tipo: client.tipo
+      let linesPath = new google.maps.Polyline({
+        path: lines,
+        geodesic: true,           
+        strokeColor: '#FF0000',           
+        strokeOpacity: 1.0,           
+        strokeWeight: 2
       });
-      lines.push({ lat: client.latitud, lng: client.longitud }); 
-  }
-
-    let linesPath = new google.maps.Polyline({
-      path: lines,
-      geodesic: true,           
-      strokeColor: '#FF0000',           
-      strokeOpacity: 1.0,           
-      strokeWeight: 2
-    });
-  linesPath.setMap(this.map);
+    linesPath.setMap(this.map);
   }
 
   ocultarVentas(){
