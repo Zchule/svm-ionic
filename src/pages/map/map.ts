@@ -25,19 +25,33 @@ export class MapPage {
   indicadores = {
     venta:{
       count: 0,
-      text: 'Venta'
+      text: 'Venta',
+      estado: true
+    },
+    ventaAnulada:{
+      count: 0,
+      text: 'Venta Anulada',
+      estado: true
     },
     pedido:{
       count: 0,
-      text: 'Pedido'
+      text: 'Pedido',
+      estado: true
+    },
+    pedidoAnulado:{
+      count: 0,
+      text: 'Pedido Anulado',
+      estado: true
     },
     visita:{
       count: 0,
-      text: 'Visita'
+      text: 'Visita',
+      estado: true
     },
     devolucion:{
       count: 0,
-      text: 'Devolucion'
+      text: 'Devolucion',
+      estado: true
     }
   }
 
@@ -134,7 +148,6 @@ export class MapPage {
   
   private renderMarkers(){
     if(this.vendedor['registro:'+ this.fecha] !== undefined){
-
       console.log(this.vendedor);
       let geoPuntosList = this.vendedor['registro:'+ this.fecha].geoPuntoList;
         console.log(geoPuntosList);
@@ -143,19 +156,34 @@ export class MapPage {
           let client = geoPuntosList[key];
           let icon = "";
           if(client.tipo == 'PEDIDO'){
-            icon = './assets/imgs/pedido.png';
-            this.indicadores.pedido.count++;
-            let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
-            this.markers.push({
-              marker: marker,
-              tipo: client.tipo
-            });
+            if(client.estadoPV == 'ANULADO'){
+              client.tipo = 'PEDIDO_ANULADO';
+              icon = './assets/imgs/pedidoAnulado.png';
+              this.indicadores.pedidoAnulado.count++;
+              let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
+              this.markers.push({
+                marker: marker,
+                icon: icon,
+                tipo: client.tipo
+              });
+            }else{
+              icon = './assets/imgs/pedido.png';
+              this.indicadores.pedido.count++;
+              let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
+              this.markers.push({
+                marker: marker,
+                icon: icon,
+                tipo: client.tipo
+              });
+            }
+            
           }else if(client.tipo == 'DEVOLUCION' ){
             icon = './assets/imgs/devolucion.png';
             this.indicadores.devolucion.count++;
             let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
             this.markers.push({
               marker: marker,
+              icon: icon,
               tipo: client.tipo
             });
           }else if(client.tipo == 'VISITA'){
@@ -164,16 +192,30 @@ export class MapPage {
             let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
             this.markers.push({
               marker: marker,
+              icon: icon,
               tipo: client.tipo
             });
           }else if(client.tipo == 'VENTA'){
-            icon = './assets/imgs/venta.png';
-            let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
-            this.markers.push({
-              marker: marker,
-              tipo: client.tipo
-            });
-            this.indicadores.venta.count++;
+            if(client.estadoPV == 'ANULADO') {
+              client.tipo = 'VENTA_ANULADA';
+              icon = './assets/imgs/ventaAnulada.png';
+              let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
+              this.markers.push({
+                marker: marker,
+                icon: icon,
+                tipo: client.tipo
+              });
+              this.indicadores.ventaAnulada.count++;
+            }else{
+              icon = './assets/imgs/venta.png';
+              let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
+              this.markers.push({
+                marker: marker,
+                icon: icon,
+                tipo: client.tipo
+              });
+              this.indicadores.venta.count++;
+            }
           }        
           lines.push({ lat: client.latitud, lng: client.longitud }); 
         }
@@ -196,20 +238,63 @@ export class MapPage {
     }
   }
 
-  ocultarVentas(){
+  ocultar(estado){
     this.markers.forEach(item=>{
-      if(item.tipo == 'VENTA'){
-        item.marker.setVisible(false);
-      }
-    })
-  }
-
-  activarVentas(){
-    this.markers.forEach(item=>{
-      if(item.tipo == 'VENTA'){
-        item.marker.setVisible(true);
-      }
-    })
+      if(item.tipo == estado && item.tipo == 'VENTA'){ //venta
+        if(this.indicadores.venta.estado){
+          this.indicadores.venta.estado = false;
+          item.marker.setVisible(false);
+        }else{
+          console.log(this.indicadores.venta.estado );
+          this.indicadores.venta.estado = true;
+          item.marker.setVisible(true);
+          console.log(this.indicadores.venta.estado);
+          }     
+      }else if(item.tipo == estado && item.tipo == 'PEDIDO'){ //pedido
+        if(this.indicadores.pedido.estado){
+          item.marker.setVisible(false);
+          this.indicadores.pedido.estado = false;
+          }else{
+          item.marker.setVisible(true);
+          this.indicadores.pedido.estado = true;
+          }
+      }else if(item.tipo == estado && item.tipo == 'VISITA'){  //visita
+        if(this.indicadores.visita.estado){
+          item.marker.setVisible(false);
+          this.indicadores.visita.estado = false;
+          }else{
+          item.marker.setVisible(true);
+          this.indicadores.visita.estado = true;
+          }
+      }else if(item.tipo == estado && item.tipo == 'VENTA_ANULADA'){ //venta anulada
+        if(this.indicadores.ventaAnulada.estado){
+          item.marker.setVisible(false);
+          this.indicadores.ventaAnulada.estado = false;
+          }else{
+          item.marker.setVisible(true);
+          this.indicadores.ventaAnulada.estado = true;
+          }
+      }else if(item.tipo == estado && item.tipo == 'PEDIDO_ANULADO'){ //pedido anulado
+        this.indicadores.pedidoAnulado.estado = false;
+        if(this.indicadores.pedidoAnulado.estado){
+          console.log(item.tipo);
+          item.marker.setVisible(false);
+          }else{
+          item.marker.setVisible(true);
+          this.indicadores.pedidoAnulado.estado = true;
+          }
+      }else if(item.tipo == estado && item.tipo == 'DEVOLUCION'){ //devolucion
+        if(this.indicadores.devolucion.estado){
+          console.log(item.tipo);
+          console.log("DEVOLUCION");
+          item.marker.setVisible(false);
+          this.indicadores.devolucion.estado = false;
+          }else{
+          item.marker.setVisible(true);
+          this.indicadores.devolucion.estado = true;
+          }
+        }
+      }) 
   }
 
   private resetCounts(){

@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, MenuController, LoadingController} from 'ionic-angular';
+import { IonicPage, NavController, MenuController, LoadingController } from 'ionic-angular';
 import { FirebaseListObservable } from 'angularfire2/database';
 
 import { LoginService } from '../../providers/login.service';
 import { VendedorService } from '../../providers/vendedor.service';
+import { Storage } from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -17,13 +18,15 @@ export class PreventaPage {
   myDate: String = new Date().toISOString().substring(0, 10);
   users: any[] = [];
   fecha: string;
+  imeiCel: string;
 
   constructor(
     private navCtrl: NavController,
     private menuCtrl: MenuController,
     private loadCtrl: LoadingController,
     private vendedorService: VendedorService,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private storage: Storage
   ) {  }
 
   ionViewDidEnter() {
@@ -31,14 +34,11 @@ export class PreventaPage {
   }
 
   ionViewDidLoad() {
-    
-    
     this.vendedorService.getFechaServidor()
     .subscribe(data =>{
       this.fecha = data.fecha;
       this.getVendedores();
     });
-
   }
 
   private getVendedores(){
@@ -46,22 +46,28 @@ export class PreventaPage {
       content: 'Cargando...'
     });
     load.present();
-
-    this.loginService.getVendedorAll('357815085654648')
-    .then(data =>{
-      console.log('getVendedorAll', data);
-      let lista = Object.assign([], data);
-      lista.map(item =>{
+    this.storage.get('imei')
+    .then(imei=>{
+        console.log('imei vendedores', imei)
+      this.imeiCel = imei;
+      this.loginService.getVendedorAll(this.imeiCel)
+      .then(data =>{
+        console.log('getVendedorAll', data);
+        let lista = Object.assign([], data);
+        lista.map(item =>{
         item.efectividad = 0;
-        if(item['registro:'+this.fecha] !== undefined){
-          item.efectividad = item['registro:'+this.fecha].efectividad;
-        }
-        return item;
-      }) 
-      this.listsVendedores = lista;
-      console.log(this.listsVendedores);
-      load.dismiss(); 
-    });
+          if(item['registro:'+this.fecha] !== undefined){
+            item.efectividad = item['registro:'+this.fecha].efectividad;
+          }
+          return item;
+        }) 
+        this.listsVendedores = lista;
+        console.log(this.listsVendedores);
+        load.dismiss(); 
+      });
+
+  })
+
 
   }
 
@@ -71,5 +77,4 @@ export class PreventaPage {
       key: key
     });
   }
-
 }

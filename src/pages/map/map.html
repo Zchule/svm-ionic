@@ -12,25 +12,47 @@
 <ion-content>
   <div id="map"></div>
   <ion-list class="mylist">
-    <ion-item type="checkbox" checked="true" (click)='ocultarVentas()'>
-      <img item-start src="assets/imgs/venta.png" alt="venta">
+    <ion-item (click)='ocultar("VENTA")'>
+      <img item-start *ngIf="indicadores.venta.estado == false" src="./assets/imgs/estado.png"  alt="venta">
+      <img item-start  *ngIf="indicadores.venta.estado == true" src="./assets/imgs/venta.png" alt="venta">
       <p>{{ indicadores.venta.text }}</p>
       <ion-badge item-end>{{ indicadores.venta.count }}</ion-badge>
-    </ion-item> 
-    <ion-item type="checkbox" class="checkeable" >
-      <img item-start src="assets/imgs/pedido.png" alt="pedido">
+    </ion-item>
+      
+    <ion-item (click)='ocultar("PEDIDO")'>
+      <img item-start *ngIf="indicadores.pedido.estado == false" src="./assets/imgs/estado.png"  alt="pedido">
+      <img item-start  *ngIf="indicadores.pedido.estado == true" src="./assets/imgs/pedido.png" alt="pedido">
       <p>{{ indicadores.pedido.text }}</p>
       <ion-badge item-end>{{ indicadores.pedido.count }}</ion-badge>
-    </ion-item> 
-    <ion-item>
-      <img item-start src="assets/imgs/visita.png" alt="visita">
+    </ion-item>
+      
+    <ion-item (click)='ocultar("VISITA")'>
+      <img item-start *ngIf="indicadores.visita.estado == false" src="./assets/imgs/estado.png"  alt="visita">
+      <img item-start  *ngIf="indicadores.visita.estado == true" src="./assets/imgs/visita.png" alt="visita">
       <p>{{ indicadores.visita.text }}</p>
       <ion-badge item-end>{{ indicadores.visita.count }}</ion-badge>
     </ion-item> 
-    <ion-item>
-      <img item-start src="assets/imgs/devolucion.png" alt="devolucion">
+   
+  </ion-list>
+  <ion-list class="mylist2">
+    <ion-item (click)='ocultar("VENTA_ANULADA")'>
+      <img item-start *ngIf="indicadores.ventaAnulada.estado == false" src="./assets/imgs/estado.png"  alt="ventaAnulada">
+      <img item-start  *ngIf="indicadores.ventaAnulada.estado == true" src="./assets/imgs/ventaAnulada.png" alt="ventaAnulada">
+      <p>{{ indicadores.ventaAnulada.text }}</p>
+      <ion-badge item-end>{{ indicadores.ventaAnulada.count }}</ion-badge>
+    </ion-item>
+    <ion-item (click)='ocultar("PEDIDO_ANULADO")'>
+      <img item-start *ngIf="indicadores.pedidoAnulado.estado == false" src="./assets/imgs/estado.png"  alt="pedidoAnulado">
+      <img item-start  *ngIf="indicadores.pedidoAnulado.estado == true" src="./assets/imgs/pedidoAnulado.png" alt="pedidoAnulado">
+      <p>{{ indicadores.pedidoAnulado.text }}</p>
+      <ion-badge item-end>{{ indicadores.pedidoAnulado.count }}</ion-badge>
+    </ion-item>
+      <ion-item (click)='ocultar("DEVOLUCION")'>
+      <img item-start *ngIf="indicadores.devolucion.estado == false" src="./assets/imgs/estado.png"  alt="devolucion">
+      <img item-start *ngIf="indicadores.devolucion.estado == true" src="./assets/imgs/devolucion.png" alt="devolucion">
       <p>{{ indicadores.devolucion.text }}</p>
       <ion-badge item-end>{{ indicadores.devolucion.count }}</ion-badge>
-    </ion-item>   
+    </ion-item> 
   </ion-list>
+
 </ion-content>

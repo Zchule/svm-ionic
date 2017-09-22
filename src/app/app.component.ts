@@ -13,7 +13,7 @@ export class MyApp {
   @ViewChild(Nav) navMaster: Nav;
 
   rootPage: any = 'LoginPage';
-  user: any[];
+  user: any;
 
   pages: Array<{title: string, component: any}>;
 
@@ -57,6 +57,16 @@ export class MyApp {
       console.log(info.deviceId);
       let imei = '357815085654648';
       this.storage.set('imei', imei );
+      this.obtenerUser();
+    })
+  }
+  
+  private obtenerUser(){
+    this.storage.get('user')
+    .then(user=>{
+      let userOff = JSON.parse(user);
+      this.user = userOff;
+      console.log("usuario nombre", this.user);
     })
   }
 

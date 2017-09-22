@@ -15,7 +15,8 @@ page-map {
   .mylist{
     position: absolute;
     bottom: 0px;
-    width: 200px;
+    width: 130px;
+    left: inherit;
     .item{
       min-height: 30px;
       img{
@@ -30,8 +31,23 @@ page-map {
     }
   }
 
-  .checkeable:checked  + img {
-    border-color: blue;
+  .mylist2{
+    position: absolute;
+    bottom: 0px;
+    width: 170px;
+    right: 55px;
+    .item{
+      min-height: 30px;
+      img{
+        max-height: 20px;
+      }
+      .label{
+        margin: 0px;
+        p{
+          font-size: 1rem;
+        }
+      }
+    }
   }
 
 }
