@@ -56,8 +56,8 @@ export class MyApp {
     this.sim.getSimInfo().then( info => {
       console.log(info);
       console.log(info.deviceId);
-      const imei = '357815085654648';
-      this.storage.set('imei', imei );
+      // const imei = '357815085654648';
+      this.storage.set('imei', info.deviceId );
     });
   }
 
@@ -68,8 +68,9 @@ export class MyApp {
       this.user = data;
     });
   }
-
+  
   logout() {
     this.navMaster.setRoot('LoginPage');
+    // this.storage.clear();
   }
 }

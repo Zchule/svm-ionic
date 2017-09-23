@@ -134,7 +134,6 @@ export class MapPage {
       this.resetCounts();
       // obtiene el registro de acuerdo a la fecha
       this.getRegister();
-      // oculta el loader
       this.load.dismiss();
     });
   }
@@ -149,7 +148,7 @@ export class MapPage {
       alert.present();
     }else {
       const geoPuntosList = this.vendedor[`registro:${this.fecha}`].geoPuntoList;
-      delete geoPuntosList['23478346'];
+      // delete geoPuntosList['23478346'];
       this.renderMarkers(geoPuntosList);
     }
   }

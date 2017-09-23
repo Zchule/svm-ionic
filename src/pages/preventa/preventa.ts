@@ -46,11 +46,11 @@ export class PreventaPage {
       content: 'Cargando...'
     });
     load.present();
-    // this.storage.get('imei')
-    // .then(imei=>{
-    //     console.log('imei vendedores', imei)
-    this.imeiCel = '357815085654648';
-    this.loginService.getVendedorAll(this.imeiCel)
+    this.storage.get('imei')
+    .then(imei=>{
+        console.log('imei vendedores', imei)
+    // this.imeiCel = '357815085654648';
+    this.loginService.getVendedorAll(imei)
     .then(data => {
       console.log('getVendedorAll', data);
       const lista = Object.assign([], data);
@@ -65,6 +65,8 @@ export class PreventaPage {
       console.log(this.listsVendedores);
       load.dismiss();
     });
+
+  })
 
   }
 

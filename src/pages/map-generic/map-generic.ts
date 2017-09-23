@@ -86,11 +86,11 @@ export class MapGenericPage {
         this.fixBounds(lat, lng);
       }
     });
-    // this.storage.get('imei')
-    // .then(imei=>{
-    const imei = '357815085654648';
+    this.storage.get('imei')
+    .then(imei=>{
+    // const imei = '357815085654648';
     this.loginService.getVendedorAllOnlineRealtime(imei);
-    // })
+    })
     this.load.dismiss();
   }
 

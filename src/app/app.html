@@ -7,6 +7,8 @@
         </div>
         <h5>SUPERVISOR</h5>
         <p *ngIf="user !== null" >{{user.NombreSupervisor}}</p>
+        <p *ngIf="user !== null" >{{user.NombreUsuario}}</p>
+        
       </div>
       <ion-list>
         <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
