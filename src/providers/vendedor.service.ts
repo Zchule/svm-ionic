@@ -16,15 +16,15 @@ export class VendedorService {
     this.vendedoresRef = this.vendedores.$ref;
   }
 
-  getVendedorAll(){
+  getVendedorAll() {
     return this.vendedores;
   }
 
-  getVendedor(id){
-    return this.fireDatabase.object('/vendedores/'+ id);
+  getVendedor(id: string) {
+    return this.fireDatabase.object('/vendedores/' + id);
   }
 
-  getFechaServidor(){
+  getFechaServidor() {
     return this.fireDatabase.object('/Servidor');
  }
 

@@ -10,17 +10,15 @@ export class InfoPage {
 
   constructor(
     private viewCtrl: ViewController,
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams
-    ) {
-  }
+  ) {}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad InfoPage');
   }
 
-  close(){
-    
+  close() {
     this.viewCtrl.dismiss();
   }
 

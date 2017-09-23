@@ -20,8 +20,8 @@ export class MyApp {
   pages: Array<{title: string, component: any}>;
 
   constructor(
-    public platform: Platform, 
-    public statusBar: StatusBar, 
+    public platform: Platform,
+    public statusBar: StatusBar,
     public splashScreen: SplashScreen,
     private sim: Sim,
     private storage: Storage,
@@ -35,13 +35,10 @@ export class MyApp {
       { title: 'Vendedores', component: 'PreventaPage' },
       { title: 'Mapa', component: 'MapGenericPage' }
     ];
-
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.obtenerImei();
       this.suscribirCanal();
@@ -55,26 +52,24 @@ export class MyApp {
     this.navMaster.setRoot(page.component);
   }
 
-  private obtenerImei(){           
+  private obtenerImei() {
     this.sim.getSimInfo().then( info => {
       console.log(info);
       console.log(info.deviceId);
-      let imei = '357815085654648';
+      const imei = '357815085654648';
       this.storage.set('imei', imei );
-    })
+    });
   }
-  
-  private suscribirCanal(){
+
+  private suscribirCanal() {
     this.loginService.getUserChannel()
-    .subscribe(data=>{
+    .subscribe(data => {
       console.log(data);
       this.user = data;
-    })
+    });
   }
 
   logout() {
     this.navMaster.setRoot('LoginPage');
-    // this.storage.clear();
   }
-  
 }

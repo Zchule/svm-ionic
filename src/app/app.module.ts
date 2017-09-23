@@ -17,13 +17,13 @@ import { Sim } from '@ionic-native/sim';
 import { IonicStorageModule } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
 
-var configFirebase = {
-  apiKey: "AIzaSyAJDgpY9ssAyjIX_vA7S1D_fgcA26BBvxQ",
-  authDomain: "svmmoviltest.firebaseapp.com",
-  databaseURL: "https://svmmoviltest.firebaseio.com",
-  projectId: "svmmoviltest",
-  storageBucket: "svmmoviltest.appspot.com",
-  messagingSenderId: "1094384829553"
+const configFirebase = {
+  apiKey: 'AIzaSyAJDgpY9ssAyjIX_vA7S1D_fgcA26BBvxQ',
+  authDomain: 'svmmoviltest.firebaseapp.com',
+  databaseURL: 'https://svmmoviltest.firebaseio.com',
+  projectId: 'svmmoviltest',
+  storageBucket: 'svmmoviltest.appspot.com',
+  messagingSenderId: '1094384829553'
 };
 
 @NgModule({

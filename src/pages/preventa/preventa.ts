@@ -35,44 +35,42 @@ export class PreventaPage {
 
   ionViewDidLoad() {
     this.vendedorService.getFechaServidor()
-    .subscribe(data =>{
+    .subscribe(data => {
       this.fecha = data.fecha;
       this.getVendedores();
     });
   }
 
-  private getVendedores(){
-    let load = this.loadCtrl.create({
+  private getVendedores() {
+    const load = this.loadCtrl.create({
       content: 'Cargando...'
     });
     load.present();
     // this.storage.get('imei')
     // .then(imei=>{
     //     console.log('imei vendedores', imei)
-      this.imeiCel = '357815085654648';
-      this.loginService.getVendedorAll(this.imeiCel)
-      .then(data =>{
-        console.log('getVendedorAll', data);
-        let lista = Object.assign([], data);
-        lista.map(item =>{
-        item.efectividad = 0;
-          if(item['registro:'+this.fecha] !== undefined){
-            item.efectividad = item['registro:'+this.fecha].efectividad;
-          }
-          return item;
-        }) 
-        this.listsVendedores = lista;
-        console.log(this.listsVendedores);
-        load.dismiss(); 
+    this.imeiCel = '357815085654648';
+    this.loginService.getVendedorAll(this.imeiCel)
+    .then(data => {
+      console.log('getVendedorAll', data);
+      const lista = Object.assign([], data);
+      lista.map(item => {
+      item.efectividad = 0;
+        if (item['registro:' + this.fecha] !== undefined) {
+          item.efectividad = item['registro:' + this.fecha].efectividad;
+        }
+        return item;
       });
-
-  // })
+      this.listsVendedores = lista;
+      console.log(this.listsVendedores);
+      load.dismiss();
+    });
 
   }
 
-  goToMapPage(vendedor){
+  goToMapPage(vendedor) {
     const key = vendedor.$key;
-    this.navCtrl.push('MapPage', {
+    this.navCtrl.push('map', {
       key: key
     });
   }

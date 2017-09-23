@@ -5,7 +5,10 @@ import { VendedorService } from '../../providers/vendedor.service';
 
 declare var google;
 
-@IonicPage()
+@IonicPage({
+  name: 'map',
+  segment: 'map/:key'
+})
 @Component({
   selector: 'page-map',
   templateUrl: 'map.html',
@@ -20,40 +23,43 @@ export class MapPage {
   bounds: any = null;
   infowindow: any;
   fecha: string;
-  markers=[];
+  markers: any[] = [];
+  markerVendedor: any = null;
+  geoList = {};
+  linesPath: any = null;
 
   indicadores = {
-    venta:{
+    venta: {
       count: 0,
       text: 'Venta',
       estado: true
     },
-    ventaAnulada:{
+    ventaAnulada: {
       count: 0,
       text: 'Venta Anulada',
       estado: true
     },
-    pedido:{
+    pedido: {
       count: 0,
       text: 'Pedido',
       estado: true
     },
-    pedidoAnulado:{
+    pedidoAnulado: {
       count: 0,
       text: 'Pedido Anulado',
       estado: true
     },
-    visita:{
+    visita: {
       count: 0,
       text: 'Visita',
       estado: true
     },
-    devolucion:{
+    devolucion: {
       count: 0,
       text: 'Devolucion',
       estado: true
     }
-  }
+  };
 
   constructor(
     private navParams: NavParams,
@@ -70,10 +76,10 @@ export class MapPage {
   ionViewDidLoad() {
 
     this.vendedorService.getFechaServidor()
-    .subscribe(data=>{
+    .subscribe(data => {
       this.fecha = data.fecha;
-      console.log(this.fecha)
-    })
+      console.log(this.fecha);
+    });
 
     this.load = this.loadCtrl.create({
       content: 'Cargando...'
@@ -84,63 +90,172 @@ export class MapPage {
 
   ionViewDidEnter() {
     this.menuCtrl.enable(false, 'menuAdmin');
-  } 
-  
-  private loadMap(){   
-    //create a new map by passing HTMLElement
-    let mapEle: HTMLElement = document.getElementById('map');
-  
-    let latitud = -17.2378799;
-    let longitud = -66.7239997;
+  }
+
+  private loadMap() {
+    // create a new map by passing HTMLElement
+    const mapEle: HTMLElement = document.getElementById('map');
+
+    const latitud = -17.2378799;
+    const longitud = -66.7239997;
 
     // create LatLng object
-    let myLatLng = { lat: latitud, lng: longitud };
-    
+    const myLatLng = { lat: latitud, lng: longitud };
     // create map
     this.map = new google.maps.Map(mapEle, {
       center: myLatLng,
       zoom: 12
     });
-      
+
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
       mapEle.classList.add('show-map');
-        this.obtenerVendedor();
-    })
+      this.obtenerVendedor();
+    });
   }
 
-  private obtenerVendedor(){
-
+  private obtenerVendedor() {
     this.vendedorService.getVendedor(this.key)
-    .subscribe((vendedor)=>{ 
+    .subscribe((vendedor) => {
       this.vendedor = vendedor;
       console.log('getVendedor', this.vendedor);
       const latitud = this.vendedor.PosicionActual.latitud;
       const longitud = this.vendedor.PosicionActual.longitud;
       const newCenter = new google.maps.LatLng(latitud, longitud);
-      this.map.setCenter( newCenter );
-      let icon = './assets/imgs/vendedor.png';
-      this.createMarker(latitud, longitud, icon, 'myMarker');
-      // this.resetCounts();
-      // this.renderMarkers();
-      if(this.vendedor['registro:'+ this.fecha] !== undefined){
-        console.log(this.vendedor);
-        let geoPuntosList: any[] = this.vendedor['registro:'+ this.fecha].geoPuntoList;
-        let list = geoPuntosList.slice(this.markers.length, geoPuntosList.length);
-        this.renderMarkers(list);
-      }else{
-        console.log('entro undefined');
-        let alert = this.alertCtrl.create({
-          subTitle: 'Sin Registro Actual ',
-          buttons: ['OK']
-        });
-        alert.present(); 
+      this.map.setCenter(newCenter);
+      const icon = './assets/imgs/vendedor.png';
+
+      // si el marker no esta creado crea un marker pero si ya esta creado modifica la posicion
+      if (this.markerVendedor === null) {
+        this.markerVendedor = this.createMarker(latitud, longitud, icon, 'myMarker');
+      }else {
+        this.markerVendedor.setPosition(newCenter);
       }
-        this.load.dismiss();
+      // Coloca todos los contadores en cero
+      this.resetCounts();
+      // obtiene el registro de acuerdo a la fecha
+      this.getRegister();
+      // oculta el loader
+      this.load.dismiss();
     });
   }
 
-  private createMarker(lat: number, lng: number, icon: string, title: string){
-    let options = {
+  // obtener el registro del vendedor
+  private getRegister() {
+    if (this.vendedor[`registro:${this.fecha}`] === undefined) {
+      const alert = this.alertCtrl.create({
+        subTitle: 'Sin Registro Actual ',
+        buttons: ['OK']
+      });
+      alert.present();
+    }else {
+      const geoPuntosList = this.vendedor[`registro:${this.fecha}`].geoPuntoList;
+      delete geoPuntosList['23478346'];
+      this.renderMarkers(geoPuntosList);
+    }
+  }
+
+  private renderMarkers(geoPuntosList: any) {
+    const lines = [];
+    for (const key in geoPuntosList) {
+      // verifica si el punto ya esta creado dentro en this.geoList si ya esta lo actualiza, si no esta lo crea
+      if (this.geoList.hasOwnProperty(key)) {
+        const updatePoint = geoPuntosList[key];
+        this.updatePoint(key, updatePoint);
+        lines.push({ lat: updatePoint.latitud, lng: updatePoint.longitud });
+      }else {
+        const newPoint = geoPuntosList[key];
+        this.createPoint(key, newPoint);
+        lines.push({ lat: newPoint.latitud, lng: newPoint.longitud });
+      }
+    }
+    this.createLines(lines);
+  }
+
+  // crea un marker para ese punto
+  private createPoint(key: string, point: any) {
+    // crear objeto
+    this.geoList[key] = {};
+    // crear punto
+    this.geoList[key].point = Object.assign({}, point);
+    // obtengo el tipo correcto
+    const type = this.getType(point);
+    this.geoList[key].point.tipo = type;
+    // obtengo el icono correcto deacuerdo al tipo
+    const icon = this.getIcon(type);
+    // crear el marker de este punto
+    this.geoList[key].marker = this.createMarker(point.latitud, point.longitud, icon, point.nombreCliente);
+  }
+
+  // actuliza la informacion sin tener que crear un marker
+  private updatePoint(key: string, point: any) {
+    this.geoList[key].point = Object.assign({}, point);
+    // obtengo el tipo correcto
+    const type = this.getType(point);
+    this.geoList[key].point.tipo = type;
+    // obtengo el icono correcto de acuerdo al tipo
+    const icon = this.getIcon(type);
+    // modifica la posicion del marker
+    this.geoList[key].marker.setPosition({
+      lat: point.latitud,
+      lng: point.longitud
+    });
+    // modifica icono
+    this.geoList[key].marker.setIcon(icon);
+  }
+
+  // retorna el icono indicado de acuerdo al tipo
+  private getIcon(tipo: string) {
+    switch (tipo) {
+      case 'VISITA': {
+        return './assets/imgs/venta.png';
+      }
+      case 'PEDIDO': {
+        return './assets/imgs/pedido.png';
+      }
+      case 'DEVOLUCION': {
+        return './assets/imgs/devolucion.png';
+      }
+      case 'PEDIDO_ANULADO': {
+        return './assets/imgs/pedidoAnulado.png';
+      }
+      case 'VENTA_ANULADA': {
+        return './assets/imgs/ventaAnulada.png';
+      }
+      default: {
+        return '';
+      }
+    }
+  }
+
+  // retorna el tipo adeacuado segun la informacion
+  private getType(point: any) {
+    if (point.tipo === 'PEDIDO' && point.estadoPV === 'ANULADO') {
+      return 'PEDIDO_ANULADO';
+    }else if (point.tipo === 'VENTA' && point.estadoPV === 'ANULADO') {
+      return 'VENTA_ANULADA';
+    }else {
+      return point.tipo;
+    }
+  }
+
+  private createLines(lines: any[]) {
+    // si ya hay unas lineas creadas las elimina antes de crear las nuevas
+    if (this.linesPath !== null) {
+      this.linesPath.setMap(null);
+    }
+    console.log(lines);
+    this.linesPath = new google.maps.Polyline({
+      path: lines,
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+    this.linesPath.setMap(this.map);
+  }
+
+  private createMarker(lat: number, lng: number, icon: string, title: string) {
+    const options = {
       position: {
         lat: lat,
         lng: lng
@@ -148,155 +263,96 @@ export class MapPage {
       title: title,
       map: this.map,
       icon: icon,
-      zIndex: Math.round(lat*-100000)
-    }
-    let marker = new google.maps.Marker(options);
+      zIndex: Math.round(lat * -100000)
+    };
+    const marker = new google.maps.Marker(options);
 
-        marker.addListener('click', ()=>{
-          this.infowindow.setContent(title); 
-          this.infowindow.open(this.map, marker);
-        });
+    marker.addListener('click', () => {
+      this.infowindow.setContent(title);
+      this.infowindow.open(this.map, marker);
+    });
     return marker;
   }
-  
-  private renderMarkers(geoPuntosList: any[]){
-        let lines = [];
-        for(let key in geoPuntosList){
-          let client = geoPuntosList[key];
-          let icon = "";
-          if(client.tipo == 'PEDIDO'){
-            if(client.estadoPV == 'ANULADO'){
-              client.tipo = 'PEDIDO_ANULADO';
-              icon = './assets/imgs/pedidoAnulado.png';
-              this.indicadores.pedidoAnulado.count++;
-              let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
-              this.markers.push({
-                marker: marker,
-                tipo: client.tipo
-              });
-            }else{
-              icon = './assets/imgs/pedido.png';
-              this.indicadores.pedido.count++;
-              let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
-              this.markers.push({
-                marker: marker,
-                tipo: client.tipo
-              });
-            }
-            
-          }else if(client.tipo == 'DEVOLUCION' ){
-            icon = './assets/imgs/devolucion.png';
-            this.indicadores.devolucion.count++;
-            let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
-            this.markers.push({
-              marker: marker,
-              tipo: client.tipo
-            });
-          }else if(client.tipo == 'VISITA'){
-            icon = './assets/imgs/visita.png';
-            this.indicadores.visita.count++;
-            let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
-            this.markers.push({
-              marker: marker,
-              tipo: client.tipo
-            });
-          }else if(client.tipo == 'VENTA'){
-            if(client.estadoPV == 'ANULADO') {
-              client.tipo = 'VENTA_ANULADA';
-              icon = './assets/imgs/ventaAnulada.png';
-              let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
-              this.markers.push({
-                marker: marker,
-                tipo: client.tipo
-              });
-              this.indicadores.ventaAnulada.count++;
-            }else{
-              icon = './assets/imgs/venta.png';
-              let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
-              this.markers.push({
-                marker: marker,
-                tipo: client.tipo
-              });
-              this.indicadores.venta.count++;
-            }
-          }        
-          lines.push({ lat: client.latitud, lng: client.longitud }); 
-        }
-  
-        let linesPath = new google.maps.Polyline({
-          path: lines,
-          geodesic: true,           
-          strokeColor: '#FF0000',           
-          strokeOpacity: 1.0,           
-          strokeWeight: 2
-        });
-      linesPath.setMap(this.map);
-    
+
+
+  toggleVenta() {
+    // Si el estado esta en true lo vuele false y si esta en false lo vuelve true
+    this.indicadores.venta.estado = !this.indicadores.venta.estado;
+    this.ocultarPuntos();
   }
 
-  ocultar(estado){
-    this.markers.forEach(item=>{
-      if(item.tipo == estado && item.tipo == 'VENTA'){ //venta
-        if(this.indicadores.venta.estado){
-          this.indicadores.venta.estado = false;
-          item.marker.setVisible(false);
-        }else{
-          console.log(this.indicadores.venta.estado );
-          this.indicadores.venta.estado = true;
-          item.marker.setVisible(true);
-          console.log(this.indicadores.venta.estado);
-          }     
-      }else if(item.tipo == estado && item.tipo == 'PEDIDO'){ //pedido
-        if(this.indicadores.pedido.estado){
-          item.marker.setVisible(false);
-          this.indicadores.pedido.estado = false;
-          }else{
-          item.marker.setVisible(true);
-          this.indicadores.pedido.estado = true;
-          }
-      }else if(item.tipo == estado && item.tipo == 'VISITA'){  //visita
-        if(this.indicadores.visita.estado){
-          item.marker.setVisible(false);
-          this.indicadores.visita.estado = false;
-          }else{
-          item.marker.setVisible(true);
-          this.indicadores.visita.estado = true;
-          }
-      }else if(item.tipo == estado && item.tipo == 'VENTA_ANULADA'){ //venta anulada
-        if(this.indicadores.ventaAnulada.estado){
-          item.marker.setVisible(false);
-          this.indicadores.ventaAnulada.estado = false;
-          }else{
-          item.marker.setVisible(true);
-          this.indicadores.ventaAnulada.estado = true;
-          }
-      }else if(item.tipo == estado && item.tipo == 'PEDIDO_ANULADO'){ //pedido anulado
-        this.indicadores.pedidoAnulado.estado = false;
-        if(this.indicadores.pedidoAnulado.estado){
-          console.log(item.tipo);
-          item.marker.setVisible(false);
-          }else{
-          item.marker.setVisible(true);
-          this.indicadores.pedidoAnulado.estado = true;
-          }
-      }else if(item.tipo == estado && item.tipo == 'DEVOLUCION'){ //devolucion
-        if(this.indicadores.devolucion.estado){
-          console.log(item.tipo);
-          console.log("DEVOLUCION");
-          item.marker.setVisible(false);
-          this.indicadores.devolucion.estado = false;
-          }else{
-          item.marker.setVisible(true);
-          this.indicadores.devolucion.estado = true;
-          }
-        }
-      }) 
+  togglePedido() {
+    // Si el estado esta en true lo vuele false y si esta en false lo vuelve true
+    this.indicadores.pedido.estado = !this.indicadores.pedido.estado;
+    this.ocultarPuntos();
   }
 
-  private resetCounts(){
+  toggleVisita() {
+    // Si el estado esta en true lo vuele false y si esta en false lo vuelve true
+    this.indicadores.visita.estado = !this.indicadores.visita.estado;
+    this.ocultarPuntos();
+  }
+
+  toggleVentaAnulada() {
+    // Si el estado esta en true lo vuele false y si esta en false lo vuelve true
+    this.indicadores.ventaAnulada.estado = !this.indicadores.ventaAnulada.estado;
+    this.ocultarPuntos();
+  }
+
+  togglePedidoAnulado() {
+    // Si el estado esta en true lo vuele false y si esta en false lo vuelve true
+    this.indicadores.pedidoAnulado.estado = !this.indicadores.pedidoAnulado.estado;
+    this.ocultarPuntos();
+  }
+
+  toggleDevolucion() {
+    // Si el estado esta en true lo vuele false y si esta en false lo vuelve true
+    this.indicadores.devolucion.estado = !this.indicadores.devolucion.estado;
+    this.ocultarPuntos();
+  }
+
+  ocultarPuntos() {
+    // recorrer la lista de points
+    for (const key in this.geoList) {
+      // verifica si el punto existe dentro de this.geoList
+      if (this.geoList.hasOwnProperty(key)) {
+        const item = this.geoList[key];
+
+        item.marker.setVisible(true);
+
+        if (this.indicadores.venta.estado === false && item.point.tipo === 'VENTA') {
+          item.marker.setVisible(false);
+        }
+
+        if (this.indicadores.pedido.estado === false && item.point.tipo === 'PEDIDO' ) {
+          item.marker.setVisible(false);
+        }
+
+        if (this.indicadores.visita.estado === false && item.point.tipo === 'VISITA' ) {
+          item.marker.setVisible(false);
+        }
+
+        if (this.indicadores.ventaAnulada.estado === false && item.point.tipo === 'VENTA_ANULADA' ) {
+          item.marker.setVisible(false);
+        }
+
+        if (this.indicadores.pedidoAnulado.estado === false && item.point.tipo === 'PEDIDO_ANULADO' ) {
+          item.marker.setVisible(false);
+        }
+
+        if (this.indicadores.devolucion.estado === false && item.point.tipo === 'DEVOLUCION' ) {
+          item.marker.setVisible(false);
+        }
+      }
+    }
+  }
+
+  private resetCounts() {
     this.indicadores.devolucion.count = 0;
-    this.indicadores.pedido.count     = 0;
-    this.indicadores.venta.count      = 0;
-    this.indicadores.visita.count     = 0;
+    this.indicadores.pedido.count = 0;
+    this.indicadores.pedidoAnulado.count = 0;
+    this.indicadores.venta.count = 0;
+    this.indicadores.ventaAnulada.count = 0;
+    this.indicadores.visita.count = 0;
   }
 }

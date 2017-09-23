@@ -13,7 +13,7 @@ export class LoginService {
 
   supervisores: FirebaseListObservable<any>;
   supervisoresRef: firebase.database.Query;
-  getVendedorAllOnlineRealtimeRef:BehaviorSubject<any>;
+  getVendedorAllOnlineRealtimeRef: BehaviorSubject<any>;
   userChannel: BehaviorSubject<any>;
 
   constructor(
@@ -21,167 +21,160 @@ export class LoginService {
     private storage: Storage,
     private network: Network,
     private platform: Platform
-  )
-   {
+  ) {
     this.supervisores = this.fireDatabase.list('/Supervisores');
     this.supervisoresRef = this.supervisores.$ref;
     this.getVendedorAllOnlineRealtimeRef = new BehaviorSubject(null);
     this.userChannel = new BehaviorSubject(null);
   }
 
-  searchImei(imei: string): Promise<any>{
-    console.log('imei', imei)
-    return new Promise((resolve, reject)=>{
+  searchImei(imei: string): Promise<any> {
+    return new Promise((resolve, reject) => {
       const query = this.supervisoresRef.orderByKey().equalTo(imei);
-      query.once('value', snap =>{
-        let user = snap.val()[imei];
+      query.once('value', snap => {
+        const user = snap.val()[imei];
         console.log(user.operacionId);
-        if(user.operacionId === 1){
+        if (user.operacionId === 1) {
           resolve(user);
-        }else{
+        }else {
           reject(user);
-        }   
-      })
-    })
+        }
+      });
+    });
   }
 
-  doLoginOnline(usuario: string, password: string, imei: string): Promise<any>{
-    console.log('user', imei)
-    return new Promise((resolve, reject)=>{
+  doLoginOnline(usuario: string, password: string, imei: string): Promise<any> {
+    return new Promise((resolve, reject) => {
       const query = this.supervisoresRef.orderByKey().equalTo(imei);
-      query.once('value', snap =>{
-        let user = snap.val()[imei];
-        console.log(user.NombreUsuario, user.Contraseña);
-        console.log(user);
-        console.log(usuario, password);
-        if(user.NombreUsuario == usuario && user.Contraseña == password && user.operacionId == 1 ){
+      query.once('value', snap => {
+        const user = snap.val()[imei];
+        if (user.NombreUsuario === usuario && user.Contraseña === password && user.operacionId === 1 ) {
           this.getVendedorAllOnline(imei);
-          let userOff = JSON.stringify(user)
+          const userOff = JSON.stringify(user);
           this.storage.set('user', userOff);
           this.storage.set('offline', true);
           this.userChannel.next(user);
           resolve(user);
-        }else{
+        }else {
           reject(user);
-        }   
-      })
-    })
-  }
-
-  doLoginOffline(usuario: string, password: string): Promise<any>{
-    return this.storage.get('user')
-    .then(user=>{
-      let userOff = JSON.parse(user);
-      this.userChannel.next(userOff);
-      if(userOff.NombreUsuario == usuario && userOff.Contraseña == password){
-        return Promise.resolve(userOff);
-      }
-    })
-  }
-
-  doLogin(usuario: string, password: string, imei: string): Promise<any>{
-    return this.storage.get('offline')
-    .then(estado =>{
-      if(estado){
-        console.log("login off", estado);
-        return this.doLoginOffline(usuario, password);
-      }else{
-        console.log("login on", estado);
-        return this.doLoginOnline(usuario, password, imei)
-      }
-    })
-  }
-
-  getSupervisor(id: string): Promise<any>{
-    return new Promise((resolve, reject)=>{
-      this.fireDatabase.object('/Supervisores/'+ id)
-      .subscribe(data =>{
-        resolve(data);
-      },error=>{
-        reject(error)
-      })
-    })
-  }
-
-  getAll(){
-    return this.supervisores;
-  }
-
-  getVendedorAllOnline(id){
-    console.log("entro Online");
-    let vendedores = [];
-    let sizeVendedores = 0;
-    return new Promise((resolve, reject)=>{
-      this.fireDatabase.list('/Supervisores/'+ id + '/VendedoresList')
-      .subscribe(list=>{
-        console.log(list);
-        sizeVendedores = list.length;
-        list.forEach(vendedor=>{
-          let imei = vendedor.imei;
-          let nombre = vendedor.nombreVendedor;
-          this.fireDatabase.object('/vendedores/'+ imei)
-          .subscribe(dataVendedor=>{
-            dataVendedor.nombreVendedor = nombre;
-            vendedores.push(dataVendedor);
-            if(vendedores.length == sizeVendedores){
-              let dataoffline = JSON.stringify(vendedores);
-              this.storage.set("vendedoresList", dataoffline);
-              console.log(vendedores);
-              resolve(vendedores);
-            }
-          })
-        })
-      })
+        }
+      });
     });
   }
 
-  getVendedorAllOffline(id){
-    console.log("entro Offline");
-    return this.storage.get("vendedoresList")
-    .then(data=>{
-      let dataoffline = JSON.parse(data);
-      return Promise.resolve(dataoffline);
-    })
+  doLoginOffline(usuario: string, password: string): Promise<any> {
+    return this.storage.get('user')
+    .then(user => {
+      const userOff = JSON.parse(user);
+      this.userChannel.next(userOff);
+      if (userOff.NombreUsuario === usuario && userOff.Contraseña === password) {
+        return Promise.resolve(userOff);
+      }
+    });
   }
 
-  getVendedorAll(id){
-    if(this.platform.is('cordova')){
-      console.log(this.network.type); 
-      if(this.network.type !== "none"){
-        console.log(this.network.type); 
+  doLogin(usuario: string, password: string, imei: string): Promise<any> {
+    return this.storage.get('offline')
+    .then(estado => {
+      if (estado) {
+        console.log('login off', estado);
+        return this.doLoginOffline(usuario, password);
+      }else {
+        console.log('login on', estado);
+        return this.doLoginOnline(usuario, password, imei);
+      }
+    });
+  }
+
+  getSupervisor(id: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.fireDatabase.object('/Supervisores/' + id)
+      .subscribe(data => {
+        resolve(data);
+      }, error => {
+        reject(error);
+      });
+    });
+  }
+
+  getAll() {
+    return this.supervisores;
+  }
+
+  getVendedorAllOnline(id: string) {
+    console.log('entro Online');
+    const vendedores = [];
+    let sizeVendedores = 0;
+    return new Promise((resolve, reject) => {
+      this.fireDatabase.list('/Supervisores/' + id + '/VendedoresList')
+      .subscribe(list => {
+        console.log(list);
+        sizeVendedores = list.length;
+        list.forEach(vendedor => {
+          const imei = vendedor.imei;
+          const nombre = vendedor.nombreVendedor;
+          this.fireDatabase.object('/vendedores/' + imei)
+          .subscribe(dataVendedor => {
+            dataVendedor.nombreVendedor = nombre;
+            vendedores.push(dataVendedor);
+            if (vendedores.length === sizeVendedores) {
+              const dataoffline = JSON.stringify(vendedores);
+              this.storage.set('vendedoresList', dataoffline);
+              console.log(vendedores);
+              resolve(vendedores);
+            }
+          });
+        });
+      });
+    });
+  }
+
+  getVendedorAllOffline(id: string) {
+    console.log('entro Offline');
+    return this.storage.get('vendedoresList')
+    .then(data => {
+      const dataoffline = JSON.parse(data);
+      return Promise.resolve(dataoffline);
+    });
+  }
+
+  getVendedorAll(id: string) {
+    if (this.platform.is('cordova')) {
+      console.log(this.network.type);
+      if (this.network.type !== 'none') {
+        console.log(this.network.type);
         return this.getVendedorAllOnline(id);
-      }else{
+      }else {
         return this.getVendedorAllOffline(id);
       }
-    }else{
+    }else {
       return this.getVendedorAllOnline(id);
     }
   }
-  
-  getVendedorAllOnlineRealtime(id){
-    this.fireDatabase.list('/Supervisores/'+ id + '/VendedoresList')
-    .subscribe(list=>{
-      list.forEach(vendedor=>{
+
+  getVendedorAllOnlineRealtime(id: string) {
+    this.fireDatabase.list('/Supervisores/' + id + '/VendedoresList')
+    .subscribe(list => {
+      list.forEach(vendedor => {
         const imei = vendedor.imei;
-        let nombre = vendedor.nombreVendedor;
-        this.fireDatabase.object('/vendedores/'+ imei)
-        .subscribe(dataVendedor=>{
+        const nombre = vendedor.nombreVendedor;
+        this.fireDatabase.object('/vendedores/' + imei)
+        .subscribe(dataVendedor => {
           dataVendedor.nombreVendedor = nombre;
           console.log(dataVendedor);
           dataVendedor.imei = imei;
           this.getVendedorAllOnlineRealtimeRef.next(dataVendedor);
-        })
-      })
-    })
+        });
+      });
+    });
   }
 
-  getVendedorAllOnlineRealtimeoOb(){
+  getVendedorAllOnlineRealtimeoOb() {
     return this.getVendedorAllOnlineRealtimeRef.asObservable();
   }
 
-  getUserChannel(){
+  getUserChannel() {
     return this.userChannel.asObservable();
   }
-
 
 }
