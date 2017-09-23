@@ -46,10 +46,10 @@ export class PreventaPage {
       content: 'Cargando...'
     });
     load.present();
-    this.storage.get('imei')
-    .then(imei=>{
-        console.log('imei vendedores', imei)
-      this.imeiCel = imei;
+    // this.storage.get('imei')
+    // .then(imei=>{
+    //     console.log('imei vendedores', imei)
+      this.imeiCel = '357815085654648';
       this.loginService.getVendedorAll(this.imeiCel)
       .then(data =>{
         console.log('getVendedorAll', data);
@@ -66,8 +66,7 @@ export class PreventaPage {
         load.dismiss(); 
       });
 
-  })
-
+  // })
 
   }
 

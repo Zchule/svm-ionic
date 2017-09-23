@@ -28,4 +28,12 @@ export class VendedorService {
     return this.fireDatabase.object('/Servidor');
  }
 
+//  getGeoListChannel(imei, fecha){
+//    this.fireDatabase.database.ref('/vendedores/'+ imei + '/registro:'+ fecha + '/geoPuntoList' )
+//    .on('child_added', data=>{
+//     console.log(data.val());
+//    })
+//   return this.fireDatabase.list('/vendedores/'+ imei + '/registro:'+ fecha + '/geoPuntoList' )
+// }
+
 }

@@ -56,10 +56,10 @@ export class LoginPage {
       });
       let usuario = this.loginForm.value.usuario;
       let password = this.loginForm.value.password;
-      this.storage.get('imei')
-      .then(imei=>{
-        console.log('imei llego', imei)
-      this.imeiCel = imei;
+      // this.storage.get('imei')
+      // .then(imei=>{
+      //   console.log('imei llego', imei)
+      // this.imeiCel = imei;
       this.imeiCel='357815085654648';
         this.loginService.doLogin(usuario, password, this.imeiCel)
         .then( usuario => {
@@ -75,7 +75,7 @@ export class LoginPage {
           alert.present();
           });
         });
-      })
+      // })
 
     }
   

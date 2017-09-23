@@ -120,9 +120,22 @@ export class MapPage {
       this.map.setCenter( newCenter );
       let icon = './assets/imgs/vendedor.png';
       this.createMarker(latitud, longitud, icon, 'myMarker');
-      this.resetCounts();
-      this.renderMarkers();
-      this.load.dismiss();
+      // this.resetCounts();
+      // this.renderMarkers();
+      if(this.vendedor['registro:'+ this.fecha] !== undefined){
+        console.log(this.vendedor);
+        let geoPuntosList: any[] = this.vendedor['registro:'+ this.fecha].geoPuntoList;
+        let list = geoPuntosList.slice(this.markers.length, geoPuntosList.length);
+        this.renderMarkers(list);
+      }else{
+        console.log('entro undefined');
+        let alert = this.alertCtrl.create({
+          subTitle: 'Sin Registro Actual ',
+          buttons: ['OK']
+        });
+        alert.present(); 
+      }
+        this.load.dismiss();
     });
   }
 
@@ -146,11 +159,7 @@ export class MapPage {
     return marker;
   }
   
-  private renderMarkers(){
-    if(this.vendedor['registro:'+ this.fecha] !== undefined){
-      console.log(this.vendedor);
-      let geoPuntosList = this.vendedor['registro:'+ this.fecha].geoPuntoList;
-        console.log(geoPuntosList);
+  private renderMarkers(geoPuntosList: any[]){
         let lines = [];
         for(let key in geoPuntosList){
           let client = geoPuntosList[key];
@@ -163,7 +172,6 @@ export class MapPage {
               let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
               this.markers.push({
                 marker: marker,
-                icon: icon,
                 tipo: client.tipo
               });
             }else{
@@ -172,7 +180,6 @@ export class MapPage {
               let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
               this.markers.push({
                 marker: marker,
-                icon: icon,
                 tipo: client.tipo
               });
             }
@@ -183,7 +190,6 @@ export class MapPage {
             let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
             this.markers.push({
               marker: marker,
-              icon: icon,
               tipo: client.tipo
             });
           }else if(client.tipo == 'VISITA'){
@@ -192,7 +198,6 @@ export class MapPage {
             let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
             this.markers.push({
               marker: marker,
-              icon: icon,
               tipo: client.tipo
             });
           }else if(client.tipo == 'VENTA'){
@@ -202,7 +207,6 @@ export class MapPage {
               let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
               this.markers.push({
                 marker: marker,
-                icon: icon,
                 tipo: client.tipo
               });
               this.indicadores.ventaAnulada.count++;
@@ -211,7 +215,6 @@ export class MapPage {
               let marker = this.createMarker(client.latitud, client.longitud, icon, client.nombreCliente);
               this.markers.push({
                 marker: marker,
-                icon: icon,
                 tipo: client.tipo
               });
               this.indicadores.venta.count++;
@@ -228,14 +231,7 @@ export class MapPage {
           strokeWeight: 2
         });
       linesPath.setMap(this.map);
-    }else{
-      console.log('entro undefined');
-      let alert = this.alertCtrl.create({
-        subTitle: 'Sin Registro Actual ',
-        buttons: ['OK']
-      });
-      alert.present(); 
-    }
+    
   }
 
   ocultar(estado){

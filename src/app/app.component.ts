@@ -3,6 +3,8 @@ import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
+import { LoginService } from '../providers/login.service';
+
 import { Sim } from '@ionic-native/sim';
 import { Storage } from '@ionic/storage';
 
@@ -13,7 +15,7 @@ export class MyApp {
   @ViewChild(Nav) navMaster: Nav;
 
   rootPage: any = 'LoginPage';
-  user: any;
+  user: any = {};
 
   pages: Array<{title: string, component: any}>;
 
@@ -22,7 +24,8 @@ export class MyApp {
     public statusBar: StatusBar, 
     public splashScreen: SplashScreen,
     private sim: Sim,
-    private storage: Storage
+    private storage: Storage,
+    public loginService: LoginService
     ) {
     this.initializeApp();
 
@@ -41,6 +44,7 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.obtenerImei();
+      this.suscribirCanal();
       this.splashScreen.hide();
     });
   }
@@ -57,16 +61,14 @@ export class MyApp {
       console.log(info.deviceId);
       let imei = '357815085654648';
       this.storage.set('imei', imei );
-      this.obtenerUser();
     })
   }
   
-  private obtenerUser(){
-    this.storage.get('user')
-    .then(user=>{
-      let userOff = JSON.parse(user);
-      this.user = userOff;
-      console.log("usuario nombre", this.user);
+  private suscribirCanal(){
+    this.loginService.getUserChannel()
+    .subscribe(data=>{
+      console.log(data);
+      this.user = data;
     })
   }
 

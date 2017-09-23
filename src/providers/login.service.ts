@@ -14,6 +14,7 @@ export class LoginService {
   supervisores: FirebaseListObservable<any>;
   supervisoresRef: firebase.database.Query;
   getVendedorAllOnlineRealtimeRef:BehaviorSubject<any>;
+  userChannel: BehaviorSubject<any>;
 
   constructor(
     public fireDatabase: AngularFireDatabase,
@@ -25,6 +26,7 @@ export class LoginService {
     this.supervisores = this.fireDatabase.list('/Supervisores');
     this.supervisoresRef = this.supervisores.$ref;
     this.getVendedorAllOnlineRealtimeRef = new BehaviorSubject(null);
+    this.userChannel = new BehaviorSubject(null);
   }
 
   searchImei(imei: string): Promise<any>{
@@ -57,6 +59,7 @@ export class LoginService {
           let userOff = JSON.stringify(user)
           this.storage.set('user', userOff);
           this.storage.set('offline', true);
+          this.userChannel.next(user);
           resolve(user);
         }else{
           reject(user);
@@ -69,6 +72,7 @@ export class LoginService {
     return this.storage.get('user')
     .then(user=>{
       let userOff = JSON.parse(user);
+      this.userChannel.next(userOff);
       if(userOff.NombreUsuario == usuario && userOff.Contraseña == password){
         return Promise.resolve(userOff);
       }
@@ -174,5 +178,10 @@ export class LoginService {
   getVendedorAllOnlineRealtimeoOb(){
     return this.getVendedorAllOnlineRealtimeRef.asObservable();
   }
+
+  getUserChannel(){
+    return this.userChannel.asObservable();
+  }
+
 
 }
