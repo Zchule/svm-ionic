@@ -63,12 +63,16 @@ export class LoginService {
   }
 
   doLoginOffline(usuario: string, password: string): Promise<any> {
+    console.log(usuario, password);
     return this.storage.get('user')
     .then(user => {
       const userOff = JSON.parse(user);
       this.userChannel.next(userOff);
+      console.log(userOff.NombreUsuario, userOff.Contraseña);
       if (userOff.NombreUsuario === usuario && userOff.Contraseña === password) {
         return Promise.resolve(userOff);
+      }else{
+        return Promise.reject(userOff);
       }
     });
   }

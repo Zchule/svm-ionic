@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, MenuController, LoadingController } from 'ionic-angular';
+import { IonicPage, NavController, MenuController, LoadingController, AlertController } from 'ionic-angular';
 import { FirebaseListObservable } from 'angularfire2/database';
 
 import { LoginService } from '../../providers/login.service';
 import { VendedorService } from '../../providers/vendedor.service';
 import { Storage } from '@ionic/storage';
+import { Network } from '@ionic-native/network';
 
 @IonicPage()
 @Component({
@@ -24,9 +25,11 @@ export class PreventaPage {
     private navCtrl: NavController,
     private menuCtrl: MenuController,
     private loadCtrl: LoadingController,
+    public alertCtrl: AlertController,
     private vendedorService: VendedorService,
     private loginService: LoginService,
-    private storage: Storage
+    private storage: Storage,
+    private network: Network
   ) {  }
 
   ionViewDidEnter() {
@@ -46,11 +49,11 @@ export class PreventaPage {
       content: 'Cargando...'
     });
     load.present();
-    this.storage.get('imei')
-    .then(imei=>{
-        console.log('imei vendedores', imei)
-    // this.imeiCel = '357815085654648';
-    this.loginService.getVendedorAll(imei)
+    // this.storage.get('imei')
+    // .then(imei=>{
+    //     console.log('imei vendedores', imei)
+    this.imeiCel = '358239057387500';
+    this.loginService.getVendedorAll(this.imeiCel)
     .then(data => {
       console.log('getVendedorAll', data);
       const lista = Object.assign([], data);
@@ -64,9 +67,18 @@ export class PreventaPage {
       this.listsVendedores = lista;
       console.log(this.listsVendedores);
       load.dismiss();
+      if (this.network.type === 'none') {
+        console.log(this.network.type);
+        const alert = this.alertCtrl.create({
+          title: 'Sin conexion',
+          subTitle: 'lista sin Actualizar',
+          buttons: ['OK']
+        });
+        alert.present();
+      }
     });
 
-  })
+  // })
 
   }
 

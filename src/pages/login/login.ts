@@ -55,13 +55,16 @@ export class LoginPage {
     const load = this.loadingCtrl.create({
       dismissOnPageChange: true,
     });
+    
     const usuario = this.loginForm.value.usuario;
     const password = this.loginForm.value.password;
-    this.storage.get('imei')
-    .then(imei=>{
-      console.log('imei llego', imei)
-    this.imeiCel = imei;
-    this.imeiCel = '357815085654648';
+    console.log(this.loginForm.value.usuario);
+    console.log(this.loginForm.value.password);
+    // this.storage.get('imei')
+    // .then(imei=>{
+    //   console.log('imei llego', imei)
+    // this.imeiCel = imei;
+    this.imeiCel = '358239057387500';
     this.loginService.doLogin(usuario, password, this.imeiCel)
     .then(() => {
       this.navCtrl.setRoot('HomePage');
@@ -77,7 +80,7 @@ export class LoginPage {
         alert.present();
       });
     });
-  })
+  // })
 
   }
 

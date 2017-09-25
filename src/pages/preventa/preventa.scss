@@ -11,7 +11,7 @@ page-preventa {
         text-align: center;
         background-color: #f4f4f4;
         border: 1px solid #dcdcdc;
-        color: #1A367B;
+        color: #3092DC;
         border-radius: 20px;
     }
  
@@ -21,11 +21,11 @@ page-preventa {
         overflow: hidden;
         padding: 0px;
         border-radius: 20px;
-        background-color: map-get($colors, primary);
+        background-color: #3092DC;
     }
     .progress{
         min-width: 0%;
-        color:#1A357B;
+        color:#3092DC;
     }
     .item{
         min-height: 30px;

@@ -56,15 +56,14 @@ export class MyApp {
     this.sim.getSimInfo().then( info => {
       console.log(info);
       console.log(info.deviceId);
-      // const imei = '357815085654648';
-      this.storage.set('imei', info.deviceId );
+      const imei = '358239057387500';
+      this.storage.set('imei', imei );
     });
   }
 
   private suscribirCanal() {
     this.loginService.getUserChannel()
     .subscribe(data => {
-      console.log(data);
       this.user = data;
     });
   }
