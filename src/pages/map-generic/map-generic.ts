@@ -41,14 +41,13 @@ export class MapGenericPage {
     if (this.network.type === 'none') {
       console.log(this.network.type);
       const alert = this.alertCtrl.create({
-        title: 'Sin conexion',
-        subTitle: 'No puede Acceder al mapa',
+        title: 'Sin conexión',
+        subTitle: 'Mapa sin actualizar ',
         buttons: ['OK']
       });
       alert.present();
       this.load.dismiss();
     }
- 
     this.loadMap();
   }
 

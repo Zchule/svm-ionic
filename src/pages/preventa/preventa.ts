@@ -37,11 +37,28 @@ export class PreventaPage {
   }
 
   ionViewDidLoad() {
+    this.verificarAcessoFirebase();
     this.vendedorService.getFechaServidor()
     .subscribe(data => {
       this.fecha = data.fecha;
       this.getVendedores();
     });
+  }
+
+  private verificarAcessoFirebase(){
+    this.vendedorService.getConexion()
+    .then(data=>{
+      console.log("conexion", data)
+      if(data !== 200){
+        const alert = this.alertCtrl.create({
+          subTitle: 'Sin acceso a Firebase',
+          buttons: ['OK']
+        });
+        alert.present();
+      }
+    }).catch(error=>{
+      console.error(error);
+    })
   }
 
   private getVendedores() {
@@ -68,19 +85,22 @@ export class PreventaPage {
       this.listsVendedores = lista;
       console.log(this.listsVendedores);
       load.dismiss();
-      if (this.network.type === 'none') {
-        console.log(this.network.type);
-        const alert = this.alertCtrl.create({
-          title: 'Sin conexion',
-          subTitle: 'lista sin Actualizar',
-          buttons: ['OK']
-        });
-        alert.present();
-      }
-    });
+      this.verificarInternet();
+    })
 
   // })
+  }
 
+  private verificarInternet(){
+    if (this.network.type === 'none') {
+      console.log(this.network.type);
+      const alert = this.alertCtrl.create({
+        title: 'Sin conexión',
+        subTitle: 'Lista sin actualizar',
+        buttons: ['OK']
+      });
+      alert.present();
+    }
   }
 
   goToMapPage(vendedor) {

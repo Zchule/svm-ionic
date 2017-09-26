@@ -88,22 +88,25 @@ export class MapPage {
       content: 'Cargando...'
     });
     this.load.present();
-    
-    if (this.network.type === 'none') {
-      console.log(this.network.type);
-      const alert = this.alertCtrl.create({
-        title: 'Sin conexion',
-        subTitle: 'No puede Acceder al mapa',
-        buttons: ['OK']
-      });
-      alert.present();
-      this.load.dismiss();
-    }
+    this.verificarConexion();
     this.loadMap();
   }
 
   ionViewDidEnter() {
     this.menuCtrl.enable(false, 'menuAdmin');
+  }
+
+  private verificarConexion(){
+    if (this.network.type === 'none') {
+      console.log(this.network.type);
+      const alert = this.alertCtrl.create({
+        title: 'Sin conexión',
+        subTitle: 'Mapa sin conexion',
+        buttons: ['OK']
+      });
+      alert.present();
+      this.load.dismiss();
+    }
   }
 
   private loadMap() {
@@ -193,7 +196,6 @@ export class MapPage {
     // obtengo el tipo correcto
     const type = this.getType(point);
     this.indicadoresList(type);
-    console.log(type);
     this.geoList[key].point.tipo = type;
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);

@@ -142,6 +142,7 @@ export class LoginService {
     return this.storage.get('vendedoresList')
     .then(data => {
       const dataoffline = JSON.parse(data);
+      console.log("listOff", dataoffline);
       return Promise.resolve(dataoffline);
     });
   }
@@ -155,7 +156,7 @@ export class LoginService {
       }else {
         return this.getVendedorAllOffline(id);
       }
-    }else {
+     } else {
       return this.getVendedorAllOnline(id);
     }
   }

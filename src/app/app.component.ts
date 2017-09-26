@@ -33,7 +33,8 @@ export class MyApp {
     this.pages = [
       { title: 'Inicio', component: 'HomePage' },
       { title: 'Vendedores', component: 'PreventaPage' },
-      { title: 'Mapa', component: 'MapGenericPage' }
+      { title: 'Mapa', component: 'MapGenericPage' },
+      { title: 'Mapa Nativo', component: 'MapNativoPage' }
     ];
   }
 
