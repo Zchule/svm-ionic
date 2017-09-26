@@ -34,7 +34,12 @@ export class LoginPage {
     }
 
   ionViewDidLoad() {
-    //
+    this.storage.get('user')
+    .then(user=>{
+      const usuario = JSON.parse(user);
+      this.loginForm.patchValue({usuario: usuario.NombreUsuario});
+    });
+    
   }
 
   ionViewDidEnter() {

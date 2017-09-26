@@ -58,6 +58,7 @@ export class PreventaPage {
       console.log('getVendedorAll', data);
       const lista = Object.assign([], data);
       lista.map(item => {
+      console.log(item);
       item.efectividad = 0;
         if (item['registro:' + this.fecha] !== undefined) {
           item.efectividad = item['registro:' + this.fecha].efectividad;

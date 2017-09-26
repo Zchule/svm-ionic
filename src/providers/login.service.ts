@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
 import { Platform } from 'ionic-angular';
+import { Md5 } from 'ts-md5/dist/md5';
 
 import * as firebase from 'firebase';
 
@@ -50,6 +51,7 @@ export class LoginService {
         const user = snap.val()[imei];
         if (user.NombreUsuario === usuario && user.Contraseña === password && user.operacionId === 1 ) {
           this.getVendedorAllOnline(imei);
+          user.Contraseña = Md5.hashStr(user.Contraseña);
           const userOff = JSON.stringify(user);
           this.storage.set('user', userOff);
           this.storage.set('offline', true);
@@ -69,7 +71,9 @@ export class LoginService {
       const userOff = JSON.parse(user);
       this.userChannel.next(userOff);
       console.log(userOff.NombreUsuario, userOff.Contraseña);
-      if (userOff.NombreUsuario === usuario && userOff.Contraseña === password) {
+      let passwordEncrip = Md5.hashStr(password);
+      console.log(passwordEncrip);
+      if (userOff.NombreUsuario === usuario && userOff.Contraseña === passwordEncrip) {
         return Promise.resolve(userOff);
       }else{
         return Promise.reject(userOff);
