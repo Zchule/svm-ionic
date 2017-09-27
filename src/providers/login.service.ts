@@ -16,6 +16,7 @@ export class LoginService {
   supervisoresRef: firebase.database.Query;
   getVendedorAllOnlineRealtimeRef: BehaviorSubject<any>;
   userChannel: BehaviorSubject<any>;
+  vendedoresChannel: BehaviorSubject<any>;
 
   constructor(
     public fireDatabase: AngularFireDatabase,
@@ -27,21 +28,7 @@ export class LoginService {
     this.supervisoresRef = this.supervisores.$ref;
     this.getVendedorAllOnlineRealtimeRef = new BehaviorSubject(null);
     this.userChannel = new BehaviorSubject(null);
-  }
-
-  searchImei(imei: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const query = this.supervisoresRef.orderByKey().equalTo(imei);
-      query.once('value', snap => {
-        const user = snap.val()[imei];
-        console.log(user.operacionId);
-        if (user.operacionId === 1) {
-          resolve(user);
-        }else {
-          reject(user);
-        }
-      });
-    });
+    this.vendedoresChannel = new BehaviorSubject(null);
   }
 
   doLoginOnline(usuario: string, password: string, imei: string): Promise<any> {
@@ -65,7 +52,6 @@ export class LoginService {
   }
 
   doLoginOffline(usuario: string, password: string): Promise<any> {
-    console.log(usuario, password);
     return this.storage.get('user')
     .then(user => {
       const userOff = JSON.parse(user);
@@ -116,7 +102,6 @@ export class LoginService {
     return new Promise((resolve, reject) => {
       this.fireDatabase.list('/Supervisores/' + id + '/VendedoresList')
       .subscribe(list => {
-        console.log(list);
         sizeVendedores = list.length;
         list.forEach(vendedor => {
           const imei = vendedor.imei;
@@ -125,10 +110,11 @@ export class LoginService {
           .subscribe(dataVendedor => {
             dataVendedor.nombreVendedor = nombre;
             vendedores.push(dataVendedor);
+            this.vendedoresChannel.next(vendedores);
             if (vendedores.length === sizeVendedores) {
               const dataoffline = JSON.stringify(vendedores);
               this.storage.set('vendedoresList', dataoffline);
-              console.log(vendedores);
+              // console.log(vendedores);
               resolve(vendedores);
             }
           });
@@ -142,6 +128,7 @@ export class LoginService {
     return this.storage.get('vendedoresList')
     .then(data => {
       const dataoffline = JSON.parse(data);
+      this.vendedoresChannel.next(dataoffline);
       console.log("listOff", dataoffline);
       return Promise.resolve(dataoffline);
     });
@@ -184,6 +171,10 @@ export class LoginService {
 
   getUserChannel() {
     return this.userChannel.asObservable();
+  }
+  
+  getVendedoresChannel() {
+    return this.vendedoresChannel.asObservable();
   }
 
 }

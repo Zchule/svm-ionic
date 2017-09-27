@@ -63,8 +63,6 @@ export class LoginPage {
     
     const usuario = this.loginForm.value.usuario;
     const password = this.loginForm.value.password;
-    console.log(this.loginForm.value.usuario);
-    console.log(this.loginForm.value.password);
     // this.storage.get('imei')
     // .then(imei=>{
     //   console.log('imei llego', imei)

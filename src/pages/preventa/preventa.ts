@@ -15,11 +15,12 @@ import { Network } from '@ionic-native/network';
 export class PreventaPage {
 
   listsVendedores: any;
-  vendedores: FirebaseListObservable<any>;
+  vendedores: any = {};
   myDate: String = new Date().toISOString().substring(0, 10);
   users: any[] = [];
   fecha: string;
   imeiCel: string;
+  
 
   constructor(
     private navCtrl: NavController,
@@ -29,7 +30,8 @@ export class PreventaPage {
     private vendedorService: VendedorService,
     private loginService: LoginService,
     private storage: Storage,
-    private network: Network
+    private network: Network,
+    
   ) {  }
 
   ionViewDidEnter() {
@@ -70,23 +72,46 @@ export class PreventaPage {
     // .then(imei=>{
     //     console.log('imei vendedores', imei)
     this.imeiCel = '358239057387500';
-    this.loginService.getVendedorAll(this.imeiCel)
-    .then(data => {
-      console.log('getVendedorAll', data);
-      const lista = Object.assign([], data);
-      lista.map(item => {
-      console.log(item);
-      item.efectividad = 0;
-        if (item['registro:' + this.fecha] !== undefined) {
-          item.efectividad = item['registro:' + this.fecha].efectividad;
-        }
-        return item;
-      });
-      this.listsVendedores = lista;
-      console.log(this.listsVendedores);
-      load.dismiss();
-      this.verificarInternet();
-    })
+    this.loginService.getVendedoresChannel()
+    .subscribe(vendedores =>{
+      console.log('getVendedorAll suscribe', vendedores);
+      if(vendedores){
+        let list = Object.assign([], vendedores);
+        console.log(typeof(list));
+        list.map(item=>{
+          console.log(item);
+          item.efectividad = 0;
+          if (item['registro:' + this.fecha] !== undefined) {
+            item.efectividad = item['registro:' + this.fecha].efectividad;
+          }
+          return item;
+        })
+        this.listsVendedores = list;
+        console.log(this.listsVendedores);
+        this.verificarInternet();
+      }
+    });
+
+    console.log(this.listsVendedores);
+    this.loginService.getVendedorAll(this.imeiCel);
+    load.dismiss();
+    // .then(data => {
+    //   console.log('getVendedorAll', data);
+    //   const lista = Object.assign([], data);
+    //   console.log(typeof(lista));
+    //   lista.map(item => {
+    //   console.log(item);
+    //   item.efectividad = 0;
+    //     if (item['registro:' + this.fecha] !== undefined) {
+    //       item.efectividad = item['registro:' + this.fecha].efectividad;
+    //     }
+    //     return item;
+    //   });
+    //   this.listsVendedores = lista;
+    //   console.log(this.listsVendedores);
+    //   load.dismiss();
+    //   this.verificarInternet();
+    // })
 
   // })
   }
@@ -109,4 +134,6 @@ export class PreventaPage {
       key: key
     });
   }
+
+  
 }

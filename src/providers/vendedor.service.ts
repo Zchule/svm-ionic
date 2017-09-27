@@ -11,6 +11,7 @@ export class VendedorService {
 
   vendedores: FirebaseListObservable<any>;
   vendedoresRef: firebase.database.Query;
+  
 
   constructor(
     public fireDatabase: AngularFireDatabase,
