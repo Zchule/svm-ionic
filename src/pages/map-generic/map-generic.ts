@@ -80,6 +80,8 @@ export class MapGenericPage {
     .subscribe(vendedor => {
       if (vendedor) {
         if (!this.vendedores[vendedor.imei]) {
+          console.log(this.vendedores[vendedor.imei]);
+          console.log(!this.vendedores[vendedor.imei]);
           this.vendedores[vendedor.imei] = {};
           this.vendedores[vendedor.imei].info = vendedor;
           lat = vendedor.PosicionActual.latitud;

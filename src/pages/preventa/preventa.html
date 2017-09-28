@@ -11,7 +11,7 @@
 
 <ion-content>
     <ion-list>
-        <button ion-item *ngFor="let vendedor of listsVendedores; async let i = index"  (click)="goToMapPage(vendedor)">
+        <button ion-item *ngFor="let vendedor of listsVendedores; let i = index"  (click)="goToMapPage(vendedor)">
           <img item-start src="./assets/imgs/auto1.jpg" style="max-height: 50px;" alt="auto">
           <h5> {{ vendedor.nombreVendedor }}</h5>
           <h5> {{ vendedor.PosicionActual.hora}}</h5> 

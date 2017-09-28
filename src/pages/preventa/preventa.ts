@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, MenuController, LoadingController, AlertController } from 'ionic-angular';
-import { FirebaseListObservable } from 'angularfire2/database';
 
 import { LoginService } from '../../providers/login.service';
 import { VendedorService } from '../../providers/vendedor.service';
@@ -72,48 +71,35 @@ export class PreventaPage {
     // .then(imei=>{
     //     console.log('imei vendedores', imei)
     this.imeiCel = '358239057387500';
-    this.loginService.getVendedoresChannel()
-    .subscribe(vendedores =>{
-      console.log('getVendedorAll suscribe', vendedores);
-      if(vendedores){
-        let list = Object.assign([], vendedores);
-        console.log(typeof(list));
-        list.map(item=>{
-          console.log(item);
-          item.efectividad = 0;
-          if (item['registro:' + this.fecha] !== undefined) {
-            item.efectividad = item['registro:' + this.fecha].efectividad;
-          }
-          return item;
-        })
-        this.listsVendedores = list;
-        console.log(this.listsVendedores);
-        this.verificarInternet();
-      }
-    });
-
-    console.log(this.listsVendedores);
-    this.loginService.getVendedorAll(this.imeiCel);
-    load.dismiss();
-    // .then(data => {
-    //   console.log('getVendedorAll', data);
-    //   const lista = Object.assign([], data);
-    //   console.log(typeof(lista));
-    //   lista.map(item => {
-    //   console.log(item);
-    //   item.efectividad = 0;
-    //     if (item['registro:' + this.fecha] !== undefined) {
-    //       item.efectividad = item['registro:' + this.fecha].efectividad;
-    //     }
-    //     return item;
-    //   });
-    //   this.listsVendedores = lista;
-    //   console.log(this.listsVendedores);
-    //   load.dismiss();
-    //   this.verificarInternet();
-    // })
-
+    this.loginService.getVendedorAll(this.imeiCel)
+    .then(data => {
+      const lista = Object.assign([], data);
+      lista.map(item => {
+      item.efectividad = 0;
+        if (item['registro:' + this.fecha] !== undefined) {
+          item.efectividad = item['registro:' + this.fecha].efectividad;
+          this.efectividad(item.$key);
+        }
+        return item;
+      });
+      this.listsVendedores = lista;
+      load.dismiss();
+      this.verificarInternet(); 
+    })
   // })
+  }
+
+  efectividad(key){
+    this.loginService.getVendedor(key, this.fecha);
+    this.loginService.getVendedorChannel()
+    .subscribe(data=>{
+      console.log(data);
+      this.vendedores = data;
+      this.vendedores.forEach(element => {
+        element.efectividad;
+        console.log(element.efectividad);
+      });
+    })
   }
 
   private verificarInternet(){
