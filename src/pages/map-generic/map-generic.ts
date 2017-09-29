@@ -38,17 +38,20 @@ export class MapGenericPage {
       content: 'Cargando...'
     });
     this.load.present();
+    this.verificarInternet();
+    this.loadMap();
+  }
+
+  private verificarInternet(){
     if (this.network.type === 'none') {
       console.log(this.network.type);
       const alert = this.alertCtrl.create({
         title: 'Sin conexión',
-        subTitle: 'Mapa sin actualizar ',
+        subTitle: 'Mapa sin actualizar',
         buttons: ['OK']
       });
       alert.present();
-      this.load.dismiss();
     }
-    this.loadMap();
   }
 
   private loadMap() {
@@ -79,20 +82,19 @@ export class MapGenericPage {
     this.loginService.getVendedorAllOnlineRealtimeoOb()
     .subscribe(vendedor => {
       if (vendedor) {
+        console.log(vendedor);
         if (!this.vendedores[vendedor.imei]) {
-          console.log(this.vendedores[vendedor.imei]);
-          console.log(!this.vendedores[vendedor.imei]);
           this.vendedores[vendedor.imei] = {};
           this.vendedores[vendedor.imei].info = vendedor;
-          lat = vendedor.PosicionActual.latitud;
-          lng = vendedor.PosicionActual.longitud;
+          lat = vendedor.latitud;
+          lng = vendedor.longitud;
           title = vendedor.nombreVendedor;
           const icon = './assets/imgs/vendedor.png';
           this.vendedores[vendedor.imei].marker = this.createMarker(lat, lng, icon, title);
         }else {
           this.vendedores[vendedor.imei].info = vendedor;
-          lat = vendedor.PosicionActual.latitud;
-          lng = vendedor.PosicionActual.longitud;
+          lat = vendedor.latitud;
+          lng = vendedor.longitud;
           this.vendedores[vendedor.imei].marker.setPosition({
             lat: lat,
             lng: lng

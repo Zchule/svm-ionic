@@ -14,6 +14,7 @@ import { VendedorService } from '../../providers/vendedor.service';
 })
 export class PreventaPage {
 
+  listsVendedores: any[] = [];
   vendedores: any = {};
   fecha: string;
   imeiCel: string;
@@ -22,7 +23,6 @@ export class PreventaPage {
   constructor(
     private navCtrl: NavController,
     private menuCtrl: MenuController,
-    private loadCtrl: LoadingController,
     private alertCtrl: AlertController,
     private vendedorService: VendedorService,
     private loginService: LoginService,
@@ -31,11 +31,10 @@ export class PreventaPage {
   ) { }
 
   ionViewDidLoad() {
-    this.verificarAcessoFirebase();
     const subscriptionFechaServidor = this.vendedorService.getFechaServidor()
     .subscribe(data => {
       this.fecha = data.fecha;
-      this.getVendedores();
+      this.checkImei();
     });
     this.subscriptions.push(subscriptionFechaServidor);
   }
@@ -50,41 +49,48 @@ export class PreventaPage {
     });
   }
 
-  private verificarAcessoFirebase(){
-    this.vendedorService.getConexion()
-    .then(data=>{
-      console.log("conexion", data)
-      if(data !== 200){
-        const alert = this.alertCtrl.create({
-          subTitle: 'Sin acceso a Firebase',
-          buttons: ['OK']
-        });
-        alert.present();
-      }
-    }).catch(error=>{
-      console.log(error);
-    })
+  goToMapPage(vendedor) {
+    const key = vendedor.imei;
+    this.navCtrl.push('MapPage', {
+      key: key
+    });
+  }
+
+  private checkImei() {
+    this.storage.get('imei')
+    .then(imei=>{
+      console.log('imei llego', imei)
+      this.imeiCel = imei;
+      this.getVendedores();
+    });
   }
 
   private getVendedores() {
-    
-    // this.storage.get('imei')
-    // .then(imei=>{
-    //     console.log('imei vendedores', imei)
-    this.imeiCel = '358239057387500';
+    //this.imeiCel = '358239057387500';
     const subscriptionVendedorAllChannel = this.vendedorService.getVendedorAllChannel()
     .subscribe(vendedor => {
+      console.log(vendedor);
       if (vendedor !== null) {
-        this.vendedores[vendedor.key] = vendedor;
-        this.vendedores[vendedor.key].efectividad = this.getEfectividad(vendedor);
+        if (!this.vendedores.hasOwnProperty(vendedor.imei)) {
+          this.vendedores[vendedor.imei] = {};
+          this.vendedores[vendedor.imei].vendedor = vendedor;
+          this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
+          this.vendedores[vendedor.imei].index = this.listsVendedores.length;
+          this.listsVendedores.push(this.vendedores[vendedor.imei].vendedor);
+        }else{
+          this.vendedores[vendedor.imei].vendedor = vendedor;
+          this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
+          this.listsVendedores[this.vendedores[vendedor.imei].index] = this.vendedores[vendedor.imei].vendedor;
+        }
         // va guardando en local cualquier cambio
+        console.log(this.vendedores, this.listsVendedores);
         const dataoffline = JSON.stringify(this.vendedores);
         this.storage.set('vendedoresList', dataoffline);
       }
     });
     this.subscriptions.push(subscriptionVendedorAllChannel);
     // getVendedorAllOnline va estricamente despues de getVendedorAllChannel
-    this.vendedorService.getVendedorAll(this.imeiCel);
+    this.vendedorService.getVendedorAll(this.imeiCel, this.fecha);
     this.verificarInternet();
   }
 
@@ -105,21 +111,27 @@ export class PreventaPage {
         buttons: ['OK']
       });
       alert.present();
+    }else{
+      // Si tiene conexion verifica conexion con firebase
+      this.verificarAcessoFirebase();
     }
   }
 
-  goToMapPage(vendedor) {
-    const key = vendedor.key;
-    this.navCtrl.push('MapPage', {
-      key: key
-    });
+  private verificarAcessoFirebase(){
+    // this.vendedorService.getConexion()
+    // .then(data=>{
+    //   console.log("conexion", data);
+    // })
+    // .catch(error=>{
+    //   const alert = this.alertCtrl.create({
+    //     subTitle: 'Sin acceso a Firebase',
+    //     buttons: ['OK']
+    //   });
+    //   alert.present();
+    // })
   }
 
-  get listsVendedores() {
-    return Object.keys(this.vendedores).map(key => {
-      return this.vendedores[key];
-    })
-  }
+  
 
   
 }

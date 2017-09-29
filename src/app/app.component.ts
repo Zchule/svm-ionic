@@ -54,12 +54,17 @@ export class MyApp {
   }
 
   private obtenerImei() {
-    this.sim.getSimInfo().then( info => {
-      console.log(info);
-      console.log(info.deviceId);
+    if(this.platform.is('cordova')){
+      this.sim.getSimInfo().then( info => {
+        console.log(info);
+        console.log(info.deviceId);
+        const imei = '358239057387500';
+        this.storage.set('imei', imei );
+      })
+    }else{
       const imei = '358239057387500';
       this.storage.set('imei', imei );
-    });
+    }
   }
 
   private suscribirCanal() {

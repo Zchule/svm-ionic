@@ -100,18 +100,16 @@ export class LoginService {
   
 
   getVendedorAllOnlineRealtime(id: string) {
-    this.fireDatabase.list('/Supervisores/' + id + '/VendedoresList')
-    .subscribe(list => {
-      list.forEach(vendedor => {
-        const imei = vendedor.imei;
-        const nombre = vendedor.nombreVendedor;
-        this.fireDatabase.object('/vendedores/' + imei)
-        .subscribe(dataVendedor => {
-          dataVendedor.nombreVendedor = nombre;
-          console.log(dataVendedor);
-          dataVendedor.imei = imei;
-          this.getVendedorAllOnlineRealtimeRef.next(dataVendedor);
-        });
+    this.fireDatabase.database.ref(`/Supervisores/${id}/VendedoresList`)
+    .on('child_added', dataSnapshot => {
+      const vendedor = dataSnapshot.val();
+      const nombre = vendedor.nombreVendedor;
+      this.fireDatabase.database.ref(`/vendedores/${vendedor.imei}/PosicionActual`)
+      .on('value', dataSnapshot => {
+        const posicionActual = dataSnapshot.val();
+        posicionActual.nombreVendedor = nombre;
+        posicionActual.imei = vendedor.imei;
+        this.getVendedorAllOnlineRealtimeRef.next(posicionActual);
       });
     });
   }

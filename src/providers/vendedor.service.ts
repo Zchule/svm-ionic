@@ -34,24 +34,23 @@ export class VendedorService {
   }
 
   getConexion() {
-    return this.http.get('https://firebase.google.com/')
-    .map(res => res.status)
+    return this.http.get('https://firebasestorage.googleapis.com/v0/b/svmmoviltest.appspot.com/o/check-conexion.json?alt=media&token=4069678c-c030-4853-be60-c299f597c021')
+    .map(res => res.json())
     .toPromise();
   }
 
-  getVendedorAllOnline(id: string): void {
+  getVendedorAllOnline(id: string, fecha): void {
     console.log('getVendedorAllOnline');
     this.fireDatabase.database.ref(`/Supervisores/${id}/VendedoresList`)
     .on('child_added', dataSnapshot => {
       const vendedor = dataSnapshot.val();
-      const nombre = vendedor.nombreVendedor;
       this.fireDatabase.database.ref(`/vendedores/${vendedor.imei}`)
       .on('value', dataSnapshot => {
         const dataVendedor = dataSnapshot.val();
-        dataVendedor.nombreVendedor = nombre;
-        dataVendedor.key = dataSnapshot.key;
+        dataVendedor.nombreVendedor = vendedor.nombreVendedor;
+        dataVendedor.imei = vendedor.imei;
         this.getVendedorAllRef.next(dataVendedor);
-      });
+      })
     });
   }
 
@@ -66,15 +65,15 @@ export class VendedorService {
     });
   }
 
-  getVendedorAll(id: string): void {
+  getVendedorAll(id: string, fecha): void {
     if (this.platform.is('cordova')) {
       if (this.network.type !== 'none') {
-        this.getVendedorAllOnline(id);
+        this.getVendedorAllOnline(id, fecha);
       }else {
         this.getVendedorAllOffline(id);
       }
      } else {
-      this.getVendedorAllOnline(id);
+      this.getVendedorAllOnline(id, fecha);
     }
   }
 

@@ -1,9 +1,15 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
-import { Geolocation, Geoposition } from '@ionic-native/geolocation';
-import { GoogleMaps, GoogleMap, GoogleMapsEvent, LatLng, CameraPosition, MarkerOptions } from '@ionic-native/google-maps';
- 
+import {
+  GoogleMaps,
+  GoogleMap,
+  GoogleMapsEvent,
+  GoogleMapOptions,
+  CameraPosition,
+  MarkerOptions,
+  Marker
+ } from '@ionic-native/google-maps';
 
 @IonicPage()
 @Component({
@@ -13,111 +19,74 @@ import { GoogleMaps, GoogleMap, GoogleMapsEvent, LatLng, CameraPosition, MarkerO
 export class MapNativoPage {
 
   map: GoogleMap;
-  myPosition: any = {};
-  markers: any[] = [
-    {
-      position:{
-        latitude: -17.3666745,
-        longitude: -66.2387878,
-      },
-      title:'Point 1',
-      icon: 'www/assets/imgs/marker-green.png'
-    },
-    {
-      position:{
-        latitude: -17.3706884,
-        longitude: -66.2397749,
-      },
-      title:'Point 2',
-      icon: 'www/assets/imgs/marker-blue.png'
-    },
-    {
-      position:{
-        latitude: -17.391398,
-        longitude: -66.2407904,
-      },
-      title:'Point 3',
-      icon: 'www/assets/imgs/marker-green.png'
-    },
-    {
-      position:{
-        latitude: -17.3878887,
-        longitude: -66.223664,
-      },
-      title:'Point 4',
-      icon: 'www/assets/imgs/marker-blue.png'
-    },
-  ];
+  mapElement: HTMLElement;
+  
 
   constructor(
-    public navCtrl: NavController, 
-    public navParams: NavParams,
-    public geolocation: Geolocation,
-    public googleMaps: GoogleMaps
+    private navCtrl: NavController,
+    private googleMaps: GoogleMaps
   ) {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad MapNativoPage');
-    this.obtenerPosicion();
+    this.loadMap();
   }
 
-  obtenerPosicion():any{
-    this.geolocation.getCurrentPosition()
-    .then(position => {
-      this.myPosition = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude
+  private loadMap(){
+
+    this.mapElement = document.getElementById('map');
+
+    let mapOptions: GoogleMapOptions = {
+      camera: {
+        target: {
+          lat: 43.0741904,
+          lng: -89.3809802
+        },
+        zoom: 18,
+        tilt: 30
       }
-      this.loadMap();
+    };
+  
+    this.map = this.googleMaps.create(this.mapElement, mapOptions);
+    // Wait the MAP_READY before using any methods.
+    this.map.one(GoogleMapsEvent.MAP_READY)
+    .then(() => {
+      console.log('Map is ready!');
+      // Now you can use all methods safely.
+      //this.getMyLocation();
+    });
+  }
+
+  private getMyLocation(){
+    this.map.getMyLocation({
+      enableHighAccuracy: true
     })
-    .catch(error=>{
+    .then(location => {
+      console.log(location);
+      this.addMarker({
+        title: 'Here',
+        icon: 'blue',
+        position: location.latLng
+      });
+      this.map.moveCamera({
+        target: location.latLng,
+        zoom: 18
+      });
+    })
+    .catch(error => {
       console.log(error);
     })
   }
-
-  loadMap(){
-    
-    let element: HTMLElement = document.getElementById('map');
   
-        this.map = this.googleMaps.create(element);
-        
-        // create CameraPosition
-        let position: CameraPosition<any> = {
-          target: new LatLng(this.myPosition.latitude, this.myPosition.longitude),
-          zoom: 12,
-          tilt: 30
-        };
-    
-        this.map.one(GoogleMapsEvent.MAP_READY).then(()=>{
-          console.log('Map is ready!');
-    
-          // move the map's camera to position
-          this.map.moveCamera(position);
-    
-          let markerOptions: MarkerOptions = {
-            position: this.myPosition,
-            title: "Here",
-            icon: 'www/assets/imgs/marker-pink.png'
-          };
-    
-          this.addMarker(markerOptions);
-    
-          this.markers.forEach(marker=>{
-            this.addMarker(marker);
-          });
-          
-        });
-      }
-  
-      addMarker(options){
-        let markerOptions: MarkerOptions = {
-          position: new LatLng(options.position.latitude, options.position.longitude),
-          title: options.title,
-          icon: options.icon
-        };
-        this.map.addMarker(markerOptions);
-      }
+  addMarker(options){
+    this.map.addMarker(options)
+    .then(marker => {
+      marker.on(GoogleMapsEvent.MARKER_CLICK)
+      .subscribe(() => {
+        alert('clicked');
+      });
+    });
+  }
     
 
 }
