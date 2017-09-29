@@ -3,10 +3,10 @@ import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/databa
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import * as firebase from 'firebase';
 import { Storage } from '@ionic/storage';
-import { Network } from '@ionic-native/network';
+// import { Network } from '@ionic-native/network';
 import { Platform } from 'ionic-angular';
 import { Md5 } from 'ts-md5/dist/md5';
-import { Subscription } from 'rxjs/Subscription';
+// import { Subscription } from 'rxjs/Subscription';
 
 import { VendedorService } from './../providers/vendedor.service';
 
@@ -22,8 +22,8 @@ export class LoginService {
   constructor(
     public fireDatabase: AngularFireDatabase,
     private storage: Storage,
-    private network: Network,
-    private platform: Platform,
+    // private network: Network,
+    // private platform: Platform,
     private vendedorService: VendedorService
   ) {
     this.supervisores = this.fireDatabase.list('/Supervisores');
@@ -96,8 +96,6 @@ export class LoginService {
   getAll() {
     return this.supervisores;
   }
-
-  
 
   getVendedorAllOnlineRealtime(id: string) {
     this.fireDatabase.database.ref(`/Supervisores/${id}/VendedoresList`)

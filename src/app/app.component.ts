@@ -33,8 +33,7 @@ export class MyApp {
     this.pages = [
       { title: 'Inicio', component: 'HomePage' },
       { title: 'Vendedores', component: 'PreventaPage' },
-      { title: 'Mapa', component: 'MapGenericPage' },
-      { title: 'Mapa Nativo', component: 'MapNativoPage' }
+      { title: 'Mapa', component: 'MapGenericPage' }
     ];
   }
 
@@ -58,12 +57,16 @@ export class MyApp {
       this.sim.getSimInfo().then( info => {
         console.log(info);
         console.log(info.deviceId);
-        const imei = '358239057387500';
+        let imei = info.deviceId;
+        // const imei = '358239057387500';
         this.storage.set('imei', imei );
       })
     }else{
-      const imei = '358239057387500';
-      this.storage.set('imei', imei );
+      this.sim.getSimInfo().then( info => {
+        let imei = info.deviceId;
+        // const imei = '358239057387500';
+        this.storage.set('imei', imei );
+      })
     }
   }
 

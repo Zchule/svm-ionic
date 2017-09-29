@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, MenuController, LoadingController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, MenuController, Loading, LoadingController, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
 import { Subscription } from 'rxjs/Subscription';
 
-import { LoginService } from '../../providers/login.service';
 import { VendedorService } from '../../providers/vendedor.service';
 
 @IonicPage()
@@ -19,24 +18,31 @@ export class PreventaPage {
   fecha: string;
   imeiCel: string;
   subscriptions: Subscription[] = [];
+  load: Loading;
   
   constructor(
     private navCtrl: NavController,
     private menuCtrl: MenuController,
     private alertCtrl: AlertController,
+    private loadCtrl: LoadingController,
     private vendedorService: VendedorService,
-    private loginService: LoginService,
     private storage: Storage,
-    private network: Network,
+    private network: Network
+
   ) { }
 
   ionViewDidLoad() {
+    this.load = this.loadCtrl.create({
+      content: 'Cargando...'
+    });
+    this.load.present();
     const subscriptionFechaServidor = this.vendedorService.getFechaServidor()
     .subscribe(data => {
       this.fecha = data.fecha;
       this.checkImei();
     });
     this.subscriptions.push(subscriptionFechaServidor);
+    this.load.dismiss();
   }
 
   ionViewDidEnter() {
@@ -66,7 +72,6 @@ export class PreventaPage {
   }
 
   private getVendedores() {
-    //this.imeiCel = '358239057387500';
     const subscriptionVendedorAllChannel = this.vendedorService.getVendedorAllChannel()
     .subscribe(vendedor => {
       console.log(vendedor);
@@ -92,6 +97,7 @@ export class PreventaPage {
     // getVendedorAllOnline va estricamente despues de getVendedorAllChannel
     this.vendedorService.getVendedorAll(this.imeiCel, this.fecha);
     this.verificarInternet();
+    
   }
 
   private getEfectividad(vendedor: any){
@@ -118,20 +124,17 @@ export class PreventaPage {
   }
 
   private verificarAcessoFirebase(){
-    // this.vendedorService.getConexion()
-    // .then(data=>{
-    //   console.log("conexion", data);
-    // })
-    // .catch(error=>{
-    //   const alert = this.alertCtrl.create({
-    //     subTitle: 'Sin acceso a Firebase',
-    //     buttons: ['OK']
-    //   });
-    //   alert.present();
-    // })
+    this.vendedorService.getConexion()
+    .then(data=>{
+      console.log("conexion", data);
+    })
+    .catch(error=>{
+      const alert = this.alertCtrl.create({
+        subTitle: 'Sin acceso a Firebase',
+        buttons: ['OK']
+      });
+      alert.present();
+    })
   }
 
-  
-
-  
 }

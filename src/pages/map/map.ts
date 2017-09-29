@@ -74,7 +74,6 @@ export class MapPage {
   }
 
   ionViewDidLoad() {
-
     this.vendedorService.getFechaServidor()
     .subscribe(data => {
       this.fecha = data.fecha;

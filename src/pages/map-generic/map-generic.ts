@@ -51,6 +51,7 @@ export class MapGenericPage {
         buttons: ['OK']
       });
       alert.present();
+      this.load.dismiss();
     }
   }
 
@@ -103,11 +104,11 @@ export class MapGenericPage {
         this.fixBounds(lat, lng);
       }
     });
-    // this.storage.get('imei')
-    // .then(imei=>{
-    const imei = '358239057387500';
+    this.storage.get('imei')
+    .then(imei=>{
+    // const imei = '358239057387500';
     this.loginService.getVendedorAllOnlineRealtime(imei);
-    // })
+    })
     this.load.dismiss();
   }
 
