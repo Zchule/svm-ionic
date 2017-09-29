@@ -6,10 +6,7 @@ import { Network } from '@ionic-native/network';
 
 declare var google;
 
-@IonicPage({
-  name: 'map',
-  segment: 'map/:key'
-})
+@IonicPage()
 @Component({
   selector: 'page-map',
   templateUrl: 'map.html',

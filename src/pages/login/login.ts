@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonicPage, NavController, NavParams, AlertController, ModalController, LoadingController, MenuController} from 'ionic-angular';
 
-import { FirebaseListObservable } from 'angularfire2/database';
 import { LoginService } from '../../providers/login.service';
 import { Storage } from '@ionic/storage';
 
@@ -14,7 +13,6 @@ import { Storage } from '@ionic/storage';
 export class LoginPage {
 
   loginForm: FormGroup;
-  supervisores: FirebaseListObservable<any>;
   data: any [];
   userName: string;
   imeiCel: string;
@@ -35,11 +33,12 @@ export class LoginPage {
 
   ionViewDidLoad() {
     this.storage.get('user')
-    .then(user=>{
+    .then(user => {
       const usuario = JSON.parse(user);
-      this.loginForm.patchValue({usuario: usuario.NombreUsuario});
+      if (usuario) {
+        this.loginForm.patchValue({usuario: usuario.NombreUsuario});
+      }
     });
-    
   }
 
   ionViewDidEnter() {

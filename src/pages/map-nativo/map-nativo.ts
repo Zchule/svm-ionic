@@ -83,7 +83,7 @@ export class MapNativoPage {
         this.map = this.googleMaps.create(element);
         
         // create CameraPosition
-        let position: CameraPosition = {
+        let position: CameraPosition<any> = {
           target: new LatLng(this.myPosition.latitude, this.myPosition.longitude),
           zoom: 12,
           tilt: 30
