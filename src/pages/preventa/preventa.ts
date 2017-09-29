@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, MenuController, LoadingController } from 'ionic-angular';
-import { FirebaseListObservable } from 'angularfire2/database';
+import { IonicPage, NavController, MenuController, LoadingController, AlertController } from 'ionic-angular';
 
 import { LoginService } from '../../providers/login.service';
 import { VendedorService } from '../../providers/vendedor.service';
 import { Storage } from '@ionic/storage';
+import { Network } from '@ionic-native/network';
 
 @IonicPage()
 @Component({
@@ -14,19 +14,23 @@ import { Storage } from '@ionic/storage';
 export class PreventaPage {
 
   listsVendedores: any;
-  vendedores: FirebaseListObservable<any>;
+  vendedores: any = {};
   myDate: String = new Date().toISOString().substring(0, 10);
   users: any[] = [];
   fecha: string;
   imeiCel: string;
+  
 
   constructor(
     private navCtrl: NavController,
     private menuCtrl: MenuController,
     private loadCtrl: LoadingController,
+    public alertCtrl: AlertController,
     private vendedorService: VendedorService,
     private loginService: LoginService,
-    private storage: Storage
+    private storage: Storage,
+    private network: Network,
+    
   ) {  }
 
   ionViewDidEnter() {
@@ -34,11 +38,28 @@ export class PreventaPage {
   }
 
   ionViewDidLoad() {
+    this.verificarAcessoFirebase();
     this.vendedorService.getFechaServidor()
     .subscribe(data => {
       this.fecha = data.fecha;
       this.getVendedores();
     });
+  }
+
+  private verificarAcessoFirebase(){
+    this.vendedorService.getConexion()
+    .then(data=>{
+      console.log("conexion", data)
+      if(data !== 200){
+        const alert = this.alertCtrl.create({
+          subTitle: 'Sin acceso a Firebase',
+          buttons: ['OK']
+        });
+        alert.present();
+      }
+    }).catch(error=>{
+      console.error(error);
+    })
   }
 
   private getVendedores() {
@@ -49,23 +70,48 @@ export class PreventaPage {
     // this.storage.get('imei')
     // .then(imei=>{
     //     console.log('imei vendedores', imei)
-    this.imeiCel = '357815085654648';
+    this.imeiCel = '358239057387500';
     this.loginService.getVendedorAll(this.imeiCel)
     .then(data => {
-      console.log('getVendedorAll', data);
       const lista = Object.assign([], data);
       lista.map(item => {
       item.efectividad = 0;
         if (item['registro:' + this.fecha] !== undefined) {
           item.efectividad = item['registro:' + this.fecha].efectividad;
+          this.efectividad(item.$key);
         }
         return item;
       });
       this.listsVendedores = lista;
-      console.log(this.listsVendedores);
       load.dismiss();
-    });
+      this.verificarInternet(); 
+    })
+  // })
+  }
 
+  efectividad(key){
+    this.loginService.getVendedor(key, this.fecha);
+    this.loginService.getVendedorChannel()
+    .subscribe(data=>{
+      console.log(data);
+      this.vendedores = data;
+      this.vendedores.forEach(element => {
+        element.efectividad;
+        console.log(element.efectividad);
+      });
+    })
+  }
+
+  private verificarInternet(){
+    if (this.network.type === 'none') {
+      console.log(this.network.type);
+      const alert = this.alertCtrl.create({
+        title: 'Sin conexión',
+        subTitle: 'Lista sin actualizar',
+        buttons: ['OK']
+      });
+      alert.present();
+    }
   }
 
   goToMapPage(vendedor) {
@@ -74,4 +120,6 @@ export class PreventaPage {
       key: key
     });
   }
+
+  
 }

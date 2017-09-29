@@ -26,8 +26,14 @@ Substitute ios for android if not on a Mac.
 
 link de repositorio= https://bocbap2.pilandina.com.bo:8888/root/svm-ionic.git
 
+https://github.com/Zchule/Admin.git
+
 git remote -v        //veo el link del repo enlazado
 git remote rm origin    //quito el repo
 
 git remote add orgin {link}     // agregar repo
 
+  ionic cordova plugin add cordova-plugin-googlemaps --variable API_KEY_FOR_ANDROID="AIzaSyDY-SUUEs5bM8xIsFLhnPhEJBHAbTArUI4" --save
+
+
+ionic cordova plugin add cordova-plugin-geolocation --variable GEOLOCATION_USAGE_DESCRIPTION="The app need the geolocation"

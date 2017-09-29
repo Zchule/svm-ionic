@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, Loading, LoadingController } from 'ionic-angular';
+import { IonicPage, Loading, LoadingController, AlertController } from 'ionic-angular';
 
 import { LoginService } from '../../providers/login.service';
 import { Storage } from '@ionic/storage';
+import { Network } from '@ionic-native/network';
 
 declare var google;
 
@@ -23,8 +24,10 @@ export class MapGenericPage {
 
   constructor(
     private loadCtrl: LoadingController,
+    public alertCtrl: AlertController,
     private loginService: LoginService,
-    private storage: Storage
+    private storage: Storage,
+    private network: Network
   ) {
     this.bounds = new google.maps.LatLngBounds();
     this.infowindow = new google.maps.InfoWindow();
@@ -34,8 +37,18 @@ export class MapGenericPage {
     this.load = this.loadCtrl.create({
       content: 'Cargando...'
     });
-    this.loadMap();
     this.load.present();
+    if (this.network.type === 'none') {
+      console.log(this.network.type);
+      const alert = this.alertCtrl.create({
+        title: 'Sin conexión',
+        subTitle: 'Mapa sin actualizar ',
+        buttons: ['OK']
+      });
+      alert.present();
+      this.load.dismiss();
+    }
+    this.loadMap();
   }
 
   private loadMap() {
@@ -67,6 +80,8 @@ export class MapGenericPage {
     .subscribe(vendedor => {
       if (vendedor) {
         if (!this.vendedores[vendedor.imei]) {
+          console.log(this.vendedores[vendedor.imei]);
+          console.log(!this.vendedores[vendedor.imei]);
           this.vendedores[vendedor.imei] = {};
           this.vendedores[vendedor.imei].info = vendedor;
           lat = vendedor.PosicionActual.latitud;
@@ -88,7 +103,7 @@ export class MapGenericPage {
     });
     // this.storage.get('imei')
     // .then(imei=>{
-    const imei = '357815085654648';
+    const imei = '358239057387500';
     this.loginService.getVendedorAllOnlineRealtime(imei);
     // })
     this.load.dismiss();
@@ -111,7 +126,7 @@ export class MapGenericPage {
       this.infowindow.setContent(title);
       this.infowindow.open(this.map, marker);
     });
-
+    
     return marker;
   }
 

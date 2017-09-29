@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
 import { Platform } from 'ionic-angular';
+import { Md5 } from 'ts-md5/dist/md5';
 
 import * as firebase from 'firebase';
 
@@ -15,6 +16,7 @@ export class LoginService {
   supervisoresRef: firebase.database.Query;
   getVendedorAllOnlineRealtimeRef: BehaviorSubject<any>;
   userChannel: BehaviorSubject<any>;
+  vendedorChannel: BehaviorSubject<any>;
 
   constructor(
     public fireDatabase: AngularFireDatabase,
@@ -26,21 +28,7 @@ export class LoginService {
     this.supervisoresRef = this.supervisores.$ref;
     this.getVendedorAllOnlineRealtimeRef = new BehaviorSubject(null);
     this.userChannel = new BehaviorSubject(null);
-  }
-
-  searchImei(imei: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const query = this.supervisoresRef.orderByKey().equalTo(imei);
-      query.once('value', snap => {
-        const user = snap.val()[imei];
-        console.log(user.operacionId);
-        if (user.operacionId === 1) {
-          resolve(user);
-        }else {
-          reject(user);
-        }
-      });
-    });
+    this.vendedorChannel = new BehaviorSubject(null);
   }
 
   doLoginOnline(usuario: string, password: string, imei: string): Promise<any> {
@@ -50,6 +38,7 @@ export class LoginService {
         const user = snap.val()[imei];
         if (user.NombreUsuario === usuario && user.Contraseña === password && user.operacionId === 1 ) {
           this.getVendedorAllOnline(imei);
+          user.Contraseña = Md5.hashStr(user.Contraseña);
           const userOff = JSON.stringify(user);
           this.storage.set('user', userOff);
           this.storage.set('offline', true);
@@ -67,8 +56,13 @@ export class LoginService {
     .then(user => {
       const userOff = JSON.parse(user);
       this.userChannel.next(userOff);
-      if (userOff.NombreUsuario === usuario && userOff.Contraseña === password) {
+      console.log(userOff.NombreUsuario, userOff.Contraseña);
+      let passwordEncrip = Md5.hashStr(password);
+      console.log(passwordEncrip);
+      if (userOff.NombreUsuario === usuario && userOff.Contraseña === passwordEncrip) {
         return Promise.resolve(userOff);
+      }else{
+        return Promise.reject(userOff);
       }
     });
   }
@@ -108,7 +102,6 @@ export class LoginService {
     return new Promise((resolve, reject) => {
       this.fireDatabase.list('/Supervisores/' + id + '/VendedoresList')
       .subscribe(list => {
-        console.log(list);
         sizeVendedores = list.length;
         list.forEach(vendedor => {
           const imei = vendedor.imei;
@@ -117,10 +110,11 @@ export class LoginService {
           .subscribe(dataVendedor => {
             dataVendedor.nombreVendedor = nombre;
             vendedores.push(dataVendedor);
+            // this.vendedorChannel.next(vendedores);
             if (vendedores.length === sizeVendedores) {
               const dataoffline = JSON.stringify(vendedores);
               this.storage.set('vendedoresList', dataoffline);
-              console.log(vendedores);
+              // console.log(vendedores);
               resolve(vendedores);
             }
           });
@@ -133,7 +127,8 @@ export class LoginService {
     console.log('entro Offline');
     return this.storage.get('vendedoresList')
     .then(data => {
-      const dataoffline = JSON.parse(data);
+      const dataoffline = JSON.parse(data); 
+      console.log("listOff", dataoffline);
       return Promise.resolve(dataoffline);
     });
   }
@@ -147,7 +142,7 @@ export class LoginService {
       }else {
         return this.getVendedorAllOffline(id);
       }
-    }else {
+     } else {
       return this.getVendedorAllOnline(id);
     }
   }
@@ -175,6 +170,20 @@ export class LoginService {
 
   getUserChannel() {
     return this.userChannel.asObservable();
+  }
+
+  getVendedor(imei, fecha){
+    const vendedores = [];
+    this.fireDatabase.object('/vendedores/' + imei + '/registro:'+ fecha )
+    .subscribe(data => {
+      console.log(data);
+      vendedores.push(data);
+      this.vendedorChannel.next(data);
+    })
+  }
+  
+  getVendedorChannel() {
+    return this.vendedorChannel.asObservable();
   }
 
 }

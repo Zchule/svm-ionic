@@ -13,8 +13,8 @@
     <ion-list>
         <button ion-item *ngFor="let vendedor of listsVendedores; let i = index"  (click)="goToMapPage(vendedor)">
           <img item-start src="./assets/imgs/auto1.jpg" style="max-height: 50px;" alt="auto">
-          <h5> {{ vendedor.nombreVendedor}}</h5> 
-          <p>hora: 07:04 am</p>
+          <h5> {{ vendedor.nombreVendedor }}</h5>
+          <h5> {{ vendedor.PosicionActual.hora}}</h5> 
           <p class="mover" >{{ vendedor.efectividad }} % </p>
           <div item-end class="progress-outer">
               <div class="mover" class="progress-inner" [style.width]="vendedor.efectividad + '%'">
