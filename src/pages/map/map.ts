@@ -139,7 +139,7 @@ export class MapPage {
 
       // si el marker no esta creado crea un marker pero si ya esta creado modifica la posicion
       if (this.markerVendedor === null) {
-        this.markerVendedor = this.createMarker(latitud, longitud, icon, 'myMarker');
+        this.markerVendedor = this.createMarker(latitud, longitud, icon, this.vendedor.nombreVendedor, "", "");
       }else {
         this.markerVendedor.setPosition(newCenter);
       }
@@ -197,7 +197,7 @@ export class MapPage {
     const icon = this.getIcon(type);
     // crear el marker de este punto
     if(icon !== ''){
-      this.geoList[key].marker = this.createMarker(point.latitud, point.longitud, icon, point.nombreCliente);      
+      this.geoList[key].marker = this.createMarker(point.latitud, point.longitud, icon, point.nombreCliente, point.clienteId, point.hora );      
     }
   }
 
@@ -288,21 +288,25 @@ export class MapPage {
     this.linesPath.setMap(this.map);
   }
 
-  private createMarker(lat: number, lng: number, icon: string, title: string) {
+  private createMarker(lat: number, lng: number, icon: string, nombre: string, id: string, hora: string) {
     const options = {
       position: {
         lat: lat,
         lng: lng
       },
-      title: title,
+      title: contentString,
       map: this.map,
       icon: icon,
       zIndex: Math.round(lat * -100000)
     };
     const marker = new google.maps.Marker(options);
-
-    marker.addListener('click', () => {
-      this.infowindow.setContent(title);
+    var contentString = '<div>'+ 
+                        '<div>CLIENTE: <b>'+ nombre +'</b> </div>'+
+                        '<div> CODIGO: <b> '+ id + ' </b></div>'+
+                        '<p> HORA: <b> '+ hora + ' </b></p>'+
+                        '</div>';
+      marker.addListener('click', () => {
+      this.infowindow.setContent(contentString);
       this.infowindow.open(this.map, marker);
     });
     return marker;

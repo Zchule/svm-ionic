@@ -26,6 +26,8 @@ Substitute ios for android if not on a Mac.
 
 link de repositorio= https://bocbap2.pilandina.com.bo:8888/root/svm-ionic.git
 
+http://bocbqa8.pilandina.com.bo/project/daniel-desarrollo-g2m/taskboard/release-23
+
 https://github.com/Zchule/Admin.git
 
 git remote -v        //veo el link del repo enlazado

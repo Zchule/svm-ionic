@@ -56,15 +56,15 @@ export class MyApp {
     if(this.platform.is('cordova')){
       this.sim.getSimInfo().then( info => {
         console.log(info);
-        console.log(info.deviceId);
+        console.log("imei celular", info);
         let imei = info.deviceId;
-        // const imei = '358239057387500';
+        // const imei = '356057074214651';
         this.storage.set('imei', imei );
       })
     }else{
       this.sim.getSimInfo().then( info => {
         let imei = info.deviceId;
-        // const imei = '358239057387500';
+        // const imei = '356057074214651';
         this.storage.set('imei', imei );
       })
     }

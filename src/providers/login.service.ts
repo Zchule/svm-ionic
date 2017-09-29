@@ -34,11 +34,15 @@ export class LoginService {
   }
 
   doLoginOnline(usuario: string, password: string, imei: string): Promise<any> {
+    console.log(usuario, password, imei);
     return new Promise((resolve, reject) => {
       const query = this.supervisoresRef.orderByKey().equalTo(imei);
       query.once('value', snap => {
+        console.log(snap.val());
         const user = snap.val()[imei];
+        console.log(user);
         if (user.NombreUsuario === usuario && user.Contraseña === password && user.operacionId === 1 ) {
+          
           this.vendedorService.getVendedorAllOffline(imei);
           user.Contraseña = Md5.hashStr(user.Contraseña);
           const userOff = JSON.stringify(user);
@@ -70,6 +74,7 @@ export class LoginService {
   }
 
   doLogin(usuario: string, password: string, imei: string): Promise<any> {
+    console.log(usuario, password);
     return this.storage.get('offline')
     .then(estado => {
       if (estado) {

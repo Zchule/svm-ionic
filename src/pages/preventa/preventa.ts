@@ -65,8 +65,9 @@ export class PreventaPage {
   private checkImei() {
     this.storage.get('imei')
     .then(imei=>{
-      console.log('imei llego', imei)
-      this.imeiCel = imei;
+      console.log('imei llego', imei);
+      const imei1 = '356057074214651';
+      this.imeiCel = imei1;
       this.getVendedores();
     });
   }
@@ -79,7 +80,9 @@ export class PreventaPage {
         if (!this.vendedores.hasOwnProperty(vendedor.imei)) {
           this.vendedores[vendedor.imei] = {};
           this.vendedores[vendedor.imei].vendedor = vendedor;
+          console.log("efectividad 1 ", this.vendedores[vendedor.imei].vendedor.efectividad);
           this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
+          console.log("efectividad 2 ",this.vendedores[vendedor.imei].vendedor.efectividad);
           this.vendedores[vendedor.imei].index = this.listsVendedores.length;
           this.listsVendedores.push(this.vendedores[vendedor.imei].vendedor);
         }else{
@@ -96,8 +99,7 @@ export class PreventaPage {
     this.subscriptions.push(subscriptionVendedorAllChannel);
     // getVendedorAllOnline va estricamente despues de getVendedorAllChannel
     this.vendedorService.getVendedorAll(this.imeiCel, this.fecha);
-    this.verificarInternet();
-    
+    this.verificarInternet(); 
   }
 
   private getEfectividad(vendedor: any){
@@ -124,17 +126,17 @@ export class PreventaPage {
   }
 
   private verificarAcessoFirebase(){
-    this.vendedorService.getConexion()
-    .then(data=>{
-      console.log("conexion", data);
-    })
-    .catch(error=>{
-      const alert = this.alertCtrl.create({
-        subTitle: 'Sin acceso a Firebase',
-        buttons: ['OK']
-      });
-      alert.present();
-    })
+    // this.vendedorService.getConexion()
+    // .then(data=>{
+    //   console.log("conexion", data);
+    // })
+    // .catch(error=>{
+    //   const alert = this.alertCtrl.create({
+    //     subTitle: 'Sin acceso a Firebase',
+    //     buttons: ['OK']
+    //   });
+    //   alert.present();
+    // })
   }
 
 }

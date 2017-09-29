@@ -54,9 +54,20 @@ export class LoginPage {
     modal.present();
   }
 
+  checkImei(event: Event) {
+    event.preventDefault();
+    this.storage.get('imei')
+    .then(imei=>{
+      console.log('imei llego', imei)
+      this.imeiCel = imei;
+      this.doLogin();
+    });
+  }
+
   doLogin() {
     const usuario = this.loginForm.value.usuario;
     const password = this.loginForm.value.password;
+    console.log(usuario, password);
     const load = this.loadingCtrl.create({
       dismissOnPageChange: true,
     });
@@ -76,16 +87,6 @@ export class LoginPage {
         });
         alert.present();
       });
-    });
-  }
-
-  checkImei(event: Event) {
-    event.preventDefault();
-    this.storage.get('imei')
-    .then(imei=>{
-      console.log('imei llego', imei)
-      this.imeiCel = imei;
-      this.doLogin();
     });
   }
 

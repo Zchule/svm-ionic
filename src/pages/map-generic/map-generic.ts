@@ -104,11 +104,11 @@ export class MapGenericPage {
         this.fixBounds(lat, lng);
       }
     });
-    this.storage.get('imei')
-    .then(imei=>{
-    // const imei = '358239057387500';
+    // this.storage.get('imei')
+    // .then(imei=>{
+    const imei = '356812072377714';
     this.loginService.getVendedorAllOnlineRealtime(imei);
-    })
+    // })
     this.load.dismiss();
   }
 
