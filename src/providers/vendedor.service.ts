@@ -9,11 +9,15 @@ import { Network } from '@ionic-native/network';
 import { Platform } from 'ionic-angular';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
 export class VendedorService {
 
   getVendedorAllRef: BehaviorSubject<any>;
+  vendedoresListRef: Subscription;
+  efectividadRef: Subscription;
+  horaRef: Subscription;
 
   constructor(
     private fireDatabase: AngularFireDatabase,
@@ -41,17 +45,49 @@ export class VendedorService {
 
   getVendedorAllOnline(id: string, fecha): void {
     console.log('getVendedorAllOnline');
-    this.fireDatabase.database.ref(`/Supervisores/${id}/VendedoresList`)
-    .on('child_added', dataSnapshot => {
-      const vendedor = dataSnapshot.val();
-      this.fireDatabase.database.ref(`/vendedores/${vendedor.imei}`)
-      .on('value', dataSnapshot => {
-        const dataVendedor = dataSnapshot.val();
-        dataVendedor.nombreVendedor = vendedor.nombreVendedor;
-        dataVendedor.imei = vendedor.imei;
-        this.getVendedorAllRef.next(dataVendedor);
+    this.vendedoresListRef = this.fireDatabase.list(`/Supervisores/${id}/VendedoresList`)
+    .subscribe( vendedoresList => {
+      console.log(vendedoresList);
+      vendedoresList.forEach((vendedor)=>{
+        vendedor.efectividad = 0;
+        vendedor.hora = "00:00:00";
+        this.getVendedorAllRef.next(vendedor);
+        this.horaRef = this.fireDatabase.object(`/vendedores/${vendedor.imei}/PosicionActual/hora`)
+        .subscribe( hora => {
+          console.log("hora", hora);
+          if(hora !== null){
+            vendedor.hora = hora.$value;
+            this.getVendedorAllRef.next(vendedor); //{}
+          }
+        });
       })
+      // const vendedor = dataSnapshot.val();
+
+      // this.efectividadRef = this.fireDatabase.database.ref(`/vendedores/${vendedor.imei}/registro:${fecha}/efectividad`)
+      // .on('value', dataEfectividadSnapshot => {
+      //   const efectividad = dataEfectividadSnapshot.val();
+      //   console.log("cambio efectividad", efectividad);
+      //   if(efectividad !== null){
+      //     vendedor.efectividad = efectividad;
+      //     this.getVendedorAllRef.next(vendedor);
+      //   }
+      // })
     });
+  }
+
+  stopGetVendedorAllOnline(){
+    if(this.vendedoresListRef !== null){
+      console.log('apagando vendedores');
+      this.vendedoresListRef.unsubscribe();
+    }
+    if(this.horaRef !== null){
+      console.log('apagando hora');
+      this.horaRef.unsubscribe();
+    }
+    // if(this.efectividadRef !== null){
+    //   console.log('apagando efectividad');
+    //   this.efectividadRef.off();
+    // }
   }
 
   getVendedorAllOffline(id: string): void {

@@ -53,6 +53,9 @@ export class PreventaPage {
     this.subscriptions.forEach((subscription) => {
       subscription.unsubscribe();
     });
+
+    this.vendedorService.stopGetVendedorAllOnline();
+
   }
 
   goToMapPage(vendedor) {
@@ -75,26 +78,37 @@ export class PreventaPage {
   private getVendedores() {
     const subscriptionVendedorAllChannel = this.vendedorService.getVendedorAllChannel()
     .subscribe(vendedor => {
-      console.log(vendedor);
-      if (vendedor !== null) {
-        if (!this.vendedores.hasOwnProperty(vendedor.imei)) {
-          this.vendedores[vendedor.imei] = {};
-          this.vendedores[vendedor.imei].vendedor = vendedor;
-          console.log("efectividad 1 ", this.vendedores[vendedor.imei].vendedor.efectividad);
-          this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
-          console.log("efectividad 2 ",this.vendedores[vendedor.imei].vendedor.efectividad);
-          this.vendedores[vendedor.imei].index = this.listsVendedores.length;
-          this.listsVendedores.push(this.vendedores[vendedor.imei].vendedor);
+      if(vendedor !== null){
+        if(this.vendedores.hasOwnProperty(vendedor.imei)){
+          const vendedorActual = this.vendedores[vendedor.imei];
+          vendedor.posicion = vendedorActual.posicion;
+          this.listsVendedores[vendedorActual.posicion] = vendedor;
         }else{
-          this.vendedores[vendedor.imei].vendedor = vendedor;
-          this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
-          this.listsVendedores[this.vendedores[vendedor.imei].index] = this.vendedores[vendedor.imei].vendedor;
+          vendedor.posicion = this.listsVendedores.length;
+          this.vendedores[vendedor.imei] = vendedor;
+          this.listsVendedores.push(vendedor);
         }
-        // va guardando en local cualquier cambio
-        console.log(this.vendedores, this.listsVendedores);
-        const dataoffline = JSON.stringify(this.vendedores);
-        this.storage.set('vendedoresList', dataoffline);
+      
       }
+
+
+      // if (vendedor !== null) {
+      //   if (!this.vendedores.hasOwnProperty(vendedor.imei)) {
+      //     this.vendedores[vendedor.imei] = {};
+      //     this.vendedores[vendedor.imei].vendedor = vendedor;
+      //     this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
+      //     this.vendedores[vendedor.imei].index = this.listsVendedores.length;
+      //     this.listsVendedores.push(this.vendedores[vendedor.imei].vendedor);
+      //   }else{
+      //     this.vendedores[vendedor.imei].vendedor = vendedor;
+      //     this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
+      //     this.listsVendedores[this.vendedores[vendedor.imei].index] = this.vendedores[vendedor.imei].vendedor;
+      //   }
+      //   // va guardando en local cualquier cambio
+      //   console.log(this.vendedores, this.listsVendedores);
+      //   const dataoffline = JSON.stringify(this.vendedores);
+      //   this.storage.set('vendedoresList', dataoffline);
+      // }
     });
     this.subscriptions.push(subscriptionVendedorAllChannel);
     // getVendedorAllOnline va estricamente despues de getVendedorAllChannel
