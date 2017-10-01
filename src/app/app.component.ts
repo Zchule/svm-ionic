@@ -58,11 +58,11 @@ export class MyApp {
       this.sim.getSimInfo().then( info => {
         console.log(info);
         console.log(info.deviceId);
-        const imei = '358239057387500';
+        const imei = '356057074214651';
         this.storage.set('imei', imei );
       })
     }else{
-      const imei = '358239057387500';
+      const imei = '356057074214651';
       this.storage.set('imei', imei );
     }
   }
