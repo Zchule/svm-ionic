@@ -3,8 +3,6 @@ import { IonicPage, NavController, MenuController, Loading, LoadingController, A
 import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
 import { Subscription } from 'rxjs/Subscription';
-import { AngularFireDatabase } from 'angularfire2/database';
-import { Observable } from 'rxjs/Observable';
 
 import { VendedorService } from '../../providers/vendedor.service';
 
@@ -61,10 +59,19 @@ export class PreventaPage {
   }
 
   goToMapPage(vendedor) {
-    const key = vendedor.imei;
-    this.navCtrl.push('MapPage', {
-      key: key
-    });
+    if (vendedor.hora === '00:00:00') {
+      const alert = this.alertCtrl.create({
+        title: 'Vendedor',
+        subTitle: 'No hay datos',
+        buttons: ['OK']
+      });
+      alert.present();
+    }else {
+      const key = vendedor.imei;
+      this.navCtrl.push('map', {
+        key: key
+      });
+    }
   }
 
   private checkImei() {
@@ -90,39 +97,13 @@ export class PreventaPage {
           this.vendedores[vendedor.imei] = vendedor;
           this.listsVendedores.push(vendedor);
         }
+        this.storage.set('vendedoresList', JSON.stringify(this.vendedores));
       }
-
-
-      // if (vendedor !== null) {
-      //   if (!this.vendedores.hasOwnProperty(vendedor.imei)) {
-      //     this.vendedores[vendedor.imei] = {};
-      //     this.vendedores[vendedor.imei].vendedor = vendedor;
-      //     this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
-      //     this.vendedores[vendedor.imei].index = this.listsVendedores.length;
-      //     this.listsVendedores.push(this.vendedores[vendedor.imei].vendedor);
-      //   }else{
-      //     this.vendedores[vendedor.imei].vendedor = vendedor;
-      //     this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
-      //     this.listsVendedores[this.vendedores[vendedor.imei].index] = this.vendedores[vendedor.imei].vendedor;
-      //   }
-      //   // va guardando en local cualquier cambio
-      //   console.log(this.vendedores, this.listsVendedores);
-      //   const dataoffline = JSON.stringify(this.vendedores);
-      //   this.storage.set('vendedoresList', dataoffline);
-      // }
     });
     this.subscriptions.push(subscriptionVendedorAllChannel);
     // getVendedorAllOnline va estricamente despues de getVendedorAllChannel
     this.vendedorService.getVendedorAll(this.imeiCel, this.fecha);
     this.verificarInternet();
-  }
-
-  private getEfectividad(vendedor: any) {
-    let efectividad = 0;
-    if (vendedor['registro:' + this.fecha] !== undefined) {
-      efectividad = vendedor['registro:' + this.fecha].efectividad;
-    }
-    return efectividad;
   }
 
   private verificarInternet() {

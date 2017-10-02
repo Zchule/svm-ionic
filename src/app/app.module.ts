@@ -17,6 +17,8 @@ import { GoogleMaps } from '@ionic-native/google-maps';
 import { MyApp } from './app.component';
 import { VendedorService } from '../providers/vendedor.service';
 import { LoginService } from '../providers/login.service';
+import { MapGenericService} from '../providers/map-generic.service';
+import { MapService } from '../providers/map.service';
 
 const configFirebase = {
   apiKey: 'AIzaSyAJDgpY9ssAyjIX_vA7S1D_fgcA26BBvxQ',
@@ -53,7 +55,9 @@ const configFirebase = {
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     VendedorService,
     LoginService,
-    Network
+    Network,
+    MapGenericService,
+    MapService
   ]
 })
 export class AppModule {}

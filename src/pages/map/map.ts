@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, MenuController, Loading, LoadingController, AlertController} from 'ionic-angular';
-
-import { VendedorService } from '../../providers/vendedor.service';
+import { Subscription } from 'rxjs/Subscription';
+import { MapService } from '../../providers/map.service';
 import { Network } from '@ionic-native/network';
 
 declare var google;
 
-@IonicPage()
+@IonicPage({
+  name: 'map',
+  segment: 'map/:key'
+})
 @Component({
   selector: 'page-map',
   templateUrl: 'map.html',
@@ -16,9 +19,7 @@ export class MapPage {
   map: any;
   key: string;
   load: Loading;
-  vendedor: any = {};
   myPosition: any = {};
-  bounds: any = null;
   infowindow: any;
   fecha: string;
   markers: any[] = [];
@@ -26,6 +27,9 @@ export class MapPage {
   geoList = {};
   linesPath: any = null;
   hora: string;
+  isCenter = false;
+
+  subscriptions: Subscription[] = [];
 
   indicadores = {
     venta: {
@@ -63,33 +67,38 @@ export class MapPage {
   constructor(
     private navParams: NavParams,
     private loadCtrl: LoadingController,
-    private vendedorService: VendedorService,
+    private mapService: MapService,
     private menuCtrl: MenuController,
     private alertCtrl: AlertController,
     private network: Network
   ) {
     this.key = this.navParams.get('key');
-    this.bounds = new google.maps.LatLngBounds();
     this.infowindow = new google.maps.InfoWindow();
   }
 
   ionViewDidLoad() {
-    this.vendedorService.getFechaServidor()
-    .subscribe(data => {
-      this.fecha = data.fecha;
-      console.log(this.fecha);
-    });
-
     this.load = this.loadCtrl.create({
       content: 'Cargando...'
     });
     this.load.present();
+    const subscriptionFechaServidor = this.mapService.getFechaServidor()
+    .valueChanges()
+    .subscribe((data: any) => {
+      this.fecha = data.fecha;
+      this.loadMap();
+    });
+    this.subscriptions.push(subscriptionFechaServidor);
     this.verificarConexion();
-    this.loadMap();
   }
 
   ionViewDidEnter() {
     this.menuCtrl.enable(false, 'menuAdmin');
+  }
+
+  ionViewDidLeave() {
+    this.subscriptions.forEach((subscription) => {
+      subscription.unsubscribe();
+    });
   }
 
   private verificarConexion() {
@@ -122,69 +131,61 @@ export class MapPage {
 
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
       mapEle.classList.add('show-map');
+      this.load.dismiss();
       this.obtenerVendedor();
     });
   }
 
   private obtenerVendedor() {
-    this.vendedorService.getVendedor(this.key)
-    .subscribe((vendedor) => {
-      this.vendedor = vendedor;
-      console.log('getVendedor', this.vendedor);
-      const latitud = this.vendedor.PosicionActual.latitud;
-      const longitud = this.vendedor.PosicionActual.longitud;
-      const newCenter = new google.maps.LatLng(latitud, longitud);
-      this.map.setCenter(newCenter);
-      const icon = './assets/imgs/vendedor.png';
+    // this.mapService.runSimulation(this.key, this.fecha);
+    const subscriptionGetVendedor = this.mapService.getVendedor(this.key, this.fecha)
+    .subscribe(points => {
+      this.resetCounts();
+      this.renderMarkers(points);
+    });
+    this.subscriptions.push(subscriptionGetVendedor);
 
+    const subscriptionVendedorPosicionActual = this.mapService.getVendedorPosicionActual(this.key)
+    .subscribe((posicionActual: any) => {
+      const latitud = posicionActual.latitud;
+      const longitud = posicionActual.longitud;
+      const newCenter = new google.maps.LatLng(latitud, longitud);
+      if (this.isCenter === false) {
+        this.map.setCenter(newCenter);
+        this.isCenter = true;
+      }
+      const icon = './assets/imgs/vendedor.png';
       // si el marker no esta creado crea un marker pero si ya esta creado modifica la posicion
       if (this.markerVendedor === null) {
-        this.markerVendedor = this.createMarker(latitud, longitud, icon, this.vendedor.nombreVendedor, '', '');
+        this.markerVendedor = this.createMarker(latitud, longitud, icon, posicionActual.nombreVendedor, '', '');
       }else {
         this.markerVendedor.setPosition(newCenter);
       }
-      // Coloca todos los contadores en cero
-      this.resetCounts();
-      // obtiene el registro de acuerdo a la fecha
-      this.getRegister();
-      this.load.dismiss();
     });
+    this.subscriptions.push(subscriptionVendedorPosicionActual);
   }
 
-  // obtener el registro del vendedor
-  private getRegister() {
-    if (this.vendedor[`registro:${this.fecha}`] === undefined) {
-      const alert = this.alertCtrl.create({
-        subTitle: 'Sin Registro Actual ',
-        buttons: ['OK']
-      });
-      alert.present();
-    }else {
-      const geoPuntosList = this.vendedor[`registro:${this.fecha}`].geoPuntoList;
-      this.renderMarkers(geoPuntosList);
-    }
-  }
-
-  private renderMarkers(geoPuntosList: any) {
+  private renderMarkers(geoPuntosList: any[]) {
     const lines = [];
-    for (const key in geoPuntosList) {
+    geoPuntosList.forEach((point) => {
       // verifica si el punto ya esta creado dentro en this.geoList si ya esta lo actualiza, si no esta lo crea
-      if (this.geoList.hasOwnProperty(key)) {
-        const updatePoint = geoPuntosList[key];
-        this.updatePoint(key, updatePoint);
+      if (this.geoList.hasOwnProperty(point.key)) {
+        const updatePoint = point.payload.val();
+        this.updatePoint(point.key, updatePoint);
         lines.push({ lat: updatePoint.latitud, lng: updatePoint.longitud });
       }else {
-        const newPoint = geoPuntosList[key];
-        this.createPoint(key, newPoint);
+        const newPoint = point.payload.val();
+        this.createPoint(point.key, newPoint);
         lines.push({ lat: newPoint.latitud, lng: newPoint.longitud });
-        this.hora = newPoint.hora;
+        // this.hora = newPoint.hora;
       }
-    }
+    });
     this.createLines(lines);
   }
 
   // crea un marker para ese punto
   private createPoint(key: string, point: any) {
+    // console.log( 'createPoint', point );
     // crear objeto
     this.geoList[key] = {};
     // crear punto
@@ -210,6 +211,7 @@ export class MapPage {
 
   // actualiza la informacion sin tener que crear un marker
   private updatePoint(key: string, point: any) {
+    // console.log( 'updatePoint', point );
     this.geoList[key].point = Object.assign({}, point);
     // obtengo el tipo correcto
     const type = this.getType(point);
@@ -217,12 +219,14 @@ export class MapPage {
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);
     // modifica la posicion del marker
-    this.geoList[key].marker.setPosition({
-      lat: point.latitud,
-      lng: point.longitud
-    });
-    // modifica icono
-    this.geoList[key].marker.setIcon(icon);
+    if ( this.geoList[key].marker ) {
+      this.geoList[key].marker.setPosition({
+        lat: point.latitud,
+        lng: point.longitud
+      });
+      // modifica icono
+      this.geoList[key].marker.setIcon(icon);
+    }
   }
 
   private indicadoresList(type) {
@@ -284,7 +288,6 @@ export class MapPage {
     if (this.linesPath !== null) {
       this.linesPath.setMap(null);
     }
-    console.log(lines);
     this.linesPath = new google.maps.Polyline({
       path: lines,
       geodesic: true,

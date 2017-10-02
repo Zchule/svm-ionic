@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, Loading, LoadingController, AlertController } from 'ionic-angular';
 
-import { LoginService } from '../../providers/login.service';
+import { MapGenericService } from '../../providers/map-generic.service';
 import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
+import { Subscription } from 'rxjs/Subscription';
 
 declare var google;
 
@@ -21,11 +22,15 @@ export class MapGenericPage {
   load: Loading;
   vendedores: any = {};
   infowindow: any;
+  fecha: string;
+  imeiCel: string;
+
+  subscriptions: Subscription[] = [];
 
   constructor(
     private loadCtrl: LoadingController,
     public alertCtrl: AlertController,
-    private loginService: LoginService,
+    private mapGenericService: MapGenericService,
     private storage: Storage,
     private network: Network
   ) {
@@ -38,8 +43,20 @@ export class MapGenericPage {
       content: 'Cargando...'
     });
     this.load.present();
+    const subscriptionFechaServidor = this.mapGenericService.getFechaServidor()
+    .valueChanges()
+    .subscribe((data: any) => {
+      this.fecha = data.fecha;
+      this.checkImei();
+    });
+    this.subscriptions.push(subscriptionFechaServidor);
     this.verificarInternet();
-    this.loadMap();
+  }
+
+  ionViewDidLeave() {
+    this.subscriptions.forEach((subscription) => {
+      subscription.unsubscribe();
+    });
   }
 
   private verificarInternet() {
@@ -72,44 +89,38 @@ export class MapGenericPage {
 
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
       mapEle.classList.add('show-map');
+      this.load.dismiss();
       this.obtenerVendedores();
     });
    }
 
   private obtenerVendedores() {
-    let lat: number;
-    let lng: number;
-    let title: string;
-    this.loginService.getVendedorAllOnlineRealtimeoOb()
+    const subscriptionVendedoresChannel = this.mapGenericService.getVendedoresChannelOb()
     .subscribe(vendedor => {
-      if (vendedor) {
-        console.log(vendedor);
-        if (!this.vendedores[vendedor.imei]) {
-          this.vendedores[vendedor.imei] = {};
-          this.vendedores[vendedor.imei].info = vendedor;
-          lat = vendedor.latitud;
-          lng = vendedor.longitud;
-          title = vendedor.nombreVendedor;
-          const icon = './assets/imgs/vendedor.png';
-          this.vendedores[vendedor.imei].marker = this.createMarker(lat, lng, icon, title);
-        }else {
-          this.vendedores[vendedor.imei].info = vendedor;
-          lat = vendedor.latitud;
-          lng = vendedor.longitud;
+      console.log('subscriptionVendedoresChannel', vendedor);
+      if (vendedor !== null) {
+        if (this.vendedores.hasOwnProperty(vendedor.imei)) { // ya lo tengo
+          this.vendedores[vendedor.imei].data = vendedor;
+          const lat = vendedor.posicionActual.latitud;
+          const lng = vendedor.posicionActual.longitud;
           this.vendedores[vendedor.imei].marker.setPosition({
             lat: lat,
             lng: lng
           });
+        }else { // no lo tengo
+          this.vendedores[vendedor.imei] = {};
+          this.vendedores[vendedor.imei].data = vendedor;
+          const lat = vendedor.posicionActual.latitud;
+          const lng = vendedor.posicionActual.longitud;
+          const icon = './assets/imgs/vendedor.png';
+          const title = vendedor.nombreVendedor;
+          this.vendedores[vendedor.imei].marker = this.createMarker(lat, lng, icon, title);
+          this.fixBounds(lat, lng);
         }
-        this.fixBounds(lat, lng);
       }
     });
-    // this.storage.get('imei')
-    // .then(imei=>{
-    const imei = '356812072377714';
-    this.loginService.getVendedorAllOnlineRealtime(imei);
-    // })
-    this.load.dismiss();
+    this.subscriptions.push(subscriptionVendedoresChannel);
+    this.mapGenericService.getVendedoresMapGeneric(this.imeiCel, this.fecha);
   }
 
   private createMarker(lat: number, lng: number, icon: string, title: string) {
@@ -136,6 +147,16 @@ export class MapGenericPage {
     const point = new google.maps.LatLng(lat, lng);
     this.bounds.extend(point);
     this.map.fitBounds(this.bounds);
+  }
+
+  private checkImei() {
+    this.storage.get('imei')
+    .then(imei => {
+      console.log('imei llego', imei);
+      const imei1 = '356057074214651';
+      this.imeiCel = imei1;
+      this.loadMap();
+    });
   }
 
 }

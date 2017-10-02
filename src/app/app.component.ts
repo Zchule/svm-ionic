@@ -57,20 +57,18 @@ export class MyApp {
   }
 
   private obtenerImei() {
-    if (this.platform.is('cordova')) {
+    console.log('obtenerImei');
+    if (this.platform.is('cordova')) { // is native
       this.sim.getSimInfo().then( info => {
-        console.log(info);
-        console.log('imei celular', info);
         const imei = info.deviceId;
+        console.log('native: imei celular', imei);
         // const imei = '356057074214651';
         this.storage.set('imei', imei );
       });
-    }else {
-      this.sim.getSimInfo().then( info => {
-        const imei = info.deviceId;
-        // const imei = '356057074214651';
-        this.storage.set('imei', imei );
-      });
+    }else { // is WEB NO TENEMOS SIM EN UN PC
+      const imei = '356057074214651';
+      console.log('web: imei celular', imei);
+      this.storage.set('imei', imei );
     }
   }
 
