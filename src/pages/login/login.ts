@@ -59,8 +59,8 @@ export class LoginPage {
     this.storage.get('imei')
     .then(imei => {
       console.log('imei llego', imei);
-      // this.imeiCel = '354152087178696';
-      this.imeiCel = imei;
+      this.imeiCel = '354152087178696';
+      // this.imeiCel = imei;
       this.doLogin();
     });
   }

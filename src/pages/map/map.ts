@@ -220,6 +220,7 @@ export class MapPage {
     this.geoList[key].point = Object.assign({}, point);
     // obtengo el tipo correcto
     const type = this.getType(point);
+    this.indicadoresList(type);
     this.geoList[key].point.tipo = type;
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);

@@ -42,7 +42,7 @@ export class VendedorService {
   }
 
   getVendedorAllOnline(id: string, fecha): void {
-    console.log('getVendedorAllOnline');
+    console.log('getVendedorAllOnline', id);
     const vendedoresListRef = this.fireDatabase.list(`/Supervisores/${id}/VendedoresList`);
     const vendedoresListSubscription = vendedoresListRef.snapshotChanges(['child_added'])
     .subscribe(actions => {

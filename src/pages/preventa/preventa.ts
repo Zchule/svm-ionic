@@ -78,10 +78,10 @@ export class PreventaPage {
 
   private checkImei() {
     this.storage.get('imei')
-    .then(imei => {
-      console.log('imei llego', imei);
-      // const imei1 = '354152087178696';
-      this.imeiCel = imei;
+    .then(imei1 => {
+      console.log('imei llego', imei1);
+      this.imeiCel = '354152087178696';
+      // this.imeiCel = imei;
       this.getVendedores();
     });
   }
