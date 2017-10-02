@@ -74,7 +74,6 @@ export class MapPage {
   }
 
   ionViewDidLoad() {
-
     this.vendedorService.getFechaServidor()
     .subscribe(data => {
       this.fecha = data.fecha;
@@ -93,7 +92,7 @@ export class MapPage {
     this.menuCtrl.enable(false, 'menuAdmin');
   }
 
-  private verificarConexion(){
+  private verificarConexion() {
     if (this.network.type === 'none') {
       console.log(this.network.type);
       const alert = this.alertCtrl.create({
@@ -140,7 +139,7 @@ export class MapPage {
 
       // si el marker no esta creado crea un marker pero si ya esta creado modifica la posicion
       if (this.markerVendedor === null) {
-        this.markerVendedor = this.createMarker(latitud, longitud, icon, 'myMarker');
+        this.markerVendedor = this.createMarker(latitud, longitud, icon, this.vendedor.nombreVendedor, '', '');
       }else {
         this.markerVendedor.setPosition(newCenter);
       }
@@ -197,8 +196,15 @@ export class MapPage {
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);
     // crear el marker de este punto
-    if(icon !== ''){
-      this.geoList[key].marker = this.createMarker(point.latitud, point.longitud, icon, point.nombreCliente);      
+    if (icon !== '') {
+      this.geoList[key].marker = this.createMarker(
+        point.latitud,
+        point.longitud,
+        icon,
+        point.nombreCliente,
+        point.clienteId,
+        point.hora
+      );
     }
   }
 
@@ -219,7 +225,7 @@ export class MapPage {
     this.geoList[key].marker.setIcon(icon);
   }
 
-  private indicadoresList(type){
+  private indicadoresList(type) {
     if (type === 'PEDIDO') {
       this.indicadores.pedido.count++;
     }else if (type === 'VISITA') {
@@ -289,21 +295,25 @@ export class MapPage {
     this.linesPath.setMap(this.map);
   }
 
-  private createMarker(lat: number, lng: number, icon: string, title: string) {
+  private createMarker(lat: number, lng: number, icon: string, nombre: string, id: string, hora: string) {
     const options = {
       position: {
         lat: lat,
         lng: lng
       },
-      title: title,
+      title: nombre,
       map: this.map,
       icon: icon,
       zIndex: Math.round(lat * -100000)
     };
     const marker = new google.maps.Marker(options);
-
-    marker.addListener('click', () => {
-      this.infowindow.setContent(title);
+    const contentString = '<div>' +
+                        '<div>CLIENTE: <b>' + nombre + '</b> </div>' +
+                        '<div> CODIGO: <b> ' + id + ' </b></div>' +
+                        '<p> HORA: <b> ' + hora + ' </b></p>' +
+                        '</div>';
+      marker.addListener('click', () => {
+      this.infowindow.setContent(contentString);
       this.infowindow.open(this.map, marker);
     });
     return marker;
@@ -350,37 +360,37 @@ export class MapPage {
         // item.marker.setVisible(true);
         if (this.indicadores.venta.estado === false && item.point.tipo === 'VENTA') {
           item.marker.setVisible(false);
-        }else if(this.indicadores.venta.estado === true && item.point.tipo === 'VENTA') {
+        }else if (this.indicadores.venta.estado === true && item.point.tipo === 'VENTA') {
           item.marker.setVisible(true);
         }
 
         if (this.indicadores.pedido.estado === false && item.point.tipo === 'PEDIDO' ) {
           item.marker.setVisible(false);
-        }else if(this.indicadores.pedido.estado === true && item.point.tipo === 'PEDIDO') {
+        }else if (this.indicadores.pedido.estado === true && item.point.tipo === 'PEDIDO') {
           item.marker.setVisible(true);
         }
 
         if (this.indicadores.visita.estado === false && item.point.tipo === 'VISITA' ) {
           item.marker.setVisible(false);
-        }else if(this.indicadores.visita.estado === true && item.point.tipo === 'VISITA') {
+        }else if (this.indicadores.visita.estado === true && item.point.tipo === 'VISITA') {
           item.marker.setVisible(true);
         }
 
         if (this.indicadores.ventaAnulada.estado === false && item.point.tipo === 'VENTA_ANULADA' ) {
           item.marker.setVisible(false);
-        }else if(this.indicadores.ventaAnulada.estado === true && item.point.tipo === 'VENTA_ANULADA') {
+        }else if (this.indicadores.ventaAnulada.estado === true && item.point.tipo === 'VENTA_ANULADA') {
           item.marker.setVisible(true);
         }
 
         if (this.indicadores.pedidoAnulado.estado === false && item.point.tipo === 'PEDIDO_ANULADO' ) {
           item.marker.setVisible(false);
-        }else if(this.indicadores.pedidoAnulado.estado === true && item.point.tipo === 'PEDIDO_ANULADO') {
+        }else if (this.indicadores.pedidoAnulado.estado === true && item.point.tipo === 'PEDIDO_ANULADO') {
           item.marker.setVisible(true);
         }
 
         if (this.indicadores.devolucion.estado === false && item.point.tipo === 'DEVOLUCION' ) {
           item.marker.setVisible(false);
-        }else if(this.indicadores.devolucion.estado === true && item.point.tipo === 'DEVOLUCION') {
+        }else if (this.indicadores.devolucion.estado === true && item.point.tipo === 'DEVOLUCION') {
           item.marker.setVisible(true);
         }
       }

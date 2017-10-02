@@ -33,8 +33,7 @@ export class MyApp {
     this.pages = [
       { title: 'Inicio', component: 'HomePage' },
       { title: 'Vendedores', component: 'PreventaPage' },
-      { title: 'Mapa', component: 'MapGenericPage' },
-      { title: 'Mapa Nativo', component: 'MapNativoPage' }
+      { title: 'Mapa', component: 'MapGenericPage' }
     ];
   }
 
@@ -54,16 +53,20 @@ export class MyApp {
   }
 
   private obtenerImei() {
-    if(this.platform.is('cordova')){
+    if (this.platform.is('cordova')) {
       this.sim.getSimInfo().then( info => {
         console.log(info);
-        console.log(info.deviceId);
-        const imei = '356057074214651';
+        console.log('imei celular', info);
+        const imei = info.deviceId;
+        // const imei = '356057074214651';
         this.storage.set('imei', imei );
-      })
-    }else{
-      const imei = '356057074214651';
-      this.storage.set('imei', imei );
+      });
+    }else {
+      this.sim.getSimInfo().then( info => {
+        const imei = info.deviceId;
+        // const imei = '356057074214651';
+        this.storage.set('imei', imei );
+      });
     }
   }
 

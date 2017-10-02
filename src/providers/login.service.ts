@@ -3,10 +3,10 @@ import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/databa
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import * as firebase from 'firebase';
 import { Storage } from '@ionic/storage';
-import { Network } from '@ionic-native/network';
+// import { Network } from '@ionic-native/network';
 import { Platform } from 'ionic-angular';
 import { Md5 } from 'ts-md5/dist/md5';
-import { Subscription } from 'rxjs/Subscription';
+// import { Subscription } from 'rxjs/Subscription';
 
 import { VendedorService } from './../providers/vendedor.service';
 
@@ -22,8 +22,8 @@ export class LoginService {
   constructor(
     public fireDatabase: AngularFireDatabase,
     private storage: Storage,
-    private network: Network,
-    private platform: Platform,
+    // private network: Network,
+    // private platform: Platform,
     private vendedorService: VendedorService
   ) {
     this.supervisores = this.fireDatabase.list('/Supervisores');
@@ -34,11 +34,15 @@ export class LoginService {
   }
 
   doLoginOnline(usuario: string, password: string, imei: string): Promise<any> {
+    console.log(usuario, password, imei);
     return new Promise((resolve, reject) => {
       const query = this.supervisoresRef.orderByKey().equalTo(imei);
       query.once('value', snap => {
+        console.log(snap.val());
         const user = snap.val()[imei];
+        console.log(user);
         if (user.NombreUsuario === usuario && user.Contraseña === password && user.operacionId === 1 ) {
+          
           this.vendedorService.getVendedorAllOffline(imei);
           user.Contraseña = Md5.hashStr(user.Contraseña);
           const userOff = JSON.stringify(user);
@@ -70,6 +74,7 @@ export class LoginService {
   }
 
   doLogin(usuario: string, password: string, imei: string): Promise<any> {
+    console.log(usuario, password);
     return this.storage.get('offline')
     .then(estado => {
       if (estado) {
@@ -96,8 +101,6 @@ export class LoginService {
   getAll() {
     return this.supervisores;
   }
-
-  
 
   getVendedorAllOnlineRealtime(id: string) {
     this.fireDatabase.database.ref(`/Supervisores/${id}/VendedoresList`)

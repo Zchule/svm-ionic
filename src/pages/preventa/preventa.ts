@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, MenuController, LoadingController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, MenuController, Loading, LoadingController, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
 import { Subscription } from 'rxjs/Subscription';
+import { AngularFireDatabase } from 'angularfire2/database';
+import { Observable } from 'rxjs/Observable';
 
-import { LoginService } from '../../providers/login.service';
 import { VendedorService } from '../../providers/vendedor.service';
 
 @IonicPage()
@@ -19,24 +20,31 @@ export class PreventaPage {
   fecha: string;
   imeiCel: string;
   subscriptions: Subscription[] = [];
-  
+  load: Loading;
+
   constructor(
     private navCtrl: NavController,
     private menuCtrl: MenuController,
     private alertCtrl: AlertController,
+    private loadCtrl: LoadingController,
     private vendedorService: VendedorService,
-    private loginService: LoginService,
     private storage: Storage,
-    private network: Network,
+    private network: Network
+
   ) { }
 
   ionViewDidLoad() {
+    this.load = this.loadCtrl.create({
+      content: 'Cargando...'
+    });
+    this.load.present();
     const subscriptionFechaServidor = this.vendedorService.getFechaServidor()
     .subscribe(data => {
       this.fecha = data.fecha;
       this.checkImei();
     });
     this.subscriptions.push(subscriptionFechaServidor);
+    this.load.dismiss();
   }
 
   ionViewDidEnter() {
@@ -47,6 +55,9 @@ export class PreventaPage {
     this.subscriptions.forEach((subscription) => {
       subscription.unsubscribe();
     });
+
+    this.vendedorService.stopGetVendedorAllOnline();
+
   }
 
   goToMapPage(vendedor) {
@@ -58,35 +69,47 @@ export class PreventaPage {
 
   private checkImei() {
     this.storage.get('imei')
-    .then(imei=>{
-      console.log('imei llego', imei)
-      this.imeiCel = imei;
+    .then(imei => {
+      console.log('imei llego', imei);
+      const imei1 = '356057074214651';
+      this.imeiCel = imei1;
       this.getVendedores();
     });
   }
 
   private getVendedores() {
-    //this.imeiCel = '358239057387500';
     const subscriptionVendedorAllChannel = this.vendedorService.getVendedorAllChannel()
     .subscribe(vendedor => {
-      console.log(vendedor);
       if (vendedor !== null) {
-        if (!this.vendedores.hasOwnProperty(vendedor.imei)) {
-          this.vendedores[vendedor.imei] = {};
-          this.vendedores[vendedor.imei].vendedor = vendedor;
-          this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
-          this.vendedores[vendedor.imei].index = this.listsVendedores.length;
-          this.listsVendedores.push(this.vendedores[vendedor.imei].vendedor);
-        }else{
-          this.vendedores[vendedor.imei].vendedor = vendedor;
-          this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
-          this.listsVendedores[this.vendedores[vendedor.imei].index] = this.vendedores[vendedor.imei].vendedor;
+        if (this.vendedores.hasOwnProperty(vendedor.imei)) {
+          const vendedorActual = this.vendedores[vendedor.imei];
+          vendedor.posicion = vendedorActual.posicion;
+          this.listsVendedores[vendedorActual.posicion] = vendedor;
+        }else {
+          vendedor.posicion = this.listsVendedores.length;
+          this.vendedores[vendedor.imei] = vendedor;
+          this.listsVendedores.push(vendedor);
         }
-        // va guardando en local cualquier cambio
-        console.log(this.vendedores, this.listsVendedores);
-        const dataoffline = JSON.stringify(this.vendedores);
-        this.storage.set('vendedoresList', dataoffline);
       }
+
+
+      // if (vendedor !== null) {
+      //   if (!this.vendedores.hasOwnProperty(vendedor.imei)) {
+      //     this.vendedores[vendedor.imei] = {};
+      //     this.vendedores[vendedor.imei].vendedor = vendedor;
+      //     this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
+      //     this.vendedores[vendedor.imei].index = this.listsVendedores.length;
+      //     this.listsVendedores.push(this.vendedores[vendedor.imei].vendedor);
+      //   }else{
+      //     this.vendedores[vendedor.imei].vendedor = vendedor;
+      //     this.vendedores[vendedor.imei].vendedor.efectividad = this.getEfectividad(vendedor);
+      //     this.listsVendedores[this.vendedores[vendedor.imei].index] = this.vendedores[vendedor.imei].vendedor;
+      //   }
+      //   // va guardando en local cualquier cambio
+      //   console.log(this.vendedores, this.listsVendedores);
+      //   const dataoffline = JSON.stringify(this.vendedores);
+      //   this.storage.set('vendedoresList', dataoffline);
+      // }
     });
     this.subscriptions.push(subscriptionVendedorAllChannel);
     // getVendedorAllOnline va estricamente despues de getVendedorAllChannel
@@ -94,7 +117,7 @@ export class PreventaPage {
     this.verificarInternet();
   }
 
-  private getEfectividad(vendedor: any){
+  private getEfectividad(vendedor: any) {
     let efectividad = 0;
     if (vendedor['registro:' + this.fecha] !== undefined) {
       efectividad = vendedor['registro:' + this.fecha].efectividad;
@@ -102,7 +125,7 @@ export class PreventaPage {
     return efectividad;
   }
 
-  private verificarInternet(){
+  private verificarInternet() {
     if (this.network.type === 'none') {
       console.log(this.network.type);
       const alert = this.alertCtrl.create({
@@ -111,13 +134,13 @@ export class PreventaPage {
         buttons: ['OK']
       });
       alert.present();
-    }else{
+    }else {
       // Si tiene conexion verifica conexion con firebase
       this.verificarAcessoFirebase();
     }
   }
 
-  private verificarAcessoFirebase(){
+  private verificarAcessoFirebase() {
     // this.vendedorService.getConexion()
     // .then(data=>{
     //   console.log("conexion", data);
@@ -131,7 +154,4 @@ export class PreventaPage {
     // })
   }
 
-  
-
-  
 }

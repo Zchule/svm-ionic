@@ -42,7 +42,7 @@ export class MapGenericPage {
     this.loadMap();
   }
 
-  private verificarInternet(){
+  private verificarInternet() {
     if (this.network.type === 'none') {
       console.log(this.network.type);
       const alert = this.alertCtrl.create({
@@ -51,6 +51,7 @@ export class MapGenericPage {
         buttons: ['OK']
       });
       alert.present();
+      this.load.dismiss();
     }
   }
 
@@ -105,7 +106,7 @@ export class MapGenericPage {
     });
     // this.storage.get('imei')
     // .then(imei=>{
-    const imei = '358239057387500';
+    const imei = '356812072377714';
     this.loginService.getVendedorAllOnlineRealtime(imei);
     // })
     this.load.dismiss();
@@ -128,7 +129,6 @@ export class MapGenericPage {
       this.infowindow.setContent(title);
       this.infowindow.open(this.map, marker);
     });
-    
     return marker;
   }
 

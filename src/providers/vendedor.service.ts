@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
-import * as firebase from 'firebase';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
@@ -9,11 +7,17 @@ import { Network } from '@ionic-native/network';
 import { Platform } from 'ionic-angular';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subscription } from 'rxjs/Subscription';
+import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class VendedorService {
 
   getVendedorAllRef: BehaviorSubject<any>;
+  vendedoresListRef: AngularFireList<any[]>;
+  efectividadRef: Subscription;
+  horaRef: Subscription;
 
   constructor(
     private fireDatabase: AngularFireDatabase,
@@ -34,24 +38,60 @@ export class VendedorService {
   }
 
   getConexion() {
-    return this.http.get('https://firebasestorage.googleapis.com/v0/b/svmmoviltest.appspot.com/o/check-conexion.json?alt=media&token=4069678c-c030-4853-be60-c299f597c021')
-    .map(res => res.json())
-    .toPromise();
+    // return this.http.get('https://firebasestorage.googleapis.com/v0/b/svmmoviltest.appspot.com/o/check-conexion.json?alt=media&token=4069678c-c030-4853-be60-c299f597c021')
+    // .map(res => res.json())
+    // .toPromise();
   }
 
   getVendedorAllOnline(id: string, fecha): void {
     console.log('getVendedorAllOnline');
-    this.fireDatabase.database.ref(`/Supervisores/${id}/VendedoresList`)
-    .on('child_added', dataSnapshot => {
-      const vendedor = dataSnapshot.val();
-      this.fireDatabase.database.ref(`/vendedores/${vendedor.imei}`)
-      .on('value', dataSnapshot => {
-        const dataVendedor = dataSnapshot.val();
-        dataVendedor.nombreVendedor = vendedor.nombreVendedor;
-        dataVendedor.imei = vendedor.imei;
-        this.getVendedorAllRef.next(dataVendedor);
-      })
+    this.vendedoresListRef = this.fireDatabase.list(`/Supervisores/${id}/VendedoresList`);
+    this.vendedoresListRef.snapshotChanges(['child_added'])
+    .subscribe(action => {
+      console.log(action);
     });
+    // .subscribe( vendedoresList => {
+    //   console.log(vendedoresList);
+    //   vendedoresList.forEach((vendedor)=>{
+    //     vendedor.efectividad = 0;
+    //     vendedor.hora = "00:00:00";
+    //     this.getVendedorAllRef.next(vendedor);
+    //     this.horaRef = this.fireDatabase.object(`/vendedores/${vendedor.imei}/PosicionActual/hora`)
+    //     .subscribe( hora => {
+    //       console.log("hora", hora);
+    //       if(hora !== null){
+    //         vendedor.hora = hora.$value;
+    //         this.getVendedorAllRef.next(vendedor); //{}
+    //       }
+    //     });
+    //   })
+      // const vendedor = dataSnapshot.val();
+
+      // this.efectividadRef = this.fireDatabase.database.ref(`/vendedores/${vendedor.imei}/registro:${fecha}/efectividad`)
+      // .on('value', dataEfectividadSnapshot => {
+      //   const efectividad = dataEfectividadSnapshot.val();
+      //   console.log("cambio efectividad", efectividad);
+      //   if(efectividad !== null){
+      //     vendedor.efectividad = efectividad;
+      //     this.getVendedorAllRef.next(vendedor);
+      //   }
+      // })
+    });
+  }
+
+  stopGetVendedorAllOnline(){
+    if(this.vendedoresListRef !== null){
+      console.log('apagando vendedores');
+      this.vendedoresListRef.unsubscribe();
+    }
+    if(this.horaRef !== null){
+      console.log('apagando hora');
+      this.horaRef.unsubscribe();
+    }
+    // if(this.efectividadRef !== null){
+    //   console.log('apagando efectividad');
+    //   this.efectividadRef.off();
+    // }
   }
 
   getVendedorAllOffline(id: string): void {
