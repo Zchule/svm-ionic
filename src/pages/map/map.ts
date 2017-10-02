@@ -138,6 +138,11 @@ export class MapPage {
     });
   }
 
+  private CargarRuta(){
+    
+    
+  }
+
   private obtenerVendedor() {
     // this.mapService.runSimulation(this.key, this.fecha);
     const subscriptionGetVendedor = this.mapService.getVendedor(this.key, this.fecha)

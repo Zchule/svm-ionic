@@ -12,6 +12,24 @@ page-map {
       }
     }
   }
+  .ruta {
+    position: absolute;
+    bottom: 680px;
+    width: 80px;
+    left: 250px;
+    .item{
+      min-height: 30px;
+      img{
+        max-height: 20px;
+      }
+      .label{
+        margin: 0px;
+        p{
+          font-size: 1rem;
+        }
+      }
+    }
+  }
   .mylist{
     position: absolute;
     bottom: 0px;
