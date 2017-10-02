@@ -68,8 +68,10 @@ export class PreventaPage {
       alert.present();
     }else {
       const key = vendedor.imei;
+      const name = vendedor.nombreVendedor;
       this.navCtrl.push('map', {
-        key: key
+        key: key,
+        name: name
       });
     }
   }
@@ -78,8 +80,8 @@ export class PreventaPage {
     this.storage.get('imei')
     .then(imei => {
       console.log('imei llego', imei);
-      const imei1 = '356057074214651';
-      this.imeiCel = imei1;
+      // const imei1 = '354152087178696';
+      this.imeiCel = imei;
       this.getVendedores();
     });
   }
@@ -87,7 +89,9 @@ export class PreventaPage {
   private getVendedores() {
     const subscriptionVendedorAllChannel = this.vendedorService.getVendedorAllChannel()
     .subscribe(vendedor => {
+      console.log('get vendedores', vendedor);
       if (vendedor !== null) {
+        console.log('vendedores', vendedor);
         if (this.vendedores.hasOwnProperty(vendedor.imei)) {
           const vendedorActual = this.vendedores[vendedor.imei];
           vendedor.posicion = vendedorActual.posicion;

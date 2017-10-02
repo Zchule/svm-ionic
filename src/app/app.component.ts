@@ -62,11 +62,14 @@ export class MyApp {
       this.sim.getSimInfo().then( info => {
         const imei = info.deviceId;
         console.log('native: imei celular', imei);
-        // const imei = '356057074214651';
+        // const imei = '354152087178696';
         this.storage.set('imei', imei );
       });
+      this.sim.hasReadPermission().then(
+        (info) => console.log('Has permission:', info)
+      );
     }else { // is WEB NO TENEMOS SIM EN UN PC
-      const imei = '356057074214651';
+      const imei = '354152087178696';
       console.log('web: imei celular', imei);
       this.storage.set('imei', imei );
     }

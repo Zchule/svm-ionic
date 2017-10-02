@@ -39,3 +39,5 @@ git remote add orgin {link}     // agregar repo
 
 
 ionic cordova plugin add cordova-plugin-geolocation --variable GEOLOCATION_USAGE_DESCRIPTION="The app need the geolocation"
+
+++++++++++++++++++++++++++++++++

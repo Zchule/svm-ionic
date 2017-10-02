@@ -18,6 +18,7 @@ export class MapPage {
 
   map: any;
   key: string;
+  name: string;
   load: Loading;
   myPosition: any = {};
   infowindow: any;
@@ -73,6 +74,7 @@ export class MapPage {
     private network: Network
   ) {
     this.key = this.navParams.get('key');
+    this.name = this.navParams.get('name');
     this.infowindow = new google.maps.InfoWindow();
   }
 
@@ -157,7 +159,8 @@ export class MapPage {
       const icon = './assets/imgs/vendedor.png';
       // si el marker no esta creado crea un marker pero si ya esta creado modifica la posicion
       if (this.markerVendedor === null) {
-        this.markerVendedor = this.createMarker(latitud, longitud, icon, posicionActual.nombreVendedor, '', '');
+        const tipo = 'VENDEDOR';
+        this.markerVendedor = this.createMarker(latitud, longitud, icon, this.name, this.key, posicionActual.hora, tipo);
       }else {
         this.markerVendedor.setPosition(newCenter);
       }
@@ -198,13 +201,15 @@ export class MapPage {
     const icon = this.getIcon(type);
     // crear el marker de este punto
     if (icon !== '') {
+      const tipo = 'CLIENTE';
       this.geoList[key].marker = this.createMarker(
         point.latitud,
         point.longitud,
         icon,
         point.nombreCliente,
         point.clienteId,
-        point.hora
+        point.hora,
+        tipo
       );
     }
   }
@@ -298,7 +303,7 @@ export class MapPage {
     this.linesPath.setMap(this.map);
   }
 
-  private createMarker(lat: number, lng: number, icon: string, nombre: string, id: string, hora: string) {
+  private createMarker(lat: number, lng: number, icon: string, nombre: string, id: string, hora: string, tipo: string) {
     const options = {
       position: {
         lat: lat,
@@ -311,7 +316,7 @@ export class MapPage {
     };
     const marker = new google.maps.Marker(options);
     const contentString = '<div>' +
-                        '<div>CLIENTE: <b>' + nombre + '</b> </div>' +
+                        '<div>' + tipo + ': <b>' + nombre + '</b> </div>' +
                         '<div> CODIGO: <b> ' + id + ' </b></div>' +
                         '<p> HORA: <b> ' + hora + ' </b></p>' +
                         '</div>';

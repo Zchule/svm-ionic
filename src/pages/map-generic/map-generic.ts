@@ -135,9 +135,11 @@ export class MapGenericPage {
       // zIndex: (Math.round(lat * -100000)<<5)
     };
     const marker = new google.maps.Marker(options);
+    const contentString = '<div>' +
+    '<div>VENDEDOR: <br><b>' + title + '</b> </div>';
 
     marker.addListener('click', () => {
-      this.infowindow.setContent(title);
+      this.infowindow.setContent(contentString);
       this.infowindow.open(this.map, marker);
     });
     return marker;
@@ -153,8 +155,8 @@ export class MapGenericPage {
     this.storage.get('imei')
     .then(imei => {
       console.log('imei llego', imei);
-      const imei1 = '356057074214651';
-      this.imeiCel = imei1;
+      // const imei1 = '354152087178696';
+      this.imeiCel = imei;
       this.loadMap();
     });
   }

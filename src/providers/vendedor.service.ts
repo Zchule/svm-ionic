@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+// import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import { Storage } from '@ionic/storage';
@@ -8,8 +8,8 @@ import { Platform } from 'ionic-angular';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subscription } from 'rxjs/Subscription';
-import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
-import { Observable } from 'rxjs/Observable';
+import { AngularFireDatabase } from 'angularfire2/database';
+// import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class VendedorService {
@@ -19,7 +19,7 @@ export class VendedorService {
 
   constructor(
     private fireDatabase: AngularFireDatabase,
-    private http: Http,
+    // private http: Http,
     private storage: Storage,
     private network: Network,
     private platform: Platform

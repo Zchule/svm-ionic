@@ -1,28 +1,26 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import * as firebase from 'firebase';
+// import * as firebase from 'firebase';
 import { Storage } from '@ionic/storage';
 // import { Network } from '@ionic-native/network';
-import { Platform } from 'ionic-angular';
 import { Md5 } from 'ts-md5/dist/md5';
 // import { Subscription } from 'rxjs/Subscription';
 
-import { VendedorService } from './../providers/vendedor.service';
+// import { VendedorService } from './../providers/vendedor.service';
 
 @Injectable()
 export class LoginService {
 
   supervisores: any;
-  supervisoresRef: firebase.database.Query;
+  // supervisoresRef: firebase.database.Query;
   getVendedorAllOnlineRealtimeRef: BehaviorSubject<any>;
   userChannel: BehaviorSubject<any>;
   vendedorChannel: BehaviorSubject<any>;
 
   constructor(
     public fireDatabase: AngularFireDatabase,
-    private storage: Storage,
-    private vendedorService: VendedorService
+    private storage: Storage
   ) {
     this.userChannel = new BehaviorSubject(null);
     this.vendedorChannel = new BehaviorSubject(null);
@@ -32,7 +30,9 @@ export class LoginService {
     console.log(usuario, password, imei);
     return new Promise((resolve, reject) => {
       const query = this.fireDatabase.database.ref('/Supervisores').orderByKey().equalTo(imei);
+      console.log(query);
       query.once('value', snap => {
+        console.log(snap);
         console.log(snap.val());
         const user = snap.val()[imei];
         console.log(user);
