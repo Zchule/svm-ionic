@@ -16,6 +16,7 @@ export class MyApp {
 
   rootPage: any = 'LoginPage';
   user: any = {};
+  currentPage = 'LoginPage';
 
   pages: Array<{title: string, component: any}>;
 
@@ -49,7 +50,10 @@ export class MyApp {
   openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
-    this.navMaster.setRoot(page.component);
+    if ( page.component !== this.currentPage ) {
+      this.currentPage = page.component;
+      this.navMaster.setRoot(page.component);
+    }
   }
 
   private obtenerImei() {
@@ -76,7 +80,7 @@ export class MyApp {
       this.user = data;
     });
   }
-  
+
   logout() {
     this.navMaster.setRoot('LoginPage');
     // this.storage.clear();

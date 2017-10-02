@@ -39,7 +39,8 @@ export class PreventaPage {
     });
     this.load.present();
     const subscriptionFechaServidor = this.vendedorService.getFechaServidor()
-    .subscribe(data => {
+    .valueChanges()
+    .subscribe((data: any) => {
       this.fecha = data.fecha;
       this.checkImei();
     });
@@ -49,15 +50,14 @@ export class PreventaPage {
 
   ionViewDidEnter() {
     this.menuCtrl.enable(true, 'menuAdmin');
+    this.vendedorService.stopGetVendedorAllOnline();
   }
 
   ionViewDidLeave() {
     this.subscriptions.forEach((subscription) => {
       subscription.unsubscribe();
     });
-
     this.vendedorService.stopGetVendedorAllOnline();
-
   }
 
   goToMapPage(vendedor) {

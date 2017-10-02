@@ -8,16 +8,14 @@ import { Platform } from 'ionic-angular';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subscription } from 'rxjs/Subscription';
-import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList, AngularFireObject } from 'angularfire2/database';
 import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class VendedorService {
 
   getVendedorAllRef: BehaviorSubject<any>;
-  vendedoresListRef: AngularFireList<any[]>;
-  efectividadRef: Subscription;
-  horaRef: Subscription;
+  subscriptions: Subscription[] = [];
 
   constructor(
     private fireDatabase: AngularFireDatabase,
@@ -45,63 +43,65 @@ export class VendedorService {
 
   getVendedorAllOnline(id: string, fecha): void {
     console.log('getVendedorAllOnline');
-    this.vendedoresListRef = this.fireDatabase.list(`/Supervisores/${id}/VendedoresList`);
-    this.vendedoresListRef.snapshotChanges(['child_added'])
-    .subscribe(action => {
-      console.log(action);
+    const vendedoresListRef = this.fireDatabase.list(`/Supervisores/${id}/VendedoresList`);
+    const vendedoresListSubscription = vendedoresListRef.snapshotChanges(['child_added'])
+    .subscribe(actions => {
+      actions.forEach(action => {
+        const vendedor = action.payload.val();
+        vendedor.efectividad = 0;
+        vendedor.hora = '00:00:00';
+        this.getVendedorAllRef.next(vendedor);
+        // hora
+        const horaRef = this.fireDatabase.object(`/vendedores/${vendedor.imei}/PosicionActual/hora`);
+        const horaSubscription = this.createHoraSubscription(horaRef, vendedor);
+        this.subscriptions.push( horaSubscription );
+        // efectividad
+        const efectividadRef = this.fireDatabase.object(`/vendedores/${vendedor.imei}/registro:${fecha}/efectividad`);
+        const efectividadSubscription = this.createEfectividadSubscription(efectividadRef, vendedor);
+        this.subscriptions.push( efectividadSubscription );
+      });
     });
-    // .subscribe( vendedoresList => {
-    //   console.log(vendedoresList);
-    //   vendedoresList.forEach((vendedor)=>{
-    //     vendedor.efectividad = 0;
-    //     vendedor.hora = "00:00:00";
-    //     this.getVendedorAllRef.next(vendedor);
-    //     this.horaRef = this.fireDatabase.object(`/vendedores/${vendedor.imei}/PosicionActual/hora`)
-    //     .subscribe( hora => {
-    //       console.log("hora", hora);
-    //       if(hora !== null){
-    //         vendedor.hora = hora.$value;
-    //         this.getVendedorAllRef.next(vendedor); //{}
-    //       }
-    //     });
-    //   })
-      // const vendedor = dataSnapshot.val();
+    this.subscriptions.push( vendedoresListSubscription );
+  }
 
-      // this.efectividadRef = this.fireDatabase.database.ref(`/vendedores/${vendedor.imei}/registro:${fecha}/efectividad`)
-      // .on('value', dataEfectividadSnapshot => {
-      //   const efectividad = dataEfectividadSnapshot.val();
-      //   console.log("cambio efectividad", efectividad);
-      //   if(efectividad !== null){
-      //     vendedor.efectividad = efectividad;
-      //     this.getVendedorAllRef.next(vendedor);
-      //   }
-      // })
+  private createHoraSubscription(horaRef, vendedor) {
+    return horaRef.valueChanges()
+    .subscribe( hora => {
+      console.log('hora', hora);
+      if (hora !== null) {
+        vendedor.hora = hora;
+        this.getVendedorAllRef.next(vendedor);
+      }
     });
   }
 
-  stopGetVendedorAllOnline(){
-    if(this.vendedoresListRef !== null){
-      console.log('apagando vendedores');
-      this.vendedoresListRef.unsubscribe();
-    }
-    if(this.horaRef !== null){
-      console.log('apagando hora');
-      this.horaRef.unsubscribe();
-    }
-    // if(this.efectividadRef !== null){
-    //   console.log('apagando efectividad');
-    //   this.efectividadRef.off();
-    // }
+  private createEfectividadSubscription(efectividadRef, vendedor) {
+    return efectividadRef.valueChanges()
+    .subscribe( efectividad => {
+      console.log('efectividad', efectividad);
+      if (efectividad !== null) {
+        vendedor.efectividad = efectividad;
+        this.getVendedorAllRef.next(vendedor);
+      }
+    });
+  }
+
+  stopGetVendedorAllOnline() {
+    console.log('stopGetVendedorAllOnline', this.subscriptions.length);
+    this.subscriptions.forEach((subscription) => {
+      subscription.unsubscribe();
+    });
+    this.subscriptions = [];
   }
 
   getVendedorAllOffline(id: string): void {
     console.log('getVendedorAllOffline');
     this.storage.get('vendedoresList')
     .then(data => {
-      const vendedoresOffline = JSON.parse(data); 
+      const vendedoresOffline = JSON.parse(data);
       Object.keys(vendedoresOffline).forEach(key => {
         this.getVendedorAllRef.next(vendedoresOffline[key]);
-      })
+      });
     });
   }
 
