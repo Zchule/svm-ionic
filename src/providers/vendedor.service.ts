@@ -110,6 +110,7 @@ export class VendedorService {
       if (this.network.type !== 'none') {
         this.getVendedorAllOnline(id, fecha);
       }else {
+        console.log('entro al else');
         this.getVendedorAllOffline(id);
       }
      } else {
