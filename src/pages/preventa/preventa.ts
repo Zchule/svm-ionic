@@ -43,6 +43,8 @@ export class PreventaPage {
       this.checkImei();
     });
     this.subscriptions.push(subscriptionFechaServidor);
+    this.verificarInternet();
+    this.getVendedores();
     this.load.dismiss();
   }
 
@@ -101,13 +103,14 @@ export class PreventaPage {
           this.vendedores[vendedor.imei] = vendedor;
           this.listsVendedores.push(vendedor);
         }
-        this.storage.set('vendedoresList', JSON.stringify(this.vendedores));
+        console.log('list', this.listsVendedores);
+        this.storage.set('vendedoresList', JSON.stringify(this.listsVendedores));
       }
     });
     this.subscriptions.push(subscriptionVendedorAllChannel);
     // getVendedorAllOnline va estricamente despues de getVendedorAllChannel
     this.vendedorService.getVendedorAll(this.imeiCel, this.fecha);
-    this.verificarInternet();
+    // this.verificarInternet();
   }
 
   private verificarInternet() {

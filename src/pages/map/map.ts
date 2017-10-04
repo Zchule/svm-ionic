@@ -28,7 +28,6 @@ export class MapPage {
   linesPath: any = null;
   hora: string;
   isCenter = false;
-  lines: any[] = [];
 
   subscriptions: Subscription[] = [];
 
@@ -138,23 +137,14 @@ export class MapPage {
     });
   }
 
-  private obtenerVendedor() {
-    // this.mapService.runSimulation(this.key, this.fecha);
+  private obtenerVendedor() { // this.mapService.runSimulation(this.key, this.fecha);
     const subscriptionGetVendedor = this.mapService.getVendedor(this.key, this.fecha)
-    .subscribe(point => {
-      console.log('point');
-      if (this.geoList.hasOwnProperty(point.key)) {
-        const updatePoint = point.payload.val();
-        this.updatePoint(point.key, updatePoint);
-      }else {
-        const newPoint = point.payload.val();
-        this.createPoint(point.key, newPoint);
-        this.lines.push({ lat: newPoint.latitud, lng: newPoint.longitud });
-        this.createLines();
-      }
+    .subscribe(points => { 
+      console.log('point', points);
+      this.resetCounts();
+      this.renderMarkers(points); 
     });
     this.subscriptions.push(subscriptionGetVendedor);
-
     const subscriptionVendedorPosicionActual = this.mapService.getVendedorPosicionActual(this.key)
     .subscribe((posicionActual: any) => {
       const latitud = posicionActual.latitud;
@@ -187,10 +177,11 @@ export class MapPage {
     const type = this.getType(point);
     this.indicadoresList(type);
     this.geoList[key].point.tipo = type;
+    console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);
     // crear el marker de este punto
-    // if (icon !== '') {
+    if (icon !== '') {
       const tipo = 'CLIENTE';
       this.geoList[key].marker = this.createMarker(
         point.latitud,
@@ -201,7 +192,7 @@ export class MapPage {
         point.hora,
         tipo
       );
-    // }
+    }
   }
 
   // actualiza la informacion sin tener que crear un marker
@@ -212,6 +203,7 @@ export class MapPage {
     const type = this.getType(point);
     this.indicadoresList(type);
     this.geoList[key].point.tipo = type;
+    console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);
     // modifica la posicion del marker
@@ -279,13 +271,31 @@ export class MapPage {
     }
   }
 
-  private createLines() {
+  private renderMarkers(geoPuntosList: any[]) {
+    const lines = [];
+    geoPuntosList.forEach((point) => {
+      // verifica si el punto ya esta creado dentro en this.geoList si ya esta lo actualiza, si no esta lo crea
+      if (this.geoList.hasOwnProperty(point.key)) {
+        const updatePoint = point.payload.val();
+        this.updatePoint(point.key, updatePoint);
+        lines.push({ lat: updatePoint.latitud, lng: updatePoint.longitud });
+      }else {
+        const newPoint = point.payload.val();
+        this.createPoint(point.key, newPoint);
+        lines.push({ lat: newPoint.latitud, lng: newPoint.longitud });
+        // this.hora = newPoint.hora;
+      }
+    });
+    this.createLines(lines);
+  }
+
+  private createLines(lines: any[]) {
     // si ya hay unas lineas creadas las elimina antes de crear las nuevas
     if (this.linesPath !== null) {
       this.linesPath.setMap(null);
     }
     this.linesPath = new google.maps.Polyline({
-      path: this.lines,
+      path: lines,
       geodesic: true,
       strokeColor: '#FF0000',
       strokeOpacity: 1.0,

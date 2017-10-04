@@ -99,6 +99,7 @@ export class VendedorService {
     this.storage.get('vendedoresList')
     .then(data => {
       const vendedoresOffline = JSON.parse(data);
+      console.log('list ofline servicio', vendedoresOffline);
       Object.keys(vendedoresOffline).forEach(key => {
         this.getVendedorAllRef.next(vendedoresOffline[key]);
       });

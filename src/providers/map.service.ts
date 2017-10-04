@@ -18,9 +18,10 @@ export class MapService {
   getVendedor(id: string, fecha: string) {
     console.log('getVendedor');
     const vendedorRef = this.fireDatabase
-    .list(`/vendedores/${id}/registro:${fecha}/geoPuntoList`, ref => ref.limitToLast(500));
-    // .list(`/vendedores/${id}/registro:${fecha}/geoPuntoList`);
-    return vendedorRef.stateChanges();
+    // .list(`/vendedores/${id}/registro:${fecha}/geoPuntoList`, ref => ref.limitToLast(500));
+    .list(`/vendedores/${id}/registro:${fecha}/geoPuntoList`);
+    // return vendedorRef.stateChanges();
+    return vendedorRef.snapshotChanges(['child_added']);
   }
 
   getVendedorPosicionActual(id: string) {

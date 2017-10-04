@@ -32,8 +32,6 @@ export class LoginService {
       const query = this.fireDatabase.database.ref('/Supervisores').orderByKey().equalTo(imei);
       console.log(query);
       query.once('value', snap => {
-        console.log(snap);
-        console.log(snap.val());
         const user = snap.val()[imei];
         console.log(user);
         if (user.NombreUsuario === usuario && user.Contraseña === password && user.operacionId === 1 ) {
