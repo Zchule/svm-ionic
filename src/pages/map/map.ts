@@ -23,12 +23,12 @@ export class MapPage {
   myPosition: any = {};
   infowindow: any;
   fecha: string;
-  markers: any[] = [];
   markerVendedor: any = null;
   geoList = {};
   linesPath: any = null;
   hora: string;
   isCenter = false;
+  lines: any[] = [];
 
   subscriptions: Subscription[] = [];
 
@@ -138,17 +138,20 @@ export class MapPage {
     });
   }
 
-  private CargarRuta(){
-    
-    
-  }
-
   private obtenerVendedor() {
     // this.mapService.runSimulation(this.key, this.fecha);
     const subscriptionGetVendedor = this.mapService.getVendedor(this.key, this.fecha)
-    .subscribe(points => {
-      this.resetCounts();
-      this.renderMarkers(points);
+    .subscribe(point => {
+      console.log('point');
+      if (this.geoList.hasOwnProperty(point.key)) {
+        const updatePoint = point.payload.val();
+        this.updatePoint(point.key, updatePoint);
+      }else {
+        const newPoint = point.payload.val();
+        this.createPoint(point.key, newPoint);
+        this.lines.push({ lat: newPoint.latitud, lng: newPoint.longitud });
+        this.createLines();
+      }
     });
     this.subscriptions.push(subscriptionGetVendedor);
 
@@ -173,24 +176,6 @@ export class MapPage {
     this.subscriptions.push(subscriptionVendedorPosicionActual);
   }
 
-  private renderMarkers(geoPuntosList: any[]) {
-    const lines = [];
-    geoPuntosList.forEach((point) => {
-      // verifica si el punto ya esta creado dentro en this.geoList si ya esta lo actualiza, si no esta lo crea
-      if (this.geoList.hasOwnProperty(point.key)) {
-        const updatePoint = point.payload.val();
-        this.updatePoint(point.key, updatePoint);
-        lines.push({ lat: updatePoint.latitud, lng: updatePoint.longitud });
-      }else {
-        const newPoint = point.payload.val();
-        this.createPoint(point.key, newPoint);
-        lines.push({ lat: newPoint.latitud, lng: newPoint.longitud });
-        // this.hora = newPoint.hora;
-      }
-    });
-    this.createLines(lines);
-  }
-
   // crea un marker para ese punto
   private createPoint(key: string, point: any) {
     // console.log( 'createPoint', point );
@@ -205,7 +190,7 @@ export class MapPage {
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);
     // crear el marker de este punto
-    if (icon !== '') {
+    // if (icon !== '') {
       const tipo = 'CLIENTE';
       this.geoList[key].marker = this.createMarker(
         point.latitud,
@@ -216,7 +201,7 @@ export class MapPage {
         point.hora,
         tipo
       );
-    }
+    // }
   }
 
   // actualiza la informacion sin tener que crear un marker
@@ -294,13 +279,13 @@ export class MapPage {
     }
   }
 
-  private createLines(lines: any[]) {
+  private createLines() {
     // si ya hay unas lineas creadas las elimina antes de crear las nuevas
     if (this.linesPath !== null) {
       this.linesPath.setMap(null);
     }
     this.linesPath = new google.maps.Polyline({
-      path: lines,
+      path: this.lines,
       geodesic: true,
       strokeColor: '#FF0000',
       strokeOpacity: 1.0,
