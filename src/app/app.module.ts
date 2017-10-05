@@ -39,7 +39,10 @@ const configFirebase = {
     IonicModule.forRoot(MyApp),
     AngularFireModule.initializeApp( configFirebase ),
     AngularFireDatabaseModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot({
+      name: '__mydb',
+         driverOrder: ['indexeddb', 'sqlite', 'websql']
+    })
   ],
   bootstrap: [IonicApp],
   entryComponents: [

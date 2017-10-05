@@ -30,7 +30,6 @@ export class LoginService {
     console.log(usuario, password, imei);
     return new Promise((resolve, reject) => {
       const query = this.fireDatabase.database.ref('/Supervisores').orderByKey().equalTo(imei);
-      console.log(query);
       query.once('value', snap => {
         const user = snap.val()[imei];
         console.log(user);

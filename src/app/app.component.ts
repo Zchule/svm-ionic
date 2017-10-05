@@ -84,6 +84,5 @@ export class MyApp {
 
   logout() {
     this.navMaster.setRoot('LoginPage');
-    // this.storage.clear();
   }
 }

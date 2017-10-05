@@ -44,8 +44,7 @@ export class PreventaPage {
     });
     this.subscriptions.push(subscriptionFechaServidor);
     this.verificarInternet();
-    this.getVendedores();
-    this.load.dismiss();
+    // this.getVendedores();
   }
 
   ionViewDidEnter() {
@@ -80,18 +79,19 @@ export class PreventaPage {
 
   private checkImei() {
     this.storage.get('imei')
-    .then(imei1 => {
-      console.log('imei llego', imei1);
-      this.imeiCel = '354152087178696';
-      // this.imeiCel = imei;
+    .then(imei => {
+      console.log('imei llego', imei);
+      // this.imeiCel = '354152087178696';
+      this.imeiCel = imei;
       this.getVendedores();
+      this.load.dismiss();
     });
   }
 
   private getVendedores() {
     const subscriptionVendedorAllChannel = this.vendedorService.getVendedorAllChannel()
     .subscribe(vendedor => {
-      console.log('get vendedores', vendedor);
+      console.log('get vendedores canal', vendedor);
       if (vendedor !== null) {
         console.log('vendedores', vendedor);
         if (this.vendedores.hasOwnProperty(vendedor.imei)) {
@@ -103,14 +103,12 @@ export class PreventaPage {
           this.vendedores[vendedor.imei] = vendedor;
           this.listsVendedores.push(vendedor);
         }
-        console.log('list', this.listsVendedores);
-        this.storage.set('vendedoresList', JSON.stringify(this.listsVendedores));
+        this.storage.set('vendedoresList', JSON.stringify(this.vendedores));
       }
     });
     this.subscriptions.push(subscriptionVendedorAllChannel);
     // getVendedorAllOnline va estricamente despues de getVendedorAllChannel
     this.vendedorService.getVendedorAll(this.imeiCel, this.fecha);
-    // this.verificarInternet();
   }
 
   private verificarInternet() {
@@ -129,17 +127,17 @@ export class PreventaPage {
   }
 
   private verificarAcessoFirebase() {
-    // this.vendedorService.getConexion()
-    // .then(data=>{
-    //   console.log("conexion", data);
-    // })
-    // .catch(error=>{
-    //   const alert = this.alertCtrl.create({
-    //     subTitle: 'Sin acceso a Firebase',
-    //     buttons: ['OK']
-    //   });
-    //   alert.present();
-    // })
+    this.vendedorService.getConexion()
+    .then(data=>{
+      console.log("conexion", data);
+    })
+    .catch(error=>{
+      const alert = this.alertCtrl.create({
+        subTitle: 'Sin acceso a Firebase',
+        buttons: ['OK']
+      });
+      alert.present();
+    })
   }
 
 }

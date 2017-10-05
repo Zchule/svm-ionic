@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-// import { Http } from '@angular/http';
+import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import { Storage } from '@ionic/storage';
@@ -9,7 +9,6 @@ import { Platform } from 'ionic-angular';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subscription } from 'rxjs/Subscription';
 import { AngularFireDatabase } from 'angularfire2/database';
-// import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class VendedorService {
@@ -19,7 +18,7 @@ export class VendedorService {
 
   constructor(
     private fireDatabase: AngularFireDatabase,
-    // private http: Http,
+    private http: Http,
     private storage: Storage,
     private network: Network,
     private platform: Platform
@@ -36,9 +35,9 @@ export class VendedorService {
   }
 
   getConexion() {
-    // return this.http.get('https://firebasestorage.googleapis.com/v0/b/svmmoviltest.appspot.com/o/check-conexion.json?alt=media&token=4069678c-c030-4853-be60-c299f597c021')
-    // .map(res => res.json())
-    // .toPromise();
+    return this.http.get('https://firebasestorage.googleapis.com/v0/b/svmmoviltest.appspot.com/o/check-conexion.json?alt=media&token=4069678c-c030-4853-be60-c299f597c021')
+    .map(res => res.json())
+    .toPromise();
   }
 
   getVendedorAllOnline(id: string, fecha): void {
@@ -109,9 +108,10 @@ export class VendedorService {
   getVendedorAll(id: string, fecha): void {
     if (this.platform.is('cordova')) {
       if (this.network.type !== 'none') {
+        console.log('entro con inter', this.network.type);
         this.getVendedorAllOnline(id, fecha);
       }else {
-        console.log('entro al else');
+        console.log('entro a none', this.network.type);
         this.getVendedorAllOffline(id);
       }
      } else {
