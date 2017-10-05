@@ -64,7 +64,7 @@ export class MapGenericPage {
       console.log(this.network.type);
       const alert = this.alertCtrl.create({
         title: 'Sin conexión',
-        subTitle: 'Mapa sin actualizar',
+        subTitle: 'Necesita conectarse',
         buttons: ['OK']
       });
       alert.present();

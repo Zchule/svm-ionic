@@ -44,7 +44,8 @@ export class PreventaPage {
     });
     this.subscriptions.push(subscriptionFechaServidor);
     this.verificarInternet();
-    // this.getVendedores();
+    this.getVendedores();
+    this.load.dismiss();
   }
 
   ionViewDidEnter() {
@@ -84,7 +85,6 @@ export class PreventaPage {
       // this.imeiCel = '354152087178696';
       this.imeiCel = imei;
       this.getVendedores();
-      this.load.dismiss();
     });
   }
 
@@ -127,17 +127,16 @@ export class PreventaPage {
   }
 
   private verificarAcessoFirebase() {
-    this.vendedorService.getConexion()
-    .then(data=>{
-      console.log("conexion", data);
-    })
-    .catch(error=>{
-      const alert = this.alertCtrl.create({
-        subTitle: 'Sin acceso a Firebase',
-        buttons: ['OK']
-      });
-      alert.present();
-    })
+  //   this.vendedorService.getConexion()
+  //   .then(data=> {
+  //     console.log("conexion", data);
+  //   })
+  //   .catch(error=> {
+  //     const alert = this.alertCtrl.create({
+  //       subTitle: 'Sin acceso a Firebase',
+  //       buttons: ['OK']
+  //     });
+  //     alert.present();
+  //   })
   }
-
 }
