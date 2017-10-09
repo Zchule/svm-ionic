@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Nav, Platform, AlertController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -26,6 +26,7 @@ export class MyApp {
     public splashScreen: SplashScreen,
     private sim: Sim,
     private storage: Storage,
+    private alertCtrl: AlertController,
     public loginService: LoginService
     ) {
     this.initializeApp();
@@ -59,15 +60,20 @@ export class MyApp {
   private obtenerImei() {
     console.log('obtenerImei');
     if (this.platform.is('cordova')) { // is native
-      this.sim.getSimInfo().then( info => {
-        const imei = info.deviceId;
-        console.log('native: imei celular', imei);
-        // const imei = '354152087178696';
-        this.storage.set('imei', imei );
-      });
-      this.sim.hasReadPermission().then(
-        (info) => console.log('Has permission:', info)
+      this.sim.requestReadPermission().then((permiso) =>{
+        console.log('Permission granted', permiso);
+        const si = permiso.$apply();
+        console.log('si', si);
+        this.sim.getSimInfo().then( info => {
+          const imei = info.deviceId;
+          console.log('native: imei celular', imei);
+          // const imei = '354152087178696';
+          this.storage.set('imei', imei );
+        });  
+      },
+        (error) => console.log('Permission denied')
       );
+       
     }else { // is WEB NO TENEMOS SIM EN UN PC
       const imei = '354152087178696';
       console.log('web: imei celular', imei);

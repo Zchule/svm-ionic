@@ -177,7 +177,7 @@ export class MapPage {
     const type = this.getType(point);
     this.indicadoresList(type);
     this.geoList[key].point.tipo = type;
-    // console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
+    console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);
     // crear el marker de este punto
@@ -203,7 +203,7 @@ export class MapPage {
     const type = this.getType(point);
     this.indicadoresList(type);
     this.geoList[key].point.tipo = type;
-    // console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
+    console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);
     // modifica la posicion del marker

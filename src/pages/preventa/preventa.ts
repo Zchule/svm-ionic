@@ -82,7 +82,7 @@ export class PreventaPage {
     this.storage.get('imei')
     .then(imei => {
       console.log('imei llego', imei);
-      // this.imeiCel = '354152087178696';
+      // this.imeiCel = '356812072207648';
       this.imeiCel = imei;
       this.getVendedores();
     });
@@ -91,7 +91,6 @@ export class PreventaPage {
   private getVendedores() {
     const subscriptionVendedorAllChannel = this.vendedorService.getVendedorAllChannel()
     .subscribe(vendedor => {
-      console.log('get vendedores canal', vendedor);
       if (vendedor !== null) {
         console.log('vendedores', vendedor);
         if (this.vendedores.hasOwnProperty(vendedor.imei)) {
@@ -128,10 +127,10 @@ export class PreventaPage {
 
   private verificarAcessoFirebase() {
   //   this.vendedorService.getConexion()
-  //   .then(data=> {
-  //     console.log("conexion", data);
+  //   .then(data => {
+  //     console.log('conexion', data);
   //   })
-  //   .catch(error=> {
+  //   .catch(error => {
   //     const alert = this.alertCtrl.create({
   //       subTitle: 'Sin acceso a Firebase',
   //       buttons: ['OK']
