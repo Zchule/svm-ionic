@@ -60,16 +60,15 @@ export class MyApp {
   private obtenerImei() {
     console.log('obtenerImei');
     if (this.platform.is('cordova')) { // is native
+      this.sim.getSimInfo().then( info => {
+        const imei = info.deviceId;
+        console.log('native: imei celular', imei);
+        // const imei = '354152087178696';
+        this.storage.set('imei', imei );
+      });
       this.sim.requestReadPermission().then((permiso) =>{
         console.log('Permission granted', permiso);
         const si = permiso.$apply();
-        console.log('si', si);
-        this.sim.getSimInfo().then( info => {
-          const imei = info.deviceId;
-          console.log('native: imei celular', imei);
-          // const imei = '354152087178696';
-          this.storage.set('imei', imei );
-        });  
       },
         (error) => console.log('Permission denied')
       );

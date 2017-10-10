@@ -42,7 +42,7 @@ export class LoginPage {
   }
 
   ionViewDidEnter() {
-    this.menuCtrl.enable(false, 'menuAdmin');
+    this.menuCtrl.enable(true, 'menuAdmin');
   }
 
   nombre(userName) {
