@@ -139,10 +139,11 @@ export class MapPage {
 
   private obtenerVendedor() { // this.mapService.runSimulation(this.key, this.fecha);
     const subscriptionGetVendedor = this.mapService.getVendedor(this.key, this.fecha)
-    .subscribe(points => { 
-      console.log('point', points);
+    .subscribe(points =>{ 
+      // console.log('point', points);
       this.resetCounts();
-      this.renderMarkers(points); 
+      this.renderMarkers(points);
+       
     });
     this.subscriptions.push(subscriptionGetVendedor);
     const subscriptionVendedorPosicionActual = this.mapService.getVendedorPosicionActual(this.key)
@@ -177,7 +178,7 @@ export class MapPage {
     const type = this.getType(point);
     this.indicadoresList(type);
     this.geoList[key].point.tipo = type;
-    console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
+    //console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);
     // crear el marker de este punto
@@ -203,7 +204,7 @@ export class MapPage {
     const type = this.getType(point);
     this.indicadoresList(type);
     this.geoList[key].point.tipo = type;
-    console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
+    //console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);
     // modifica la posicion del marker

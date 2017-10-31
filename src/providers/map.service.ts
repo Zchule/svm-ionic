@@ -16,7 +16,7 @@ export class MapService {
   }
 
   getVendedor(id: string, fecha: string) {
-    console.log('getVendedor');
+    // console.log('getVendedor');
     const vendedorRef = this.fireDatabase
     // .list(`/vendedores/${id}/registro:${fecha}/geoPuntoList`, ref => ref.limitToLast(500));
     .list(`/vendedores/${id}/registro:${fecha}/geoPuntoList`);
@@ -25,7 +25,7 @@ export class MapService {
   }
 
   getVendedorPosicionActual(id: string) {
-    console.log('getVendedorPosicionActual');
+    // console.log('getVendedorPosicionActual');
     const vendedorRef = this.fireDatabase.object(`/vendedores/${id}/PosicionActual`);
     return vendedorRef.valueChanges();
   }
