@@ -18,7 +18,7 @@ export class MyApp {
   user: any = {};
   currentPage = 'LoginPage';
 
-  pages: Array<{title: string, component: any}>;
+  pages: Array<{ title: string, component: any, icon: string }>;
 
   constructor(
     public platform: Platform,
@@ -28,14 +28,26 @@ export class MyApp {
     private storage: Storage,
     private alertCtrl: AlertController,
     public loginService: LoginService
-    ) {
+  ) {
     this.initializeApp();
 
     // used for an example of ngFor and navigation
     this.pages = [
-      { title: 'Inicio', component: 'HomePage' },
-      { title: 'Vendedores', component: 'PreventaPage' },
-      { title: 'Mapa', component: 'MapGenericPage' }
+      {
+        title: 'Inicio',
+        icon: 'md-home',
+        component: 'HomePage'
+      },
+      {
+        title: 'Vendedores',
+        icon: 'md-list-box', 
+        component: 'PreventaPage'
+      },
+      {
+        title: 'Mapa',
+        icon: 'map',
+        component: 'MapGenericPage'
+      }
     ];
   }
 
@@ -51,7 +63,7 @@ export class MyApp {
   openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
-    if ( page.component !== this.currentPage ) {
+    if (page.component !== this.currentPage) {
       this.currentPage = page.component;
       this.navMaster.setRoot(page.component);
     }
@@ -60,31 +72,31 @@ export class MyApp {
   private obtenerImei() {
     console.log('obtenerImei');
     if (this.platform.is('cordova')) { // is native
-      this.sim.getSimInfo().then( info => {
+      this.sim.getSimInfo().then(info => {
         const imei = info.deviceId;
         console.log('native: imei celular', imei);
         // const imei = '354152087178696';
-        this.storage.set('imei', imei );
+        this.storage.set('imei', imei);
       });
-      this.sim.requestReadPermission().then((permiso) =>{
+      this.sim.requestReadPermission().then((permiso) => {
         console.log('Permission granted', permiso);
         const si = permiso.$apply();
       },
         (error) => console.log('Permission denied')
       );
-       
-    }else { // is WEB NO TENEMOS SIM EN UN PC
-      const imei = '354152087178696';
+
+    } else { // is WEB NO TENEMOS SIM EN UN PC
+      const imei = '356811079170460';
       console.log('web: imei celular', imei);
-      this.storage.set('imei', imei );
+      this.storage.set('imei', imei);
     }
   }
 
   private suscribirCanal() {
     this.loginService.getUserChannel()
-    .subscribe(data => {
-      this.user = data;
-    });
+      .subscribe(data => {
+        this.user = data;
+      });
   }
 
   logout() {
