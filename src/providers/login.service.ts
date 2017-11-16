@@ -26,6 +26,20 @@ export class LoginService {
     this.vendedorChannel = new BehaviorSubject(null);
   }
 
+  doLogin(usuario: string, password: string, imei: string): Promise<any> {
+    console.log(usuario, password);
+    return this.storage.get('offline')
+    .then(estado => {
+      if (estado) {
+        console.log('login offline', estado);
+        return this.doLoginOffline(usuario, password);
+      }else {
+        console.log('login online', estado);
+        return this.doLoginOnline(usuario, password, imei);
+      }
+    });
+  }
+
   doLoginOnline(usuario: string, password: string, imei: string): Promise<any> {
     console.log(usuario, password, imei);
     return new Promise((resolve, reject) => {
@@ -60,20 +74,6 @@ export class LoginService {
         return Promise.resolve(userOff);
       }else {
         return Promise.reject(userOff);
-      }
-    });
-  }
-
-  doLogin(usuario: string, password: string, imei: string): Promise<any> {
-    console.log(usuario, password);
-    return this.storage.get('offline')
-    .then(estado => {
-      if (estado) {
-        console.log('login offline', estado);
-        return this.doLoginOffline(usuario, password);
-      }else {
-        console.log('login online', estado);
-        return this.doLoginOnline(usuario, password, imei);
       }
     });
   }

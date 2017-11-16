@@ -19,6 +19,7 @@ import { VendedorService } from '../providers/vendedor.service';
 import { LoginService } from '../providers/login.service';
 import { MapGenericService} from '../providers/map-generic.service';
 import { MapService } from '../providers/map.service';
+import { SupervisoresProvider } from '../providers/supervisores.service';
 
 const configFirebase = {
   apiKey: 'AIzaSyAJDgpY9ssAyjIX_vA7S1D_fgcA26BBvxQ',
@@ -60,7 +61,8 @@ const configFirebase = {
     LoginService,
     Network,
     MapGenericService,
-    MapService
+    MapService,
+    SupervisoresProvider
   ]
 })
 export class AppModule {}

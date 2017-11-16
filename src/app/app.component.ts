@@ -47,6 +47,11 @@ export class MyApp {
         title: 'Mapa',
         icon: 'map',
         component: 'MapGenericPage'
+      },
+      {
+        title: 'Supervisores',
+        icon: 'md-list-box',
+        component: 'ListSupervidoresPage'
       }
     ];
   }

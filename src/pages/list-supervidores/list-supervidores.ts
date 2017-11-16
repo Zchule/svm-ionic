@@ -4,17 +4,17 @@ import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
 import { Subscription } from 'rxjs/Subscription';
 
-import { VendedorService } from '../../providers/vendedor.service';
+import { SupervisoresProvider } from '../../providers/supervisores.service';
 
 @IonicPage()
 @Component({
-  selector: 'page-preventa',
-  templateUrl: 'preventa.html',
+  selector: 'page-list-supervidores',
+  templateUrl: 'list-supervidores.html',
 })
-export class PreventaPage {
+export class ListSupervidoresPage {
 
-  listsVendedores: any[] = [];
-  vendedores: any = {};
+  listsSupervisores: any[] = [];
+  supervisores: any = {};
   fecha: string;
   imeiCel: string;
   subscriptions: Subscription[] = [];
@@ -25,18 +25,19 @@ export class PreventaPage {
     private menuCtrl: MenuController,
     private alertCtrl: AlertController,
     private loadCtrl: LoadingController,
-    private vendedorService: VendedorService,
+    private supervisorService: SupervisoresProvider,
     private storage: Storage,
     private network: Network
-
-  ) { }
+  ) {
+  }
 
   ionViewDidLoad() {
+    console.log('ionViewDidLoad ListSupervidoresPage');
     this.load = this.loadCtrl.create({
       content: 'Cargando...'
     });
     this.load.present();
-    const subscriptionFechaServidor = this.vendedorService.getFechaServidor()
+    const subscriptionFechaServidor = this.supervisorService.getFechaServidor()
     .valueChanges()
     .subscribe((data: any) => {
       this.fecha = data.fecha;
@@ -44,24 +45,24 @@ export class PreventaPage {
     });
     this.subscriptions.push(subscriptionFechaServidor);
     this.verificarInternet();
-    this.getVendedores();
+    this.getSupervisores();
     this.load.dismiss();
   }
 
   ionViewDidEnter() {
     this.menuCtrl.enable(true, 'menuAdmin');
-    this.vendedorService.stopGetVendedorAllOnline();
+    this.supervisorService.stopGetSupervisorAllOnline();
   }
 
   ionViewDidLeave() {
     this.subscriptions.forEach((subscription) => {
       subscription.unsubscribe();
     });
-    this.vendedorService.stopGetVendedorAllOnline();
+    this.supervisorService.stopGetSupervisorAllOnline();
   }
 
-  goToMapPage(vendedor) {
-    if (vendedor.hora === '00:00:00') {
+  goToMapPage(supervisor) {
+    if (supervisor.hora === '00:00:00') {
       const alert = this.alertCtrl.create({
         title: 'Vendedor',
         subTitle: 'No hay datos',
@@ -69,8 +70,8 @@ export class PreventaPage {
       });
       alert.present();
     }else {
-      const key = vendedor.imei;
-      const name = vendedor.nombreVendedor;
+      const key = supervisor.imei;
+      const name = supervisor.nombreVendedor;
       this.navCtrl.push('map', {
         key: key,
         name: name
@@ -78,36 +79,43 @@ export class PreventaPage {
     }
   }
 
+  goToListVendedores(supervisor) {
+    this.navCtrl.push('PreventaPage', {
+      key: supervisor.$key,
+      name: name
+    });
+  }
+ 
   private checkImei() {
     this.storage.get('imei')
     .then(imei => {
-      console.log('imei llego', imei);
-      this.imeiCel = '356811079170536';
+      // console.log('imei llego', imei);
+      this.imeiCel = '359825061511512';
       // this.imeiCel = imei;
-      this.getVendedores();
+      this.getSupervisores();
     });
   }
 
-  private getVendedores() {
-    const subscriptionVendedorAllChannel = this.vendedorService.getVendedorAllChannel()
-    .subscribe(vendedor => {
-      if (vendedor !== null) {
-        console.log('vendedores', vendedor);
-        if (this.vendedores.hasOwnProperty(vendedor.imei)) {
-          const vendedorActual = this.vendedores[vendedor.imei];
-          vendedor.posicion = vendedorActual.posicion;
-          this.listsVendedores[vendedorActual.posicion] = vendedor;
+  private getSupervisores() {
+    const subscriptionVendedorAllChannel = this.supervisorService.getSupervisorAllChannel()
+    .subscribe(supervisor => {
+      if (supervisor !== null) {
+        console.log('vendedores', supervisor);
+        if (this.supervisores.hasOwnProperty(supervisor.imei)) {
+          const vendedorActual = this.supervisores[supervisor.imei];
+          supervisor.posicion = vendedorActual.posicion;
+          this.listsSupervisores[vendedorActual.posicion] = supervisor;
         }else {
-          vendedor.posicion = this.listsVendedores.length;
-          this.vendedores[vendedor.imei] = vendedor;
-          this.listsVendedores.push(vendedor);
+          supervisor.posicion = this.listsSupervisores.length;
+          this.supervisores[supervisor.imei] = supervisor;
+          this.listsSupervisores.push(supervisor);
         }
-        this.storage.set('vendedoresList', JSON.stringify(this.vendedores));
+        this.storage.set('SupervisoresList', JSON.stringify(this.supervisores));
       }
     });
     this.subscriptions.push(subscriptionVendedorAllChannel);
-    // getVendedorAllOnline va estricamente despues de getVendedorAllChannel
-    this.vendedorService.getVendedorAll(this.imeiCel, this.fecha);
+    // getSupervisorAllOnline va estricamente despues de getVendedorAllChannel
+    this.supervisorService.getSupervisorAll(this.imeiCel, this.fecha);
   }
 
   private verificarInternet() {
@@ -121,21 +129,8 @@ export class PreventaPage {
       alert.present();
     }else {
       // Si tiene conexion verifica conexion con firebase
-      this.verificarAcessoFirebase();
     }
   }
 
-  private verificarAcessoFirebase() {
-  //   this.vendedorService.getConexion()
-  //   .then(data => {
-  //     console.log('conexion', data);
-  //   })
-  //   .catch(error => {
-  //     const alert = this.alertCtrl.create({
-  //       subTitle: 'Sin acceso a Firebase',
-  //       buttons: ['OK']
-  //     });
-  //     alert.present();
-  //   })
-  }
+
 }
