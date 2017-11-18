@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform, AlertController } from 'ionic-angular';
+import { Nav, Platform, AlertController, MenuController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -18,7 +18,42 @@ export class MyApp {
   user: any = {};
   currentPage = 'LoginPage';
 
-  pages: Array<{ title: string, component: any, icon: string }>;
+  // used for an example of ngFor and navigation
+  pagesSuper: any[] = [
+    {
+      title: 'Inicio',
+      icon: 'md-home',
+      component: 'HomePage'
+    },
+    {
+      title: 'Vendedores',
+      icon: 'md-list-box', 
+      component: 'PreventaPage'
+    },
+    {
+      title: 'Mapa Vendedores',
+      icon: 'map',
+      component: 'MapGenericPage'
+    }
+  ];
+
+pagesJefe: any[] = [
+  {
+    title: 'Inicio',
+    icon: 'md-home',
+    component: 'HomeJefeVentasPage'
+  },
+  {
+    title: 'Supervisores',
+    icon: 'md-list-box',
+    component: 'ListSupervidoresPage'
+  },
+  {
+    title: 'Mapa Supervisores',
+    icon: 'map',
+    component: 'MapGenericPage'
+  }
+];
 
   constructor(
     public platform: Platform,
@@ -27,33 +62,10 @@ export class MyApp {
     private sim: Sim,
     private storage: Storage,
     private alertCtrl: AlertController,
-    public loginService: LoginService
+    public loginService: LoginService,
+    private menuCtrl: MenuController
   ) {
     this.initializeApp();
-
-    // used for an example of ngFor and navigation
-    this.pages = [
-      {
-        title: 'Inicio',
-        icon: 'md-home',
-        component: 'HomePage'
-      },
-      {
-        title: 'Vendedores',
-        icon: 'md-list-box', 
-        component: 'PreventaPage'
-      },
-      {
-        title: 'Mapa',
-        icon: 'map',
-        component: 'MapGenericPage'
-      },
-      {
-        title: 'Supervisores',
-        icon: 'md-list-box',
-        component: 'ListSupervidoresPage'
-      }
-    ];
   }
 
   initializeApp() {
@@ -62,16 +74,22 @@ export class MyApp {
       this.obtenerImei();
       this.suscribirCanal();
       this.splashScreen.hide();
+      this.disenabledMenu();
     });
   }
 
-  openPage(page) {
+  openPage( page ) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
     if (page.component !== this.currentPage) {
       this.currentPage = page.component;
       this.navMaster.setRoot(page.component);
     }
+  }
+
+  private disenabledMenu(){
+    this.menuCtrl.enable(false, 'menuJefe');
+    this.menuCtrl.enable(false, 'menuSuper');
   }
 
   private obtenerImei() {
@@ -91,7 +109,8 @@ export class MyApp {
       );
 
     } else { // is WEB NO TENEMOS SIM EN UN PC
-      const imei = '356811079170460';
+      // const imei = '358993064450418'; //SUPER
+      const imei = '359825061511512'; //JEFE
       console.log('web: imei celular', imei);
       this.storage.set('imei', imei);
     }

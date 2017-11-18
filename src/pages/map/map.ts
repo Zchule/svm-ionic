@@ -10,6 +10,7 @@ declare var google;
   name: 'map',
   segment: 'map/:key'
 })
+
 @Component({
   selector: 'page-map',
   templateUrl: 'map.html',
@@ -93,7 +94,7 @@ export class MapPage {
   }
 
   ionViewDidEnter() {
-    this.menuCtrl.enable(false, 'menuAdmin');
+    this.menuCtrl.enable(false, 'menuSuper');
   }
 
   ionViewDidLeave() {

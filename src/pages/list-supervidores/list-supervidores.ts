@@ -50,7 +50,7 @@ export class ListSupervidoresPage {
   }
 
   ionViewDidEnter() {
-    this.menuCtrl.enable(true, 'menuAdmin');
+    this.menuCtrl.enable(true, 'menuJefe');
     this.supervisorService.stopGetSupervisorAllOnline();
   }
 
@@ -64,19 +64,18 @@ export class ListSupervidoresPage {
   goToMapPage(supervisor) {
     if (supervisor.hora === '00:00:00') {
       const alert = this.alertCtrl.create({
-        title: 'Vendedor',
+        title: 'Supervisor',
         subTitle: 'No hay datos',
         buttons: ['OK']
       });
       alert.present();
-    }else {
       const key = supervisor.imei;
-      const name = supervisor.nombreVendedor;
-      this.navCtrl.push('map', {
+      const name = supervisor.nombreSupervisor;
+      this.navCtrl.push('MapSupervisorPage', {
         key: key,
         name: name
       });
-    }
+    } 
   }
 
   goToListVendedores(supervisor) {
@@ -89,9 +88,9 @@ export class ListSupervidoresPage {
   private checkImei() {
     this.storage.get('imei')
     .then(imei => {
-      // console.log('imei llego', imei);
-      this.imeiCel = '359825061511512';
-      // this.imeiCel = imei;
+      console.log('imei llego', imei);
+      // this.imeiCel = '359825061511512';
+      this.imeiCel = imei;
       this.getSupervisores();
     });
   }

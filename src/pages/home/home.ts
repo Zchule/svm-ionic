@@ -18,6 +18,6 @@ export class HomePage {
   }
 
   ionViewDidEnter() {
-    this.menuCtrl.enable(false, 'menuAdmin');
+    this.menuCtrl.enable(true, 'menuSuper');
   }
 }

@@ -42,7 +42,7 @@ export class LoginPage {
   }
 
   ionViewDidEnter() {
-    this.menuCtrl.enable(true, 'menuAdmin');
+    this.menuCtrl.enable(true, 'menuSuper');
   }
 
   nombre(userName) {
@@ -74,9 +74,11 @@ export class LoginPage {
     });
     load.present();
     this.loginService.doLogin(usuario, password, this.imeiCel)
-    .then(() => {
+    .then((user) => {
       load.dismiss();
-      this.navCtrl.setRoot('HomePage');
+      console.log('login user', user);
+      console.log('login tipo', user.tipo);
+      this.navCtrl.setRoot(user.page);
     })
     .catch(error => {
       load.dismiss()

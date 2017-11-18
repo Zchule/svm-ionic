@@ -28,7 +28,6 @@ export class PreventaPage {
     private vendedorService: VendedorService,
     private storage: Storage,
     private network: Network
-
   ) { }
 
   ionViewDidLoad() {
@@ -49,7 +48,7 @@ export class PreventaPage {
   }
 
   ionViewDidEnter() {
-    this.menuCtrl.enable(true, 'menuAdmin');
+    this.menuCtrl.enable(true, 'menuSuper');
     this.vendedorService.stopGetVendedorAllOnline();
   }
 
@@ -82,8 +81,8 @@ export class PreventaPage {
     this.storage.get('imei')
     .then(imei => {
       console.log('imei llego', imei);
-      this.imeiCel = '356811079170536';
-      // this.imeiCel = imei;
+      // this.imeiCel = '356811079170536';
+      this.imeiCel = imei;
       this.getVendedores();
     });
   }

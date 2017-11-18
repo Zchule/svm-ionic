@@ -47,6 +47,11 @@ export class LoginService {
       query.once('value', snap => {
         const user = snap.val()[imei];
         console.log(user);
+        let pages: any = {
+          'supervisor': 'HomePage',
+          'jventas': 'HomeJefeVentasPage',
+        };
+        user.page = pages[user.tipo];
         if (user.NombreUsuario === usuario && user.Contraseña === password && user.operacionId === 1 ) {
           // this.vendedorService.getVendedorAllOffline(imei);
           user.Contraseña = Md5.hashStr(user.Contraseña);
