@@ -75,7 +75,7 @@ export class ListSupervidoresPage {
         key: key,
         name: name
       });
-    } 
+    }
   }
 
   goToListVendedores(supervisor) {
@@ -84,7 +84,7 @@ export class ListSupervidoresPage {
       name: name
     });
   }
- 
+
   private checkImei() {
     this.storage.get('imei')
     .then(imei => {
@@ -104,7 +104,7 @@ export class ListSupervidoresPage {
           const vendedorActual = this.supervisores[supervisor.imei];
           supervisor.posicion = vendedorActual.posicion;
           this.listsSupervisores[vendedorActual.posicion] = supervisor;
-        }else {
+        } else {
           supervisor.posicion = this.listsSupervisores.length;
           this.supervisores[supervisor.imei] = supervisor;
           this.listsSupervisores.push(supervisor);
@@ -126,7 +126,7 @@ export class ListSupervidoresPage {
         buttons: ['OK']
       });
       alert.present();
-    }else {
+    } else {
       // Si tiene conexion verifica conexion con firebase
     }
   }

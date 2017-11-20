@@ -11,13 +11,13 @@
 
 <ion-content>
   <ion-list>
-    <button ion-item *ngFor="let supervisor of listsSupervisores; let i = index"  (click)="goToListVendedores(supervisor)">
-      <img item-start src="./assets/imgs/super.png" style="max-height: 50px;" alt="auto">
-      <h5> {{ supervisor.nombreSupervisor }}</h5>
-      <h5> Hora: {{ supervisor.hora}}</h5> 
+    <ion-item *ngFor="let supervisor of listsSupervisores; let i = index">
+      <img (click)="goToListVendedores(supervisor)" item-start src="./assets/imgs/super.png" style="max-height: 50px;" alt="auto">
+      <h5 (click)="goToListVendedores(supervisor)"> {{ supervisor.nombreSupervisor }}</h5>
+      <h5 (click)="goToListVendedores(supervisor)"> Hora: {{ supervisor.hora}}</h5>
       <button class="icon" ion-button clear item-right icon-only (click)="goToMapPage(supervisor)">
-          <ion-icon color="primary" name="map"></ion-icon> 
+          <ion-icon color="primary" name="map"></ion-icon>
         </button>
-    </button>
+    </ion-item>
   </ion-list>
 </ion-content>

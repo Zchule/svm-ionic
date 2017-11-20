@@ -140,11 +140,10 @@ export class MapPage {
 
   private obtenerVendedor() { // this.mapService.runSimulation(this.key, this.fecha);
     const subscriptionGetVendedor = this.mapService.getVendedor(this.key, this.fecha)
-    .subscribe(points =>{ 
+    .subscribe(points => {
       // console.log('point', points);
       this.resetCounts();
       this.renderMarkers(points);
-       
     });
     this.subscriptions.push(subscriptionGetVendedor);
     const subscriptionVendedorPosicionActual = this.mapService.getVendedorPosicionActual(this.key)
@@ -161,7 +160,7 @@ export class MapPage {
       if (this.markerVendedor === null) {
         const tipo = 'VENDEDOR';
         this.markerVendedor = this.createMarker(latitud, longitud, icon, this.name, this.key, posicionActual.hora, tipo);
-      }else {
+      } else {
         this.markerVendedor.setPosition(newCenter);
       }
     });
@@ -179,7 +178,7 @@ export class MapPage {
     const type = this.getType(point);
     this.indicadoresList(type);
     this.geoList[key].point.tipo = type;
-    //console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
+    // console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);
     // crear el marker de este punto
@@ -205,7 +204,7 @@ export class MapPage {
     const type = this.getType(point);
     this.indicadoresList(type);
     this.geoList[key].point.tipo = type;
-    //console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
+    // console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
     // obtengo el icono correcto de acuerdo al tipo
     const icon = this.getIcon(type);
     // modifica la posicion del marker
@@ -222,15 +221,15 @@ export class MapPage {
   private indicadoresList(type) {
     if (type === 'PEDIDO') {
       this.indicadores.pedido.count++;
-    }else if (type === 'VISITA') {
+    } else if (type === 'VISITA') {
       this.indicadores.visita.count++;
-    }else if (type === 'VENTA') {
+    } else if (type === 'VENTA') {
       this.indicadores.venta.count++;
-    }else if (type === 'DEVOLUCION') {
+    } else if (type === 'DEVOLUCION') {
       this.indicadores.devolucion.count++;
-    }else if (type === 'PEDIDO_ANULADO') {
+    } else if (type === 'PEDIDO_ANULADO') {
       this.indicadores.pedidoAnulado.count++;
-    }else if (type === 'VENTA_ANULADA') {
+    } else if (type === 'VENTA_ANULADA') {
       this.indicadores.ventaAnulada.count++;
     }
   }
@@ -266,9 +265,9 @@ export class MapPage {
   private getType(point: any) {
     if (point.tipo === 'PEDIDO' && point.estadoPV === 'ANULADO') {
       return 'PEDIDO_ANULADO';
-    }else if (point.tipo === 'VENTA' && point.estadoPV === 'ANULADO') {
+    } else if (point.tipo === 'VENTA' && point.estadoPV === 'ANULADO') {
       return 'VENTA_ANULADA';
-    }else {
+    } else {
       return point.tipo;
     }
   }
@@ -281,7 +280,7 @@ export class MapPage {
         const updatePoint = point.payload.val();
         this.updatePoint(point.key, updatePoint);
         lines.push({ lat: updatePoint.latitud, lng: updatePoint.longitud });
-      }else {
+      } else {
         const newPoint = point.payload.val();
         this.createPoint(point.key, newPoint);
         lines.push({ lat: newPoint.latitud, lng: newPoint.longitud });
@@ -371,37 +370,37 @@ export class MapPage {
         // item.marker.setVisible(true);
         if (this.indicadores.venta.estado === false && item.point.tipo === 'VENTA') {
           item.marker.setVisible(false);
-        }else if (this.indicadores.venta.estado === true && item.point.tipo === 'VENTA') {
+        } else if (this.indicadores.venta.estado === true && item.point.tipo === 'VENTA') {
           item.marker.setVisible(true);
         }
 
         if (this.indicadores.pedido.estado === false && item.point.tipo === 'PEDIDO' ) {
           item.marker.setVisible(false);
-        }else if (this.indicadores.pedido.estado === true && item.point.tipo === 'PEDIDO') {
+        } else if (this.indicadores.pedido.estado === true && item.point.tipo === 'PEDIDO') {
           item.marker.setVisible(true);
         }
 
         if (this.indicadores.visita.estado === false && item.point.tipo === 'VISITA' ) {
           item.marker.setVisible(false);
-        }else if (this.indicadores.visita.estado === true && item.point.tipo === 'VISITA') {
+        } else if (this.indicadores.visita.estado === true && item.point.tipo === 'VISITA') {
           item.marker.setVisible(true);
         }
 
         if (this.indicadores.ventaAnulada.estado === false && item.point.tipo === 'VENTA_ANULADA' ) {
           item.marker.setVisible(false);
-        }else if (this.indicadores.ventaAnulada.estado === true && item.point.tipo === 'VENTA_ANULADA') {
+        } else if (this.indicadores.ventaAnulada.estado === true && item.point.tipo === 'VENTA_ANULADA') {
           item.marker.setVisible(true);
         }
 
         if (this.indicadores.pedidoAnulado.estado === false && item.point.tipo === 'PEDIDO_ANULADO' ) {
           item.marker.setVisible(false);
-        }else if (this.indicadores.pedidoAnulado.estado === true && item.point.tipo === 'PEDIDO_ANULADO') {
+        } else if (this.indicadores.pedidoAnulado.estado === true && item.point.tipo === 'PEDIDO_ANULADO') {
           item.marker.setVisible(true);
         }
 
         if (this.indicadores.devolucion.estado === false && item.point.tipo === 'DEVOLUCION' ) {
           item.marker.setVisible(false);
-        }else if (this.indicadores.devolucion.estado === true && item.point.tipo === 'DEVOLUCION') {
+        } else if (this.indicadores.devolucion.estado === true && item.point.tipo === 'DEVOLUCION') {
           item.marker.setVisible(true);
         }
       }

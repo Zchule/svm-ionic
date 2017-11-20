@@ -27,7 +27,7 @@ export class MyApp {
     },
     {
       title: 'Vendedores',
-      icon: 'md-list-box', 
+      icon: 'md-list-box',
       component: 'PreventaPage'
     },
     {
@@ -87,7 +87,7 @@ pagesJefe: any[] = [
     }
   }
 
-  private disenabledMenu(){
+  private disenabledMenu() {
     this.menuCtrl.enable(false, 'menuJefe');
     this.menuCtrl.enable(false, 'menuSuper');
   }
@@ -109,8 +109,8 @@ pagesJefe: any[] = [
       );
 
     } else { // is WEB NO TENEMOS SIM EN UN PC
-      // const imei = '358993064450418'; //SUPER
-      const imei = '359825061511512'; //JEFE
+      const imei = '358993064450418'; // SUPER
+      // const imei = '359825061511512'; // JEFE
       console.log('web: imei celular', imei);
       this.storage.set('imei', imei);
     }

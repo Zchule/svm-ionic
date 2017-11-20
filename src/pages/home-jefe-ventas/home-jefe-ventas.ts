@@ -11,7 +11,7 @@ export class HomeJefeVentasPage {
   myDate: String = new Date().toISOString().substring(0, 10);
 
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
     public menuCtrl: MenuController
   ) {
