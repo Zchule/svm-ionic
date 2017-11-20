@@ -141,7 +141,7 @@ export class MapPage {
   private obtenerVendedor() { // this.mapService.runSimulation(this.key, this.fecha);
     const subscriptionGetVendedor = this.mapService.getVendedor(this.key, this.fecha)
     .subscribe(points => {
-      // console.log('point', points);
+      console.log('point', points);
       this.resetCounts();
       this.renderMarkers(points);
     });

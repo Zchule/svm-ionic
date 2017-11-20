@@ -77,7 +77,6 @@ export class LoginPage {
     .then((user) => {
       load.dismiss();
       console.log('login user', user);
-      console.log('login tipo', user.tipo);
       this.navCtrl.setRoot(user.page);
     })
     .catch(error => {

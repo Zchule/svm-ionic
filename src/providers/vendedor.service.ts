@@ -109,12 +109,15 @@ export class VendedorService {
       if (this.network.type !== 'none') {
         console.log('entro con inter', this.network.type);
         this.getVendedorAllOnline(id, fecha);
+        console.log('id', id);
       }else {
         console.log('entro a none', this.network.type);
         this.getVendedorAllOffline(id);
+        console.log('id', id);
       }
      } else {
       this.getVendedorAllOnline(id, fecha);
+      console.log('id', id);
     }
   }
 

@@ -38,7 +38,7 @@ export class SupervisoresProvider {
 
   getSupervisorAllOnline(id: string, fecha): void {
     console.log('getVendedorAllOnline', id);
-    const supervisoresListRef = this.fireDatabase.list(`/JefeDeVentas/${id}/SupervisorList`);
+    const supervisoresListRef = this.fireDatabase.list(`/Supervisores/${id}/SupervisoresList`);
     const supervisoresListSubscription = supervisoresListRef.snapshotChanges(['child_added'])
     .subscribe(actions => {
       actions.forEach(action => {
@@ -46,12 +46,22 @@ export class SupervisoresProvider {
         supervisor.hora = '00:00:00';
         this.getSupervisorAllRef.next(supervisor);
         // hora
-        // const horaRef = this.fireDatabase.object(`/vendedores/${supervisor.imei}/PosicionActual/hora`);
-        // const horaSubscription = this.createHoraSubscription(horaRef, supervisor);
-        // this.subscriptions.push( horaSubscription );
+        const horaRef = this.fireDatabase.object(`/trackingSupervisor/${supervisor.imei}/PosicionActual/hora`);
+        const horaSubscription = this.createHoraSubscription(horaRef, supervisor);
+        this.subscriptions.push( horaSubscription );
       });
     });
     this.subscriptions.push( supervisoresListSubscription );
+  }
+
+  private createHoraSubscription(horaRef, supervisor) {
+    return horaRef.valueChanges()
+    .subscribe( hora => {
+      if (hora !== null) {
+        supervisor.hora = hora;
+        this.getSupervisorAllRef.next(supervisor);
+      }
+    });
   }
 
   stopGetSupervisorAllOnline() {
@@ -79,7 +89,7 @@ export class SupervisoresProvider {
       if (this.network.type !== 'none') {
         console.log('entro con inter', this.network.type);
         this.getSupervisorAllOnline(id, fecha);
-      }else {
+      } else {
         console.log('entro a none', this.network.type);
         this.getSupervisorAllOffline(id);
       }
@@ -90,6 +100,21 @@ export class SupervisoresProvider {
 
   getSupervisorAllChannel() {
     return this.getSupervisorAllRef.asObservable();
+  }
+
+  getSupervisorMap(id: string, fecha: string) {
+    // console.log('getVendedor');
+    const vendedorRef = this.fireDatabase
+    // .list(`/vendedores/${id}/registro:${fecha}/geoPuntoList`, ref => ref.limitToLast(500));
+    .list(`/trackingSupervisor/${id}/registro:${fecha}/geoPuntoList`);
+    // return vendedorRef.stateChanges();
+    return vendedorRef.snapshotChanges(['child_added']);
+  }
+
+  getSupervisorPosicionActual(id: string) {
+    // console.log('getVendedorPosicionActual');
+    const vendedorRef = this.fireDatabase.object(`/trackingSupervisor/${id}/PosicionActual`);
+    return vendedorRef.valueChanges();
   }
 
 }

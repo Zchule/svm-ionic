@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, MenuController, Loading, LoadingController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, MenuController, Loading, LoadingController, AlertController, NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
 import { Subscription } from 'rxjs/Subscription';
@@ -19,6 +19,8 @@ export class PreventaPage {
   imeiCel: string;
   subscriptions: Subscription[] = [];
   load: Loading;
+  key: string;
+  name: string;
 
   constructor(
     private navCtrl: NavController,
@@ -27,8 +29,9 @@ export class PreventaPage {
     private loadCtrl: LoadingController,
     private vendedorService: VendedorService,
     private storage: Storage,
-    private network: Network
-  ) { }
+    private network: Network,
+    private navParams: NavParams
+  ) { this.key = this.navParams.get('key'); }
 
   ionViewDidLoad() {
     this.load = this.loadCtrl.create({
@@ -43,7 +46,7 @@ export class PreventaPage {
     });
     this.subscriptions.push(subscriptionFechaServidor);
     this.verificarInternet();
-    this.getVendedores();
+    // this.getVendedores();
     this.load.dismiss();
   }
 
@@ -67,7 +70,7 @@ export class PreventaPage {
         buttons: ['OK']
       });
       alert.present();
-    }else {
+    } else {
       const key = vendedor.imei;
       const name = vendedor.nombreVendedor;
       this.navCtrl.push('map', {
@@ -78,16 +81,27 @@ export class PreventaPage {
   }
 
   private checkImei() {
-    this.storage.get('imei')
-    .then(imei => {
-      console.log('imei llego', imei);
-      // this.imeiCel = '356811079170536';
-      this.imeiCel = imei;
-      this.getVendedores();
+    this.storage.get('user')
+    .then(user => {
+      const userSinup = JSON.parse(user);
+      console.log('user logueado', userSinup);
+      if (userSinup.tipo === 'jventas') {
+        this.imeiCel = this.key;
+        console.log('imei vendedor', this.imeiCel);
+        this.getVendedores(this.imeiCel);
+      } else {
+        this.storage.get('imei')
+        .then(imei => {
+          console.log('imei llego sup', imei);
+          // this.imeiCel = '356811079170536';
+          this.imeiCel = imei;
+          this.getVendedores(this.imeiCel);
+        });
+      }
     });
   }
 
-  private getVendedores() {
+  private getVendedores(imei) {
     const subscriptionVendedorAllChannel = this.vendedorService.getVendedorAllChannel()
     .subscribe(vendedor => {
       if (vendedor !== null) {
@@ -96,7 +110,7 @@ export class PreventaPage {
           const vendedorActual = this.vendedores[vendedor.imei];
           vendedor.posicion = vendedorActual.posicion;
           this.listsVendedores[vendedorActual.posicion] = vendedor;
-        }else {
+        } else {
           vendedor.posicion = this.listsVendedores.length;
           this.vendedores[vendedor.imei] = vendedor;
           this.listsVendedores.push(vendedor);
@@ -118,7 +132,7 @@ export class PreventaPage {
         buttons: ['OK']
       });
       alert.present();
-    }else {
+    } else {
       // Si tiene conexion verifica conexion con firebase
       this.verificarAcessoFirebase();
     }

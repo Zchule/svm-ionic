@@ -62,6 +62,7 @@ export class ListSupervidoresPage {
   }
 
   goToMapPage(supervisor) {
+    console.log(supervisor);
     if (supervisor.hora === '00:00:00') {
       const alert = this.alertCtrl.create({
         title: 'Supervisor',
@@ -69,8 +70,9 @@ export class ListSupervidoresPage {
         buttons: ['OK']
       });
       alert.present();
+    } else {
       const key = supervisor.imei;
-      const name = supervisor.nombreSupervisor;
+      const name = supervisor.nombreVendedor;
       this.navCtrl.push('MapSupervisorPage', {
         key: key,
         name: name
@@ -80,8 +82,7 @@ export class ListSupervidoresPage {
 
   goToListVendedores(supervisor) {
     this.navCtrl.push('PreventaPage', {
-      key: supervisor.$key,
-      name: name
+      key: supervisor.imei
     });
   }
 
@@ -96,14 +97,14 @@ export class ListSupervidoresPage {
   }
 
   private getSupervisores() {
-    const subscriptionVendedorAllChannel = this.supervisorService.getSupervisorAllChannel()
+    const subscriptionSupervisorAllChannel = this.supervisorService.getSupervisorAllChannel()
     .subscribe(supervisor => {
       if (supervisor !== null) {
-        console.log('vendedores', supervisor);
+        console.log('supervisor', supervisor);
         if (this.supervisores.hasOwnProperty(supervisor.imei)) {
-          const vendedorActual = this.supervisores[supervisor.imei];
-          supervisor.posicion = vendedorActual.posicion;
-          this.listsSupervisores[vendedorActual.posicion] = supervisor;
+          const supervisorActual = this.supervisores[supervisor.imei];
+          supervisor.posicion = supervisorActual.posicion;
+          this.listsSupervisores[supervisorActual.posicion] = supervisor;
         } else {
           supervisor.posicion = this.listsSupervisores.length;
           this.supervisores[supervisor.imei] = supervisor;
@@ -112,7 +113,7 @@ export class ListSupervidoresPage {
         this.storage.set('SupervisoresList', JSON.stringify(this.supervisores));
       }
     });
-    this.subscriptions.push(subscriptionVendedorAllChannel);
+    this.subscriptions.push(subscriptionSupervisorAllChannel);
     // getSupervisorAllOnline va estricamente despues de getVendedorAllChannel
     this.supervisorService.getSupervisorAll(this.imeiCel, this.fecha);
   }
