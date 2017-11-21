@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform, AlertController, MenuController } from 'ionic-angular';
+import { Nav, Platform, MenuController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -61,7 +61,6 @@ pagesJefe: any[] = [
     public splashScreen: SplashScreen,
     private sim: Sim,
     private storage: Storage,
-    private alertCtrl: AlertController,
     public loginService: LoginService,
     private menuCtrl: MenuController
   ) {

@@ -33,7 +33,7 @@ export class LoginService {
       if (estado) {
         console.log('login offline', estado);
         return this.doLoginOffline(usuario, password);
-      }else {
+      } else {
         console.log('login online', estado);
         return this.doLoginOnline(usuario, password, imei);
       }
@@ -47,7 +47,7 @@ export class LoginService {
       query.once('value', snap => {
         const user = snap.val()[imei];
         console.log(user);
-        let pages: any = {
+        const pages: any = {
           'supervisor': 'HomePage',
           'jventas': 'HomeJefeVentasPage',
         };
@@ -60,7 +60,7 @@ export class LoginService {
           this.storage.set('offline', true);
           this.userChannel.next(user);
           resolve(user);
-        }else {
+        } else {
           reject(user);
         }
       });
@@ -77,7 +77,7 @@ export class LoginService {
       console.log(passwordEncrip);
       if (userOff.NombreUsuario === usuario && userOff.Contraseña === passwordEncrip) {
         return Promise.resolve(userOff);
-      }else {
+      } else {
         return Promise.reject(userOff);
       }
     });

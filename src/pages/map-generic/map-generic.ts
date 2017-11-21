@@ -107,7 +107,7 @@ export class MapGenericPage {
             lat: lat,
             lng: lng
           });
-        }else { // no lo tengo
+        } else { // no lo tengo
           this.vendedores[vendedor.imei] = {};
           this.vendedores[vendedor.imei].data = vendedor;
           const lat = vendedor.posicionActual.latitud;

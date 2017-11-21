@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+// import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import 'rxjs/add/operator/map';
@@ -19,7 +19,7 @@ export class SupervisoresProvider {
 
   constructor(
     private fireDatabase: AngularFireDatabase,
-    private http: HttpClient,
+    // private http: HttpClient,
     private storage: Storage,
     private network: Network,
     private platform: Platform

@@ -20,6 +20,9 @@ import { LoginService } from '../providers/login.service';
 import { MapGenericService} from '../providers/map-generic.service';
 import { MapService } from '../providers/map.service';
 import { SupervisoresProvider } from '../providers/supervisores.service';
+import { LocationService } from '../providers/location';
+
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 
 const configFirebase = {
   apiKey: 'AIzaSyAJDgpY9ssAyjIX_vA7S1D_fgcA26BBvxQ',
@@ -56,13 +59,15 @@ const configFirebase = {
     Geolocation,
     GoogleMaps,
     SQLite,
+    BackgroundGeolocation,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     VendedorService,
     LoginService,
     Network,
     MapGenericService,
     MapService,
-    SupervisoresProvider
+    SupervisoresProvider,
+    LocationService
   ]
 })
 export class AppModule {}
