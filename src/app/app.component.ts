@@ -102,12 +102,12 @@ pagesJefe: any[] = [
       });
       this.sim.requestReadPermission().then((permiso) => {
         console.log('Permission granted', permiso);
-        const si = permiso.$apply();
       },
         (error) => console.log('Permission denied')
       );
 
     } else { // is WEB NO TENEMOS SIM EN UN PC
+      // const imei = '356265066243709'; // pruebas
       // const imei = '358993064450418'; // SUPER
       const imei = '359825061511512'; // JEFE
       console.log('web: imei celular', imei);

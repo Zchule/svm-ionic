@@ -103,11 +103,8 @@ export class SupervisoresProvider {
   }
 
   getSupervisorMap(id: string, fecha: string) {
-    // console.log('getVendedor');
-    const vendedorRef = this.fireDatabase
-    // .list(`/vendedores/${id}/registro:${fecha}/geoPuntoList`, ref => ref.limitToLast(500));
-    .list(`/trackingSupervisor/${id}/registro:${fecha}/geoPuntoList`);
-    // return vendedorRef.stateChanges();
+    // console.log('getsupervisor');
+    const vendedorRef = this.fireDatabase.list(`/trackingSupervisor/${id}/registro:${fecha}/geoPuntoList`);
     return vendedorRef.snapshotChanges(['child_added']);
   }
 

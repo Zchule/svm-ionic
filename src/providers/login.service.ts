@@ -34,7 +34,7 @@ export class LoginService {
         console.log('login offline', estado);
         return this.doLoginOffline(usuario, password);
       } else {
-        console.log('login online', estado);
+        console.log('login online doLogin', estado);
         return this.doLoginOnline(usuario, password, imei);
       }
     });

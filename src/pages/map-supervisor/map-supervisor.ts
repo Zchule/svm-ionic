@@ -195,6 +195,17 @@ export class MapSupervisorPage {
   }
 
   private createLines(lines: any[]) {
+    const seq = {
+      repeat: '50px',
+      icon: {
+        path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
+        scale: 1,
+        fillOpacity: 0,
+        strokeColor: '#2677FF',
+        strokeWeight: 2,
+        strokeOpacity: 1
+      }
+    };
     // si ya hay unas lineas creadas las elimina antes de crear las nuevas
     if (this.linesPath !== null) {
       this.linesPath.setMap(null);
@@ -204,7 +215,8 @@ export class MapSupervisorPage {
       geodesic: true,
       strokeColor: '#FF0000',
       strokeOpacity: 1.0,
-      strokeWeight: 2
+      strokeWeight: 2,
+      icons: [seq]
     });
     this.linesPath.setMap(this.map);
   }
