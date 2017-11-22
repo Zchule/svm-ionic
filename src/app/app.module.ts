@@ -23,6 +23,7 @@ import { SupervisoresProvider } from '../providers/supervisores.service';
 import { LocationService } from '../providers/location';
 
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
+import { MapGenericSupService } from '../providers/map-generic-sup';
 
 const configFirebase = {
   apiKey: 'AIzaSyAJDgpY9ssAyjIX_vA7S1D_fgcA26BBvxQ',
@@ -67,7 +68,8 @@ const configFirebase = {
     MapGenericService,
     MapService,
     SupervisoresProvider,
-    LocationService
+    LocationService,
+    MapGenericSupService
   ]
 })
 export class AppModule {}

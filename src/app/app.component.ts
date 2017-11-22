@@ -51,7 +51,7 @@ pagesJefe: any[] = [
   {
     title: 'Mapa Supervisores',
     icon: 'map',
-    component: 'MapGenericPage'
+    component: 'MapGenericSupPage'
   }
 ];
 
