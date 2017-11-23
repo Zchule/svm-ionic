@@ -23,30 +23,32 @@ export class LocationService {
   }
 
   savePositionActual(latitud, longitud) {
-    const position = this.fireDatabase.object(`trackingSupervisor/${this.imeiSuper}`);
+    console.log('save position');
+    const position = this.fireDatabase.object(`trackingSupervisor/${this.imeiSuper}/PosicionActual`);
     position.set({
-      PosicionActual: {
         hora: `${this.today.getHours()}:${this.today.getMinutes()}:${this.today.getMinutes()}`,
         latitude: latitud,
-        longitude: longitud,
-      }
+        longitude: longitud
+    });
+  }
+
+  updatePositionActual(latitud, longitud) {
+    console.log('update position');
+    const position = this.fireDatabase.object(`trackingSupervisor/${this.imeiSuper}/PosicionActual`);
+    position.update({
+        hora: `${this.today.getHours()}:${this.today.getMinutes()}:${this.today.getMinutes()}`,
+        latitude: latitud,
+        longitude: longitud
     });
   }
 
   saveGeoPuntoList(fecha, latitud, longitud) {
     const geoPuntoListRef = this.fireDatabase.object(`/trackingSupervisor/${this.imeiSuper}/registro:${fecha}/geoPuntoList`);
     geoPuntoListRef.set({
-      '`registro:${fecha}`': {
-        fecha: fecha,
-        geoPuntoList: [
-          {
-            hora: `${this.today.getHours()}:${this.today.getMinutes()}:${this.today.getMinutes()}`,
-            latitude: latitud,
-            longitude: longitud,
-          }
-        ]
-      }
-    });
+      hora: `${this.today.getHours()}:${this.today.getMinutes()}:${this.today.getMinutes()}`,
+      latitude: latitud,
+      longitude: longitud,
+      });
   }
 
   start(fecha) {
@@ -71,9 +73,16 @@ export class LocationService {
     this.backgroundGeolocation.configure(config)
       .subscribe((location: BackgroundGeolocationResponse) => {
         console.log('ubic', location);
-        console.log('ubic latitude', location.latitude, location.longitude);
         this.saveGeoPuntoList(fecha, location.latitude, location.longitude);
-        this.savePositionActual(location.latitude, location.longitude);
+        let a = 0;
+        if (a === 0) {
+          this.savePositionActual(location.latitude, location.longitude);
+          a = a + 1;
+          console.log(a);
+        } else {
+          this.updatePositionActual(location.latitude, location.longitude);
+          console.log(a);
+        }
         this.backgroundGeolocation.getLogEntries(100)
           .then((errors) => {
             console.error(errors);

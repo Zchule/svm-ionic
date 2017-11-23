@@ -34,6 +34,11 @@ export class VendedorService {
     return this.fireDatabase.object('/Servidor');
   }
 
+  getVendedorTipo(id) {
+    const vendedorTipoRef = this.fireDatabase.object(`/vendedores/${id}/supervisorId`);
+    return vendedorTipoRef.valueChanges();
+  }
+
   getConexion() {
     return this.http.get('https://firebasestorage.googleapis.com/v0/b/svmmoviltest.appspot.com/o/check-conexion.json?alt=media&token=4069678c-c030-4853-be60-c299f597c021')
     .toPromise();
@@ -48,6 +53,7 @@ export class VendedorService {
         const vendedor = action.payload.val();
         vendedor.efectividad = 0;
         vendedor.hora = '00:00:00';
+        vendedor.tipo = '0';
         this.getVendedorAllRef.next(vendedor);
         // hora
         const horaRef = this.fireDatabase.object(`/vendedores/${vendedor.imei}/PosicionActual/hora`);
@@ -57,9 +63,26 @@ export class VendedorService {
         const efectividadRef = this.fireDatabase.object(`/vendedores/${vendedor.imei}/registro:${fecha}/efectividad`);
         const efectividadSubscription = this.createEfectividadSubscription(efectividadRef, vendedor);
         this.subscriptions.push( efectividadSubscription );
+
+        // hora
+        const tipoRef = this.fireDatabase.object(`/vendedores/${vendedor.imei}/supervisorId`);
+        const tipoSubscription = this.createTipoSubscription(tipoRef, vendedor);
+        this.subscriptions.push( tipoSubscription );
+
       });
     });
     this.subscriptions.push( vendedoresListSubscription );
+  }
+
+  private createTipoSubscription(tipoRef, vendedor) {
+    return tipoRef.valueChanges()
+    .subscribe( tipo => {
+      console.log('tipo', tipo);
+      if (tipo !== null) {
+        vendedor.tipo = tipo;
+        this.getVendedorAllRef.next(vendedor);
+      }
+    });
   }
 
   private createHoraSubscription(horaRef, vendedor) {

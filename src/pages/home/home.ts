@@ -28,13 +28,13 @@ export class HomePage {
   ) {}
 
   ionViewDidLoad() {
-    const subscriptionFechaServidor = this.mapService.getFechaServidor()
+    this.mapService.getFechaServidor()
     .valueChanges()
     .subscribe((data: any) => {
       this.fecha = data.fecha;
+      this.startBackgroundGeolocation();
     });
-    this.subscriptions.push(subscriptionFechaServidor);
-    this.startBackgroundGeolocation();
+    
   }
 
   ionViewDidEnter() {

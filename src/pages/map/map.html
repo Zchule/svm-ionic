@@ -5,20 +5,12 @@
             <ion-icon name="menu"></ion-icon>
           </button>
         </ion-buttons>
-    <ion-title class="Title">Mapa Vendedor</ion-title>
+    <ion-title class="Title">MAPA VENDEDOR</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
   <div id="map"></div>
-  <!-- <div class="ruta" >
-      <ion-item (click)='CargarRuta()'>
-          <img item-start *ngIf="indicadores.venta.estado == false" src="./assets/imgs/rutaInhabilitada.png"  alt="venta">
-          <img item-start  *ngIf="indicadores.venta.estado == true" src="./assets/imgs/ruta.png" alt="venta">
-          <p>Ruta</p>
-        </ion-item>
-  </div> -->
-
   <ion-list class="mylist">
     <ion-item (click)='toggleVenta()'>
       <img item-start *ngIf="indicadores.venta.estado == false" src="./assets/imgs/estado.png"  alt="venta">
@@ -26,14 +18,6 @@
       <p>{{ indicadores.venta.text }}</p>
       <ion-badge item-end>{{ indicadores.venta.count }}</ion-badge>
     </ion-item>
-      
-    <ion-item (click)='togglePedido()'>
-      <img item-start *ngIf="indicadores.pedido.estado == false" src="./assets/imgs/estado.png"  alt="pedido">
-      <img item-start  *ngIf="indicadores.pedido.estado == true" src="./assets/imgs/pedido.png" alt="pedido">
-      <p>{{ indicadores.pedido.text }}</p>
-      <ion-badge item-end>{{ indicadores.pedido.count }}</ion-badge>
-    </ion-item>
-      
     <ion-item (click)='toggleVisita()'>
       <img item-start *ngIf="indicadores.visita.estado == false" src="./assets/imgs/estado.png"  alt="visita">
       <img item-start  *ngIf="indicadores.visita.estado == true" src="./assets/imgs/visita.png" alt="visita">
@@ -41,18 +25,13 @@
       <ion-badge item-end>{{ indicadores.visita.count }}</ion-badge>
     </ion-item> 
   </ion-list>
+
   <ion-list class="mylist2">
     <ion-item (click)='toggleVentaAnulada()'>
       <img item-start *ngIf="indicadores.ventaAnulada.estado == false" src="./assets/imgs/estado.png"  alt="ventaAnulada">
       <img item-start  *ngIf="indicadores.ventaAnulada.estado == true" src="./assets/imgs/ventaAnulada.png" alt="ventaAnulada">
       <p>{{ indicadores.ventaAnulada.text }}</p>
       <ion-badge item-end>{{ indicadores.ventaAnulada.count }}</ion-badge>
-    </ion-item>
-    <ion-item (click)='togglePedidoAnulado()'>
-      <img item-start *ngIf="indicadores.pedidoAnulado.estado == false" src="./assets/imgs/estado.png"  alt="pedidoAnulado">
-      <img item-start  *ngIf="indicadores.pedidoAnulado.estado == true" src="./assets/imgs/pedidoAnulado.png" alt="pedidoAnulado">
-      <p>{{ indicadores.pedidoAnulado.text }}</p>
-      <ion-badge item-end>{{ indicadores.pedidoAnulado.count }}</ion-badge>
     </ion-item>
       <ion-item (click)='toggleDevolucion()'>
       <img item-start *ngIf="indicadores.devolucion.estado == false" src="./assets/imgs/estado.png"  alt="devolucion">

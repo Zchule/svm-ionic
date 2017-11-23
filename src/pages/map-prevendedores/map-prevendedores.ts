@@ -6,16 +6,18 @@ import { Network } from '@ionic-native/network';
 
 declare var google;
 
-@IonicPage({
-  name: 'map',
-  segment: 'map/:key'
-})
+@IonicPage(
+  // {
+  // name: 'map',
+  // segment: 'map/:key'
+// }
+)
 
 @Component({
-  selector: 'page-map',
-  templateUrl: 'map.html',
+  selector: 'page-map-prevendedores',
+  templateUrl: 'map-prevendedores.html',
 })
-export class MapPage {
+export class MapPrevendedoresPage {
 
   map: any;
   key: string;
@@ -29,21 +31,10 @@ export class MapPage {
   linesPath: any = null;
   hora: string;
   isCenter = false;
-  tipo: any;
 
   subscriptions: Subscription[] = [];
 
   indicadores = {
-    venta: {
-      count: 0,
-      text: 'Venta',
-      estado: true
-    },
-    ventaAnulada: {
-      count: 0,
-      text: 'Venta Anulada',
-      estado: true
-    },
     pedido: {
       count: 0,
       text: 'Pedido',
@@ -57,11 +48,6 @@ export class MapPage {
     visita: {
       count: 0,
       text: 'Visita',
-      estado: true
-    },
-    devolucion: {
-      count: 0,
-      text: 'Devolucion',
       estado: true
     }
   };
@@ -156,10 +142,10 @@ export class MapPage {
         this.map.setCenter(newCenter);
         this.isCenter = true;
       }
-      const icon = './assets/imgs/vendedor.png';
+      const icon = './assets/imgs/prevendedor.png';
       // si el marker no esta creado crea un marker pero si ya esta creado modifica la posicion
       if (this.markerVendedor === null) {
-        const tipo = 'VENDEDOR';
+        const tipo = 'PREVENDEDOR';
         this.markerVendedor = this.createMarker(latitud, longitud, icon, this.name, this.key, posicionActual.hora, tipo);
       } else {
         this.markerVendedor.setPosition(newCenter);
@@ -220,31 +206,26 @@ export class MapPage {
   }
 
   private indicadoresList(type) {
-    if (type === 'VISITA') {
+    if (type === 'PEDIDO') {
+      this.indicadores.pedido.count++;
+    } else if (type === 'VISITA') {
       this.indicadores.visita.count++;
-    } else if (type === 'VENTA') {
-      this.indicadores.venta.count++;
-    } else if (type === 'DEVOLUCION') {
-      this.indicadores.devolucion.count++;
-    } else if (type === 'VENTA_ANULADA') {
-      this.indicadores.ventaAnulada.count++;
+    } else if (type === 'PEDIDO_ANULADO') {
+      this.indicadores.pedidoAnulado.count++;
     }
   }
 
   // retorna el icono indicado de acuerdo al tipo
   private getIcon(tipo: string) {
     switch (tipo) {
-      case 'VENTA': {
-        return './assets/imgs/venta.png';
-
-      }case 'VISITA': {
+      case 'VISITA': {
         return './assets/imgs/visita.png';
       }
-      case 'DEVOLUCION': {
-        return './assets/imgs/devolucion.png';
+      case 'PEDIDO': {
+        return './assets/imgs/pedido.png';
       }
-      case 'VENTA_ANULADA': {
-        return './assets/imgs/ventaAnulada.png';
+      case 'PEDIDO_ANULADO': {
+        return './assets/imgs/pedidoAnulado.png';
       }
       default: {
         return '';
@@ -254,8 +235,8 @@ export class MapPage {
 
   // retorna el tipo adeacuado segun la informacion
   private getType(point: any) {
-    if (point.tipo === 'VENTA' && point.estadoPV === 'ANULADO') {
-      return 'VENTA_ANULADA';
+    if (point.tipo === 'PEDIDO' && point.estadoPV === 'ANULADO') {
+      return 'PEDIDO_ANULADO';
     } else {
       return point.tipo;
     }
@@ -330,10 +311,9 @@ export class MapPage {
     return marker;
   }
 
-
-  toggleVenta() {
+  togglePedido() {
     // Si el estado esta en true lo vuele false y si esta en false lo vuelve true
-    this.indicadores.venta.estado = !this.indicadores.venta.estado;
+    this.indicadores.pedido.estado = !this.indicadores.pedido.estado;
     this.ocultarPuntos();
   }
 
@@ -342,13 +322,8 @@ export class MapPage {
     this.ocultarPuntos();
   }
 
-  toggleVentaAnulada() {
-    this.indicadores.ventaAnulada.estado = !this.indicadores.ventaAnulada.estado;
-    this.ocultarPuntos();
-  }
-
-  toggleDevolucion() {
-    this.indicadores.devolucion.estado = !this.indicadores.devolucion.estado;
+  togglePedidoAnulado() {
+    this.indicadores.pedidoAnulado.estado = !this.indicadores.pedidoAnulado.estado;
     this.ocultarPuntos();
   }
 
@@ -359,9 +334,10 @@ export class MapPage {
       if (this.geoList.hasOwnProperty(key)) {
         const item = this.geoList[key];
         // item.marker.setVisible(true);
-        if (this.indicadores.venta.estado === false && item.point.tipo === 'VENTA') {
+
+        if (this.indicadores.pedido.estado === false && item.point.tipo === 'PEDIDO' ) {
           item.marker.setVisible(false);
-        } else if (this.indicadores.venta.estado === true && item.point.tipo === 'VENTA') {
+        } else if (this.indicadores.pedido.estado === true && item.point.tipo === 'PEDIDO') {
           item.marker.setVisible(true);
         }
 
@@ -371,15 +347,9 @@ export class MapPage {
           item.marker.setVisible(true);
         }
 
-        if (this.indicadores.ventaAnulada.estado === false && item.point.tipo === 'VENTA_ANULADA' ) {
+        if (this.indicadores.pedidoAnulado.estado === false && item.point.tipo === 'PEDIDO_ANULADO' ) {
           item.marker.setVisible(false);
-        } else if (this.indicadores.ventaAnulada.estado === true && item.point.tipo === 'VENTA_ANULADA') {
-          item.marker.setVisible(true);
-        }
-
-        if (this.indicadores.devolucion.estado === false && item.point.tipo === 'DEVOLUCION' ) {
-          item.marker.setVisible(false);
-        } else if (this.indicadores.devolucion.estado === true && item.point.tipo === 'DEVOLUCION') {
+        } else if (this.indicadores.pedidoAnulado.estado === true && item.point.tipo === 'PEDIDO_ANULADO') {
           item.marker.setVisible(true);
         }
       }
@@ -387,9 +357,9 @@ export class MapPage {
   }
 
   private resetCounts() {
-    this.indicadores.devolucion.count = 0;
-    this.indicadores.venta.count = 0;
-    this.indicadores.ventaAnulada.count = 0;
+    this.indicadores.pedido.count = 0;
+    this.indicadores.pedidoAnulado.count = 0;
     this.indicadores.visita.count = 0;
   }
+
 }

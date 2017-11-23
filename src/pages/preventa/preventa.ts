@@ -73,10 +73,19 @@ export class PreventaPage {
     } else {
       const key = vendedor.imei;
       const name = vendedor.nombreVendedor;
-      this.navCtrl.push('map', {
-        key: key,
-        name: name
-      });
+      const tipo = vendedor.tipo;
+        console.log('tipo', tipo );
+        if (tipo === '0' || tipo === null) {
+          this.navCtrl.push('map', {
+            key: key,
+            name: name
+          });
+        } else {
+          this.navCtrl.push('MapPrevendedoresPage', {
+            key: key,
+            name: name
+          });
+        }
     }
   }
 
