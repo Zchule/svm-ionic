@@ -53,7 +53,7 @@ export class VendedorService {
         const vendedor = action.payload.val();
         vendedor.efectividad = 0;
         vendedor.hora = '00:00:00';
-        vendedor.tipo = '0';
+        vendedor.tipo = 'vendedor';
         this.getVendedorAllRef.next(vendedor);
         // hora
         const horaRef = this.fireDatabase.object(`/vendedores/${vendedor.imei}/PosicionActual/hora`);
@@ -64,8 +64,8 @@ export class VendedorService {
         const efectividadSubscription = this.createEfectividadSubscription(efectividadRef, vendedor);
         this.subscriptions.push( efectividadSubscription );
 
-        // hora
-        const tipoRef = this.fireDatabase.object(`/vendedores/${vendedor.imei}/supervisorId`);
+        // tipo
+        const tipoRef = this.fireDatabase.object(`/vendedores/${vendedor.imei}/tipo`);
         const tipoSubscription = this.createTipoSubscription(tipoRef, vendedor);
         this.subscriptions.push( tipoSubscription );
 

@@ -75,7 +75,7 @@ export class PreventaPage {
       const name = vendedor.nombreVendedor;
       const tipo = vendedor.tipo;
         console.log('tipo', tipo );
-        if (tipo === '0' || tipo === null) {
+        if (tipo === 'vendedor') {
           this.navCtrl.push('map', {
             key: key,
             name: name
