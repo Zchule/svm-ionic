@@ -45,7 +45,6 @@ export class ListSupervidoresPage {
     });
     this.subscriptions.push(subscriptionFechaServidor);
     this.verificarInternet();
-    this.getSupervisores();
     this.load.dismiss();
   }
 

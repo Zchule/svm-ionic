@@ -24,7 +24,7 @@ export class HomePage {
     private backgroundGeolocation: BackgroundGeolocation,
     private locationProvider: LocationService,
     public alertCtrl: AlertController,
-    private mapService: MapService,
+    private mapService: MapService
   ) {}
 
   ionViewDidLoad() {
@@ -34,7 +34,6 @@ export class HomePage {
       this.fecha = data.fecha;
       this.startBackgroundGeolocation();
     });
-    
   }
 
   ionViewDidEnter() {

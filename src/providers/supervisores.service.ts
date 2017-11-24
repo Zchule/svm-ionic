@@ -37,7 +37,7 @@ export class SupervisoresProvider {
   }
 
   getSupervisorAllOnline(id: string, fecha): void {
-    console.log('getVendedorAllOnline', id);
+    console.log('getSupervisorAllOnline', id);
     const supervisoresListRef = this.fireDatabase.list(`/Supervisores/${id}/SupervisoresList`);
     const supervisoresListSubscription = supervisoresListRef.snapshotChanges(['child_added'])
     .subscribe(actions => {
@@ -65,7 +65,7 @@ export class SupervisoresProvider {
   }
 
   stopGetSupervisorAllOnline() {
-    console.log('stopGetVendedorAllOnline', this.subscriptions.length);
+    console.log('stopGetSupervisorAllOnline', this.subscriptions.length);
     this.subscriptions.forEach((subscription) => {
       subscription.unsubscribe();
     });

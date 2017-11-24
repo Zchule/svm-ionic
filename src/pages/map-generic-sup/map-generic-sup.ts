@@ -113,7 +113,7 @@ export class MapGenericSupPage {
           this.supervisores[vendedor.imei].data = vendedor;
           const lat = vendedor.posicionActual.latitud;
           const lng = vendedor.posicionActual.longitud;
-          const icon = './assets/imgs/vendedor.png';
+          const icon = './assets/imgs/marker1.png';
           const title = vendedor.nombreVendedor;
           this.supervisores[vendedor.imei].marker = this.createMarker(lat, lng, icon, title);
           this.fixBounds(lat, lng);

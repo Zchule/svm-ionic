@@ -108,12 +108,12 @@ export class MapSupervisorPage {
   }
 
   private obtenerSupervisor() { // this.mapService.runSimulation(this.key, this.fecha);
-    const subscriptionGetVendedor = this.mapService.getSupervisorMap(this.key, this.fecha)
+    const subscriptionGetSupervisor = this.mapService.getSupervisorMap(this.key, this.fecha)
     .subscribe(points => {
       console.log('point', points);
       this.renderMarkers(points);
     });
-    this.subscriptions.push(subscriptionGetVendedor);
+    this.subscriptions.push(subscriptionGetSupervisor);
     const subscriptionSupervisorPosicionActual = this.mapService.getSupervisorPosicionActual(this.key)
     .subscribe((posicionActual: any) => {
       console.log(posicionActual);
@@ -125,7 +125,7 @@ export class MapSupervisorPage {
         this.map.setCenter(newCenter);
         this.isCenter = true;
       }
-      const icon = './assets/imgs/vendedor.png';
+      const icon = './assets/imgs/marker1.png';
       // si el marker no esta creado crea un marker pero si ya esta creado modifica la posicion
       if (this.markerSuper === null) {
         const tipo = ' SUPERVISOR';
