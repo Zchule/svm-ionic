@@ -1,22 +1,23 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, MenuController, Loading, LoadingController, AlertController} from 'ionic-angular';
 import { Subscription } from 'rxjs/Subscription';
+import { MapService } from '../../../providers/map.service';
 import { Network } from '@ionic-native/network';
-
-import { SupervisoresProvider } from '../../providers/supervisores.service';
 
 declare var google;
 
-@IonicPage({
-  // name: 'map-supervisor',
-  // segment: 'map-supervisor/:key'
-})
+@IonicPage(
+  // {
+  // name: 'map',
+  // segment: 'map/:key'
+// }
+)
 
 @Component({
-  selector: 'page-map-supervisor',
-  templateUrl: 'map-supervisor.html',
+  selector: 'page-map-prevendedores',
+  templateUrl: 'map-prevendedores.html',
 })
-export class MapSupervisorPage {
+export class MapPrevendedoresPage {
 
   map: any;
   key: string;
@@ -25,7 +26,7 @@ export class MapSupervisorPage {
   myPosition: any = {};
   infowindow: any;
   fecha: string;
-  markerSuper: any = null;
+  markerVendedor: any = null;
   geoList = {};
   linesPath: any = null;
   hora: string;
@@ -33,10 +34,28 @@ export class MapSupervisorPage {
 
   subscriptions: Subscription[] = [];
 
+  indicadores = {
+    pedido: {
+      count: 0,
+      text: 'Pedido',
+      estado: true
+    },
+    pedidoAnulado: {
+      count: 0,
+      text: 'Pedido Anulado',
+      estado: true
+    },
+    visita: {
+      count: 0,
+      text: 'Visita',
+      estado: true
+    }
+  };
+
   constructor(
     private navParams: NavParams,
     private loadCtrl: LoadingController,
-    private mapService: SupervisoresProvider,
+    private mapService: MapService,
     private menuCtrl: MenuController,
     private alertCtrl: AlertController,
     private network: Network
@@ -47,7 +66,6 @@ export class MapSupervisorPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad MapSupervisorPage');
     this.load = this.loadCtrl.create({
       content: 'Cargando...'
     });
@@ -63,7 +81,7 @@ export class MapSupervisorPage {
   }
 
   ionViewDidEnter() {
-    this.menuCtrl.enable(false, 'menuJefe');
+    this.menuCtrl.enable(false, 'menuSuper');
   }
 
   ionViewDidLeave() {
@@ -103,38 +121,37 @@ export class MapSupervisorPage {
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
       mapEle.classList.add('show-map');
       this.load.dismiss();
-      this.obtenerSupervisor();
+      this.obtenerVendedor();
     });
   }
 
-  private obtenerSupervisor() { // this.mapService.runSimulation(this.key, this.fecha);
-    const subscriptionGetSupervisor = this.mapService.getSupervisorMap(this.key, this.fecha)
+  private obtenerVendedor() { // this.mapService.runSimulation(this.key, this.fecha);
+    const subscriptionGetVendedor = this.mapService.getVendedor(this.key, this.fecha)
     .subscribe(points => {
       console.log('point', points);
+      this.resetCounts();
       this.renderMarkers(points);
     });
-    this.subscriptions.push(subscriptionGetSupervisor);
-    const subscriptionSupervisorPosicionActual = this.mapService.getSupervisorPosicionActual(this.key)
+    this.subscriptions.push(subscriptionGetVendedor);
+    const subscriptionVendedorPosicionActual = this.mapService.getVendedorPosicionActual(this.key)
     .subscribe((posicionActual: any) => {
-      console.log(posicionActual);
       const latitud = posicionActual.latitud;
       const longitud = posicionActual.longitud;
       const newCenter = new google.maps.LatLng(latitud, longitud);
-      console.log(latitud, longitud);
       if (this.isCenter === false) {
         this.map.setCenter(newCenter);
         this.isCenter = true;
       }
-      const icon = './assets/imgs/marker1.png';
+      const icon = './assets/imgs/prevendedor.png';
       // si el marker no esta creado crea un marker pero si ya esta creado modifica la posicion
-      if (this.markerSuper === null) {
-        const tipo = ' SUPERVISOR';
-        this.markerSuper = this.createMarker(latitud, longitud, icon, this.name, this.key, posicionActual.hora, tipo);
+      if (this.markerVendedor === null) {
+        const tipo = 'PREVENDEDOR';
+        this.markerVendedor = this.createMarker(latitud, longitud, icon, this.name, this.key, posicionActual.hora, tipo);
       } else {
-        this.markerSuper.setPosition(newCenter);
+        this.markerVendedor.setPosition(newCenter);
       }
     });
-    this.subscriptions.push(subscriptionSupervisorPosicionActual);
+    this.subscriptions.push(subscriptionVendedorPosicionActual);
   }
 
   // crea un marker para ese punto
@@ -145,19 +162,25 @@ export class MapSupervisorPage {
     // crear punto
     this.geoList[key].point = Object.assign({}, point);
     // obtengo el tipo correcto
+    const type = this.getType(point);
+    this.indicadoresList(type);
+    this.geoList[key].point.tipo = type;
     // console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
     // obtengo el icono correcto de acuerdo al tipo
-    const icon = ' ';
+    const icon = this.getIcon(type);
     // crear el marker de este punto
+    if (icon !== '') {
+      const tipo = 'CLIENTE';
       this.geoList[key].marker = this.createMarker(
         point.latitud,
         point.longitud,
         icon,
-        point.nombre,
-        point.key,
+        point.nombreCliente,
+        point.clienteId,
         point.hora,
-        point.tipo
+        tipo
       );
+    }
   }
 
   // actualiza la informacion sin tener que crear un marker
@@ -165,14 +188,57 @@ export class MapSupervisorPage {
     // console.log( 'updatePoint', point );
     this.geoList[key].point = Object.assign({}, point);
     // obtengo el tipo correcto
+    const type = this.getType(point);
+    this.indicadoresList(type);
+    this.geoList[key].point.tipo = type;
     // console.log('position: ', type, this.geoList[key].point.latitud, this.geoList[key].point.longitud);
     // obtengo el icono correcto de acuerdo al tipo
+    const icon = this.getIcon(type);
     // modifica la posicion del marker
     if ( this.geoList[key].marker ) {
       this.geoList[key].marker.setPosition({
         lat: point.latitud,
         lng: point.longitud
       });
+      // modifica icono
+      this.geoList[key].marker.setIcon(icon);
+    }
+  }
+
+  private indicadoresList(type) {
+    if (type === 'PEDIDO') {
+      this.indicadores.pedido.count++;
+    } else if (type === 'VISITA') {
+      this.indicadores.visita.count++;
+    } else if (type === 'PEDIDO_ANULADO') {
+      this.indicadores.pedidoAnulado.count++;
+    }
+  }
+
+  // retorna el icono indicado de acuerdo al tipo
+  private getIcon(tipo: string) {
+    switch (tipo) {
+      case 'VISITA': {
+        return './assets/imgs/visita.png';
+      }
+      case 'PEDIDO': {
+        return './assets/imgs/pedido.png';
+      }
+      case 'PEDIDO_ANULADO': {
+        return './assets/imgs/pedidoAnulado.png';
+      }
+      default: {
+        return '';
+      }
+    }
+  }
+
+  // retorna el tipo adeacuado segun la informacion
+  private getType(point: any) {
+    if (point.tipo === 'PEDIDO' && point.estadoPV === 'ANULADO') {
+      return 'PEDIDO_ANULADO';
+    } else {
+      return point.tipo;
     }
   }
 
@@ -221,7 +287,7 @@ export class MapSupervisorPage {
     this.linesPath.setMap(this.map);
   }
 
-  private createMarker(lat: number, lng: number, icon: string, nombre: string, id: string,  hora: string, tipo: string) {
+  private createMarker(lat: number, lng: number, icon: string, nombre: string, id: string, hora: string, tipo: string) {
     const options = {
       position: {
         lat: lat,
@@ -243,6 +309,57 @@ export class MapSupervisorPage {
       this.infowindow.open(this.map, marker);
     });
     return marker;
+  }
+
+  togglePedido() {
+    // Si el estado esta en true lo vuele false y si esta en false lo vuelve true
+    this.indicadores.pedido.estado = !this.indicadores.pedido.estado;
+    this.ocultarPuntos();
+  }
+
+  toggleVisita() {
+    this.indicadores.visita.estado = !this.indicadores.visita.estado;
+    this.ocultarPuntos();
+  }
+
+  togglePedidoAnulado() {
+    this.indicadores.pedidoAnulado.estado = !this.indicadores.pedidoAnulado.estado;
+    this.ocultarPuntos();
+  }
+
+  ocultarPuntos() {
+    // recorrer la lista de points
+    for (const key in this.geoList) {
+      // verifica si el punto existe dentro de this.geoList
+      if (this.geoList.hasOwnProperty(key)) {
+        const item = this.geoList[key];
+        // item.marker.setVisible(true);
+
+        if (this.indicadores.pedido.estado === false && item.point.tipo === 'PEDIDO' ) {
+          item.marker.setVisible(false);
+        } else if (this.indicadores.pedido.estado === true && item.point.tipo === 'PEDIDO') {
+          item.marker.setVisible(true);
+        }
+
+        if (this.indicadores.visita.estado === false && item.point.tipo === 'VISITA' ) {
+          item.marker.setVisible(false);
+        } else if (this.indicadores.visita.estado === true && item.point.tipo === 'VISITA') {
+          item.marker.setVisible(true);
+        }
+
+        if (this.indicadores.pedidoAnulado.estado === false && item.point.tipo === 'PEDIDO_ANULADO' ) {
+          item.marker.setVisible(false);
+        } else if (this.indicadores.pedidoAnulado.estado === true && item.point.tipo === 'PEDIDO_ANULADO') {
+          item.marker.setVisible(true);
+        }
+      }
+    }
+  }
+
+  private resetCounts() {
+    this.indicadores.pedido.count = 0;
+    this.indicadores.pedidoAnulado.count = 0;
+    this.indicadores.visita.count = 0;
   }
 
 }

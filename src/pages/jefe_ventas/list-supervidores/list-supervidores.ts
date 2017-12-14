@@ -4,7 +4,7 @@ import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
 import { Subscription } from 'rxjs/Subscription';
 
-import { SupervisoresProvider } from '../../providers/supervisores.service';
+import { SupervisoresProvider } from '../../../providers/supervisores.service';
 
 @IonicPage()
 @Component({

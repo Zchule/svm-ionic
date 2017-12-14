@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, Loading, LoadingController, AlertController } from 'ionic-angular';
 
-import { MapGenericService } from '../../providers/map-generic.service';
+import { MapGenericService } from '../../../providers/map-generic.service';
 import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
 import { Subscription } from 'rxjs/Subscription';
@@ -64,7 +64,7 @@ export class MapGenericPage {
       console.log(this.network.type);
       const alert = this.alertCtrl.create({
         title: 'Sin conexión',
-        subTitle: 'Necesita conectarse',
+        subTitle: 'Necesita conectarse a internet',
         buttons: ['OK']
       });
       alert.present();
@@ -117,6 +117,13 @@ export class MapGenericPage {
           this.vendedores[vendedor.imei].marker = this.createMarker(lat, lng, icon, title);
           this.fixBounds(lat, lng);
         }
+      }else{
+        const alert = this.alertCtrl.create({
+          title: 'Sin Datos',
+          subTitle: 'No se tiene Registros',
+          buttons: ['OK']
+        });
+        alert.present();
       }
     });
     this.subscriptions.push(subscriptionVendedoresChannel);

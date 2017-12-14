@@ -109,7 +109,9 @@ pagesJefe: any[] = [
     } else { // is WEB NO TENEMOS SIM EN UN PC
       // const imei = '356265066243709'; // pruebas
       // const imei = '358993064450418'; // SUPER
-      const imei = '359825061511512'; // JEFE
+      // const imei = '359825061511512'; // JEFE
+      // const imei = '353642091466930'; // JEFE Tarija
+      const imei = '867539021089619'; //sucre jefe
       console.log('web: imei celular', imei);
       this.storage.set('imei', imei);
     }

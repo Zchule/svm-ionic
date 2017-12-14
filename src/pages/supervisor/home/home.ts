@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, MenuController, AlertController } from 'ionic-angular';
 
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
-import { LocationService } from './../../providers/location';
+import { LocationService } from './../../../providers/location';
 
-import { MapService } from '../../providers/map.service';
+import { MapService } from '../../../providers/map.service';
 import { Subscription } from 'rxjs/Subscription';
 
 @IonicPage()

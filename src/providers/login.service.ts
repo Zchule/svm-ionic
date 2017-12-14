@@ -34,7 +34,7 @@ export class LoginService {
         console.log('login offline', estado);
         return this.doLoginOffline(usuario, password);
       } else {
-        console.log('login online doLogin', estado);
+        console.log('login online doLogin', estado, imei);
         return this.doLoginOnline(usuario, password, imei);
       }
     });
@@ -52,6 +52,7 @@ export class LoginService {
           'jventas': 'HomeJefeVentasPage',
         };
         user.page = pages[user.tipo];
+        console.log(user.NombreUsuario, usuario, user.Contraseña, password, user.operacionId );
         if (user.NombreUsuario === usuario && user.Contraseña === password && user.operacionId === 1 ) {
           // this.vendedorService.getVendedorAllOffline(imei);
           user.Contraseña = Md5.hashStr(user.Contraseña);
@@ -59,6 +60,7 @@ export class LoginService {
           this.storage.set('user', userOff);
           this.storage.set('offline', true);
           this.userChannel.next(user);
+          console.log(user);
           resolve(user);
         } else {
           reject(user);

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, Loading, LoadingController, AlertController } from 'ionic-angular';
 
-import { MapGenericSupService } from '../../providers/map-generic-sup';
+import { MapGenericSupService } from '../../../providers/map-generic-sup';
 import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
 import { Subscription } from 'rxjs/Subscription';
@@ -118,6 +118,13 @@ export class MapGenericSupPage {
           this.supervisores[vendedor.imei].marker = this.createMarker(lat, lng, icon, title);
           this.fixBounds(lat, lng);
         }
+      }else{
+        const alert = this.alertCtrl.create({
+          title: 'Sin Datos',
+          subTitle: 'No se tiene Registros',
+          buttons: ['OK']
+        });
+        alert.present();
       }
     });
     this.subscriptions.push(subscriptionVendedoresChannel);

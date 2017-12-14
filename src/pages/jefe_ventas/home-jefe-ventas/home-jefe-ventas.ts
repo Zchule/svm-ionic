@@ -25,4 +25,5 @@ export class HomeJefeVentasPage {
     this.menuCtrl.enable(false, 'menuSuper');
     this.menuCtrl.enable(true, 'menuJefe');
   }
+
 }

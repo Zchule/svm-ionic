@@ -147,5 +147,5 @@ export class VendedorService {
   getVendedorAllChannel() {
     return this.getVendedorAllRef.asObservable();
   }
-
+  
 }

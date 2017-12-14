@@ -4,7 +4,7 @@ import { Storage } from '@ionic/storage';
 import { Network } from '@ionic-native/network';
 import { Subscription } from 'rxjs/Subscription';
 
-import { VendedorService } from '../../providers/vendedor.service';
+import { VendedorService } from '../../../providers/vendedor.service';
 
 @IonicPage()
 @Component({

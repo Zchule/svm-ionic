@@ -54,20 +54,20 @@ export class LocationService {
   start(fecha) {
     const config: BackgroundGeolocationConfig = {
       desiredAccuracy: 10,
-      stationaryRadius: 1,
-      distanceFilter: 1,
-      debug: true,
+      stationaryRadius: 5,
+      distanceFilter: 5,
+      debug: false,
       stopOnTerminate: false,
       locationProvider: 1,
       startForeground: true,
-      interval: 6000,
+      interval: 300000,
       fastestInterval: 5000,
       activitiesInterval: 10000,
-      notificationTitle: 'Background tracking',
-      notificationText: 'enabled',
-      notificationIconColor: '#FEDD1E',
-      notificationIconLarge: 'mappointer_large',
-      notificationIconSmall: 'mappointer_small'
+      // notificationTitle: 'Background tracking',
+      // notificationText: 'enabled',
+      // notificationIconColor: '#FEDD1E',
+      // notificationIconLarge: 'mappointer_large',
+      // notificationIconSmall: 'mappointer_small'
     };
 
     this.backgroundGeolocation.configure(config)
