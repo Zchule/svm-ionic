@@ -26,7 +26,7 @@ export class LocationService {
     console.log('save position');
     const position = this.fireDatabase.object(`trackingSupervisor/${this.imeiSuper}/PosicionActual`);
     position.set({
-        hora: `${this.today.getHours()}:${this.today.getMinutes()}:${this.today.getMinutes()}`,
+        hora: `${this.today.getHours()}:${this.today.getMinutes()}:${this.today.getSeconds()}`,
         latitud: latitude,
         longitud: longitude
     });
@@ -36,7 +36,7 @@ export class LocationService {
     console.log('update position');
     const position = this.fireDatabase.object(`trackingSupervisor/${this.imeiSuper}/PosicionActual`);
     position.update({
-        hora: `${this.today.getHours()}:${this.today.getMinutes()}:${this.today.getMinutes()}`,
+        hora: `${this.today.getHours()}:${this.today.getMinutes()}:${this.today.getSeconds()}`,
         latitud: latitude,
         longitud: longitude
     });
@@ -45,7 +45,7 @@ export class LocationService {
   saveGeoPuntoList(fecha, latitude, longitude) {
     const geoPuntoListRef = this.fireDatabase.list(`/trackingSupervisor/${this.imeiSuper}/registro:${fecha}/geoPuntoList`);
     geoPuntoListRef.push({
-      hora: `${this.today.getHours()}:${this.today.getMinutes()}:${this.today.getMinutes()}`,
+      hora: `${this.today.getHours()}:${this.today.getMinutes()}:${this.today.getSeconds()}`,
       latitud: latitude,
       longitud: longitude,
       });

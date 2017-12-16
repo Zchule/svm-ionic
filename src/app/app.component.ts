@@ -111,7 +111,9 @@ pagesJefe: any[] = [
       // const imei = '358993064450418'; // SUPER
       // const imei = '359825061511512'; // JEFE
       // const imei = '353642091466930'; // JEFE Tarija
-      const imei = '867539021089619'; //sucre jefe
+      // const imei = '867539021089619'; //sucre jefe
+      // const imei = '867539021087324'; // ronald
+      const imei = '357815083659037'; // Roberto
       console.log('web: imei celular', imei);
       this.storage.set('imei', imei);
     }

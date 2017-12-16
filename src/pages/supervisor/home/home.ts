@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, MenuController, AlertController } from 'ionic-angular';
+import { IonicPage, MenuController, AlertController } from 'ionic-angular';
 
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { LocationService } from './../../../providers/location';
@@ -14,25 +14,32 @@ import { Subscription } from 'rxjs/Subscription';
 })
 export class HomePage {
 
+  date = new Date();
+  fecha: string = (this.date.getMonth() + 1) + '-' + this.date.getDate() + '-' + this.date.getFullYear();
   myDate: String = new Date().toISOString().substring(0, 10);
-  fecha: string;
+  fechaServidor: string;
   subscriptions: Subscription[] = [];
 
   constructor(
-    public navCtrl: NavController,
-    public menuCtrl: MenuController,
+    private  menuCtrl: MenuController,
     private backgroundGeolocation: BackgroundGeolocation,
     private locationProvider: LocationService,
-    public alertCtrl: AlertController,
+    private  alertCtrl: AlertController,
     private mapService: MapService
   ) {}
 
   ionViewDidLoad() {
+    console.log('fecha', this.fecha);
     this.mapService.getFechaServidor()
     .valueChanges()
     .subscribe((data: any) => {
-      this.fecha = data.fecha;
-      this.startBackgroundGeolocation();
+      this.fechaServidor = data.fecha;
+      if (this.fechaServidor === this.fecha) {
+        console.log('true');
+        this.startBackgroundGeolocation();
+      } else {
+        this.startBackgroundGeolocation();
+      }
     });
   }
 
