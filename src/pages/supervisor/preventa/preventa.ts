@@ -47,7 +47,6 @@ export class PreventaPage {
     this.subscriptions.push(subscriptionFechaServidor);
     this.verificarInternet();
     // this.getVendedores();
-    this.load.dismiss();
   }
 
   ionViewDidEnter() {
@@ -111,25 +110,28 @@ export class PreventaPage {
   }
 
   private getVendedores(imei) {
-    const subscriptionVendedorAllChannel = this.vendedorService.getVendedorAllChannel()
-    .subscribe(vendedor => {
-      if (vendedor !== null) {
-        console.log('vendedores', vendedor);
-        if (this.vendedores.hasOwnProperty(vendedor.imei)) {
-          const vendedorActual = this.vendedores[vendedor.imei];
-          vendedor.posicion = vendedorActual.posicion;
-          this.listsVendedores[vendedorActual.posicion] = vendedor;
-        } else {
-          vendedor.posicion = this.listsVendedores.length;
-          this.vendedores[vendedor.imei] = vendedor;
-          this.listsVendedores.push(vendedor);
+    setTimeout(() => {
+      const subscriptionVendedorAllChannel = this.vendedorService.getVendedorAllChannel()
+      .subscribe(vendedor => {
+        if (vendedor !== null) {
+          console.log('vendedores', vendedor);
+          if (this.vendedores.hasOwnProperty(vendedor.imei)) {
+            const vendedorActual = this.vendedores[vendedor.imei];
+            vendedor.posicion = vendedorActual.posicion;
+            this.listsVendedores[vendedorActual.posicion] = vendedor;
+          } else {
+            vendedor.posicion = this.listsVendedores.length;
+            this.vendedores[vendedor.imei] = vendedor;
+            this.listsVendedores.push(vendedor);
+          }
+          this.storage.set('vendedoresList', JSON.stringify(this.vendedores));
         }
-        this.storage.set('vendedoresList', JSON.stringify(this.vendedores));
-      }
-    });
-    this.subscriptions.push(subscriptionVendedorAllChannel);
-    // getVendedorAllOnline va estricamente despues de getVendedorAllChannel
-    this.vendedorService.getVendedorAll(this.imeiCel, this.fecha);
+      });
+      this.subscriptions.push(subscriptionVendedorAllChannel);
+      // getVendedorAllOnline va estricamente despues de getVendedorAllChannel
+      this.vendedorService.getVendedorAll(this.imeiCel, this.fecha);
+    }, 1000);
+    this.load.dismiss();
   }
 
   private verificarInternet() {

@@ -45,7 +45,6 @@ export class ListSupervidoresPage {
     });
     this.subscriptions.push(subscriptionFechaServidor);
     this.verificarInternet();
-    this.load.dismiss();
   }
 
   ionViewDidEnter() {
@@ -96,6 +95,7 @@ export class ListSupervidoresPage {
   }
 
   private getSupervisores() {
+    setTimeout(() => {
     const subscriptionSupervisorAllChannel = this.supervisorService.getSupervisorAllChannel()
     .subscribe(supervisor => {
       if (supervisor !== null) {
@@ -115,6 +115,8 @@ export class ListSupervidoresPage {
     this.subscriptions.push(subscriptionSupervisorAllChannel);
     // getSupervisorAllOnline va estricamente despues de getVendedorAllChannel
     this.supervisorService.getSupervisorAll(this.imeiCel, this.fecha);
+    }, 1000);
+    this.load.dismiss();
   }
 
   private verificarInternet() {

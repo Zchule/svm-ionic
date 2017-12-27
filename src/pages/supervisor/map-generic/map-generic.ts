@@ -117,13 +117,6 @@ export class MapGenericPage {
           this.vendedores[vendedor.imei].marker = this.createMarker(lat, lng, icon, title);
           this.fixBounds(lat, lng);
         }
-      } else {
-        const alert = this.alertCtrl.create({
-          title: 'Sin Datos',
-          subTitle: 'No se tiene Registros',
-          buttons: ['OK']
-        });
-        alert.present();
       }
     });
     this.subscriptions.push(subscriptionVendedoresChannel);
